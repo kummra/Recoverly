@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validReminderTime(value) {
+      return value is string
+        && value.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$');
+    }
+
+    function validUserDoc() {
+      return request.resource.data.keys().hasOnly(['goalWeeklyMl', 'reminderTime', 'updatedAt'])
+        && request.resource.data.goalWeeklyMl is int
+        && request.resource.data.goalWeeklyMl >= 0
+        && request.resource.data.goalWeeklyMl <= 5000
+        && (!('reminderTime' in request.resource.data) || request.resource.data.reminderTime == null || validReminderTime(request.resource.data.reminderTime));
+    }
+
+    function validDrinkRecord() {
+      return request.resource.data.keys().hasOnly(['quantity', 'type', 'mood', 'createdAt'])
+        && request.resource.data.quantity is int
+        && request.resource.data.quantity > 0
+        && request.resource.data.quantity <= 5000
+        && request.resource.data.type is string
+        && request.resource.data.type in ['beer', 'wine', 'whiskey', 'vodka', 'other']
+        && (!('mood' in request.resource.data) || request.resource.data.mood == null || (request.resource.data.mood is string && request.resource.data.mood.size() <= 120));
+    }
+
+    function validAiChat() {
+      return request.resource.data.keys().hasOnly(['title', 'createdAt', 'updatedAt'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120;
+    }
+
+    function validAiMessage() {
+      return request.resource.data.keys().hasOnly(['role', 'content', 'createdAt'])
+        && request.resource.data.role in ['user', 'assistant']
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 2000;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && validUserDoc();
+      allow delete: if false;
+
+      match /drinkRecords/{recordId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && validDrinkRecord();
+        allow update: if isOwner(userId) && validDrinkRecord();
+        allow delete: if isOwner(userId);
+      }
+
+      match /aiChats/{chatId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validAiChat();
+        allow delete: if isOwner(userId);
+
+        match /messages/{messageId} {
+          allow read: if isOwner(userId);
+          allow create, update: if isOwner(userId) && validAiMessage();
+          allow delete: if isOwner(userId);
+        }
+      }
+    }
+  }
+}
