@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Bot, MessageSquarePlus, Send, User } from "lucide-react";
 
 import { ProtectedRoute } from "@/components/protected-route";
+import { CrisisHelpline } from "@/components/safety-notice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -200,6 +201,8 @@ function AIContent() {
         <p className="text-sm text-slate-400">A compassionate, non-judgmental conversation partner.</p>
       </div>
 
+      <CrisisHelpline />
+
       <div className="grid gap-6 lg:grid-cols-[280px,1fr]">
         {/* Sidebar */}
         <Card className="h-fit">
@@ -276,7 +279,7 @@ function AIContent() {
                     {message.role === "assistant" ? <Bot className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
                   </div>
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                    className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                       message.role === "assistant"
                         ? "bg-slate-800/80 text-slate-100"
                         : "bg-emerald-600/15 text-emerald-50"

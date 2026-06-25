@@ -5,16 +5,21 @@ import { FieldValue } from "firebase-admin/firestore";
 
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { aiRequestSchema } from "@/lib/schemas";
+import { CRISIS_HELP_MESSAGE, detectCrisis } from "@/lib/safety";
 
 export const runtime = "nodejs";
 
 const SYSTEM_PROMPT = `
-You are a compassionate recovery-support assistant for alcohol reduction.
-Rules:
-- Never shame the user.
-- Reinforce identity-based progress and practical next steps.
-- If user mentions self-harm or immediate danger, strongly advise contacting emergency services and trusted local support now.
-- Keep tone calm, concise, and encouraging.
+You are a compassionate, non-judgmental recovery-support companion for people reducing or quitting alcohol. You are NOT a doctor, nurse, or therapist, and you must never present yourself as one.
+
+Core rules (do not break these):
+- NO MEDICAL ADVICE: never give medical advice, diagnoses, medication or dosage guidance, or treatment plans, and never claim to treat, cure, or be a substitute for professional care. For any medical or clinical question, encourage the user to consult a qualified doctor or counsellor.
+- WITHDRAWAL SAFETY: stopping alcohol suddenly can be medically dangerous for heavy or dependent drinkers (it can cause seizures and delirium tremens, which can be life-threatening). If the user talks about quitting — especially abruptly, or if they describe heavy or daily drinking — gently warn them about this and urge them to see a doctor before stopping and to only reduce under medical supervision. Never encourage anyone to quit cold-turkey.
+- CRISIS: if the user mentions self-harm, suicide, hopelessness, or being in danger, respond with warmth, take it seriously, never minimise it, and point them to real help right away (a crisis helpline, a trusted person, or emergency services). You are not their only support.
+- NO SHAME: never shame or scold. Reinforce identity-based progress ("you are someone who is choosing awareness") and offer small, practical, non-medical next steps.
+- Keep replies calm, concise, and encouraging.
+
+You offer emotional support and motivation only — not medical, legal, or clinical advice.
 `;
 
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
@@ -35,6 +40,11 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
 }
 
 export async function POST(request: NextRequest) {
+  // Tracked outside the try so that, even if generation fails, a user who
+  // expressed crisis still receives a helpline instead of a generic error.
+  let crisisDetected = false;
+  let responseChatId: string | undefined;
+
   try {
     if (!isAdminConfigured || !adminDb) {
       return NextResponse.json({ error: "Firebase Admin is not configured. Check server environment variables." }, { status: 500 });
@@ -59,10 +69,15 @@ export async function POST(request: NextRequest) {
 
     const { messages } = parsed.data;
     const chatId = parsed.data.chatId ?? randomUUID();
+    responseChatId = chatId;
     const safeMessages = messages.map((item) => ({
       role: item.role,
       content: item.content
     }));
+
+    // Deterministic safety net: check the latest user message for crisis language.
+    const lastUserMessage = [...safeMessages].reverse().find((item) => item.role === "user")?.content ?? "";
+    crisisDetected = detectCrisis(lastUserMessage);
 
     const result = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -70,7 +85,12 @@ export async function POST(request: NextRequest) {
       messages: [{ role: "system", content: SYSTEM_PROMPT }, ...safeMessages]
     });
 
-    const reply = result.choices[0]?.message?.content?.trim() ?? "I am here with you. Tell me what you need right now.";
+    const modelReply = result.choices[0]?.message?.content?.trim() ?? "I am here with you. Tell me what you need right now.";
+
+    // If the user expressed crisis, ALWAYS lead with real help — regardless of
+    // what the model returned. Defense in depth on top of the system prompt.
+    const reply = crisisDetected ? `${CRISIS_HELP_MESSAGE}\n\n${modelReply}` : modelReply;
+
     const now = FieldValue.serverTimestamp();
 
     const sessionRef = adminDb.collection("users").doc(uid).collection("aiChats").doc(chatId);
@@ -104,6 +124,13 @@ export async function POST(request: NextRequest) {
     // org IDs, Firestore paths, rate-limit specifics, etc.).
     // eslint-disable-next-line no-console
     console.error("[POST /api/ai]", error);
+
+    // Safety override: never leave someone who expressed crisis without help,
+    // even if the model call or storage failed.
+    if (crisisDetected) {
+      return NextResponse.json({ chatId: responseChatId ?? "", reply: CRISIS_HELP_MESSAGE }, { status: 200 });
+    }
+
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 }

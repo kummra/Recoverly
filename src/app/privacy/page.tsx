@@ -16,7 +16,7 @@ const sections = [
   },
   {
     title: "Data deletion",
-    content: "You can request deletion of your data by removing your account and associated records. Contact support if you need help with data removal."
+    content: "You can permanently delete your account and all associated data at any time from Settings → Delete account. This removes your drink records, goals, and AI chat history, and cannot be undone."
   },
   {
     title: "Third parties",

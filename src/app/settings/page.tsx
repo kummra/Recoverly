@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, AlertCircle, User, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
+import { DeleteAccount } from "@/components/delete-account";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -162,6 +163,8 @@ function SettingsContent() {
               </div>
             </CardContent>
           </Card>
+
+          <DeleteAccount />
         </div>
       </div>
     </div>

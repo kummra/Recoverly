@@ -6,6 +6,7 @@ import { format } from "date-fns";
 
 import { LogDrinkModal } from "@/components/log-drink-modal";
 import { ProtectedRoute } from "@/components/protected-route";
+import { MedicalDisclaimer } from "@/components/safety-notice";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { type DrinkRecord, getDrinkRecords, getUserProfile } from "@/lib/firestore";
@@ -90,6 +91,8 @@ function DashboardContent() {
           {user ? <LogDrinkModal userId={user.uid} onSaved={refresh} /> : null}
         </CardContent>
       </Card>
+
+      <MedicalDisclaimer />
 
       {/* Stats grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
