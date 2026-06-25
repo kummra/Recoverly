@@ -1,10 +1,10 @@
 # Recoverly - Anti-Alcohol Recovery App
 
-Production-ready Next.js 14 recovery platform with Firebase Auth + Firestore, protected tracking features, analytics, and AI guidance.
+Production-ready Next.js 16 recovery platform with Firebase Auth + Firestore, protected tracking features, analytics, and AI guidance.
 
 ## Tech Stack
 
-- Next.js 14 (App Router, Node runtime routes)
+- Next.js 16 (App Router, Node runtime routes)
 - React + TypeScript
 - Tailwind CSS + shadcn-style UI primitives
 - Firebase Authentication + Firestore
