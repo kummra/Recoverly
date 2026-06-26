@@ -5,6 +5,30 @@ Source of the legacy code: the original Cursor/Expo build, backed up at
 working folder). This document lists what is worth bringing into the clean app and what
 to leave behind.
 
+## Context: why the live site looked "emptier" (2026-06-26)
+Before this migration, the live site was being deployed by **Cursor CLI from the parent
+folder** (the richer legacy build), with a dirty working tree. Deploying the clean app to
+production made the site leaner because the legacy extras (chiefly the breathalyser
+dashboard section) had not been ported yet. **No pages were deleted** — git history never
+contained FAQ / support / helpline / guide pages, and neither did the legacy build (checked
+its rendered `.next` HTML). Those content pages below were therefore **built fresh**, not
+ported.
+
+## ✅ Done (2026-06-26)
+- **/support** — crisis helplines (Tele-MANAS, KIRAN, 112) + withdrawal-safety warning +
+  professional-help guidance. Sources numbers from `src/lib/safety.ts`.
+- **/faq** — safety-forward Q&A (no medical advice).
+- **/guide** — step-by-step "How Recoverly works".
+- **SEO** — `app/sitemap.ts` + `app/robots.ts` (private screens excluded) + enriched root
+  metadata (title template, OpenGraph, Twitter, keywords). Replaces the legacy
+  `public/sitemap.xml`.
+- Footer wired to the new pages; stale "OpenAI" mention on /privacy corrected.
+
+## ⏸️ Deferred (low value / high risk pre-deadline)
+- **Theme toggle** (`theme-provider.tsx` + `theme-toggle.tsx`, `next-themes`). The clean app
+  is built dark-only with hardcoded `slate-*`/`text-white`; a real light mode means
+  recolouring every page. Not worth the regression risk before the deadline.
+
 ## ✅ Port (high value)
 
 ### Breathalyser (the Science & Technology centrepiece) — Block 4
