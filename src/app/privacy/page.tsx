@@ -12,7 +12,7 @@ const sections = [
   },
   {
     title: "AI conversations",
-    content: "OpenAI requests are sent through secure server routes. API keys are never exposed to clients. Your conversation history is stored in Firestore under your account."
+    content: "AI requests are sent through secure server routes, where your identity is verified before any reply. API keys are never exposed to clients. Your conversation history is stored in Firestore under your account."
   },
   {
     title: "Data deletion",
