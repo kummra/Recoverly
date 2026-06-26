@@ -18,9 +18,9 @@ Live deployment: https://recoverly-app.vercel.app
   - `users/{uid}` — `goalWeeklyMl`, `reminderTime`, `updatedAt`
   - `users/{uid}/drinkRecords/{id}` — `quantity` (ml), `type`, `mood?`, `createdAt`
   - `users/{uid}/aiChats/{chatId}/messages/{id}` — chat history
-- **AI coach:** OpenAI (`gpt-4o-mini`) via the server route `src/app/api/ai/route.ts`.
-  The OpenAI key is server-side only; every request verifies the caller's Firebase ID
-  token and resolves a `uid`.
+- **AI coach:** a **Qwen** model on **Groq Cloud** (OpenAI-compatible API) in
+  `src/app/api/ai/route.ts`. `GROQ_API_KEY` is server-side only and the model is overridable
+  via `GROQ_MODEL`. Every request verifies the caller's Firebase ID token and resolves a `uid`.
 - **Validation:** shared between Zod (`src/lib/schemas.ts`) and `firestore.rules`.
 - **Deploy:** Vercel (primary); Docker + k8s manifests exist for Oracle Cloud.
 
@@ -55,7 +55,7 @@ npm run lint
 ```
 
 Requires `.env.local` (copy from `.env.example`):
-`NEXT_PUBLIC_FIREBASE_*`, `OPENAI_API_KEY`, and server admin creds
+`NEXT_PUBLIC_FIREBASE_*`, `GROQ_API_KEY`, and server admin creds
 `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY`.
 The app builds and renders without these, but auth and the AI coach are inert until set.
 

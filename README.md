@@ -8,7 +8,7 @@ Production-ready Next.js 16 recovery platform with Firebase Auth + Firestore, pr
 - React + TypeScript
 - Tailwind CSS + shadcn-style UI primitives
 - Firebase Authentication + Firestore
-- OpenAI SDK (server-side key only)
+- Groq Cloud — Qwen model (server-side key only)
 - Recharts (records charts)
 - Docker + Kubernetes manifests (Oracle Cloud compatible)
 
@@ -78,7 +78,7 @@ Production-ready Next.js 16 recovery platform with Firebase Auth + Firestore, pr
 - AI chat:
   - `/api/ai` server route (Node runtime)
   - Firebase token verification in API route
-  - server-only OpenAI key usage
+  - server-only Groq key usage
   - Firestore chat sessions/messages for memory/sidebar
 
 ## Environment Variables
@@ -97,7 +97,7 @@ Required vars:
 - `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
 - `NEXT_PUBLIC_FIREBASE_APP_ID`
-- `OPENAI_API_KEY`
+- `GROQ_API_KEY` (and optionally `GROQ_MODEL`)
 - `FIREBASE_PROJECT_ID`
 - `FIREBASE_CLIENT_EMAIL`
 - `FIREBASE_PRIVATE_KEY`

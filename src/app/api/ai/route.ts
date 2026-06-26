@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
+import Groq from "groq-sdk";
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 import { FieldValue } from "firebase-admin/firestore";
 
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
@@ -8,6 +8,11 @@ import { aiRequestSchema } from "@/lib/schemas";
 import { CRISIS_HELP_MESSAGE, detectCrisis } from "@/lib/safety";
 
 export const runtime = "nodejs";
+
+// Qwen on Groq Cloud (OpenAI-compatible API). The model id is overridable via
+// env so it can be corrected without a code change — confirm the exact id from
+// the Groq console's Models page, as Groq rejects unknown ids.
+const GROQ_MODEL = process.env.GROQ_MODEL ?? "qwen/qwen3.6-27b";
 
 const SYSTEM_PROMPT = `
 You are a compassionate, non-judgmental recovery-support companion for people reducing or quitting alcohol. You are NOT a doctor, nurse, or therapist, and you must never present yourself as one.
@@ -21,6 +26,15 @@ Core rules (do not break these):
 
 You offer emotional support and motivation only — not medical, legal, or clinical advice.
 `;
+
+// Qwen3 is a reasoning model that can wrap private reasoning in <think>…</think>.
+// Strip it so the user only ever sees the final answer.
+function stripThinking(text: string): string {
+  return text
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/<\/?think>/gi, "")
+    .trim();
+}
 
 async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   if (!adminAuth) return null;
@@ -50,11 +64,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Firebase Admin is not configured. Check server environment variables." }, { status: 500 });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "OPENAI_API_KEY is not configured." }, { status: 500 });
+      return NextResponse.json({ error: "GROQ_API_KEY is not configured." }, { status: 500 });
     }
-    const openai = new OpenAI({ apiKey });
 
     const uid = await getUserIdFromRequest(request);
     if (!uid) {
@@ -79,13 +92,18 @@ export async function POST(request: NextRequest) {
     const lastUserMessage = [...safeMessages].reverse().find((item) => item.role === "user")?.content ?? "";
     crisisDetected = detectCrisis(lastUserMessage);
 
-    const result = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const groq = new Groq({ apiKey });
+    const completion = await groq.chat.completions.create({
+      model: GROQ_MODEL,
       temperature: 0.4,
+      // Headroom so a reasoning model's <think> phase doesn't crowd out the
+      // visible answer (the thinking is stripped below before the user sees it).
+      max_tokens: 2048,
       messages: [{ role: "system", content: SYSTEM_PROMPT }, ...safeMessages]
     });
 
-    const modelReply = result.choices[0]?.message?.content?.trim() ?? "I am here with you. Tell me what you need right now.";
+    const rawReply = completion.choices?.[0]?.message?.content ?? "";
+    const modelReply = stripThinking(rawReply) || "I am here with you. Tell me what you need right now.";
 
     // If the user expressed crisis, ALWAYS lead with real help — regardless of
     // what the model returned. Defense in depth on top of the system prompt.
@@ -120,8 +138,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ chatId, reply });
   } catch (error) {
     // Log the real error server-side for debugging; return a generic
-    // message to the client to avoid leaking internal details (OpenAI
-    // org IDs, Firestore paths, rate-limit specifics, etc.).
+    // message to the client to avoid leaking internal details.
     // eslint-disable-next-line no-console
     console.error("[POST /api/ai]", error);
 

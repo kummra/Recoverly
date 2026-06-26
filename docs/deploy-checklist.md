@@ -31,7 +31,10 @@ Client (safe to expose, must be `NEXT_PUBLIC_`):
 - [ ] `NEXT_PUBLIC_FIREBASE_APP_ID`
 
 Server-only (never `NEXT_PUBLIC_`):
-- [ ] `OPENAI_API_KEY`
+- [ ] `GROQ_API_KEY` (Groq Cloud key for the Qwen AI coach)
+- [ ] *(optional)* `GROQ_MODEL` — overrides the default `qwen/qwen3.6-27b`.
+      **Confirm the exact model id from the Groq console's Models page** — Groq rejects
+      unknown ids, and the names there are specific.
 - [ ] `FIREBASE_PROJECT_ID`
 - [ ] `FIREBASE_CLIENT_EMAIL`
 - [ ] `FIREBASE_PRIVATE_KEY` (paste with literal `\n` newlines, or wrapped in quotes — the
