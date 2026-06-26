@@ -55,10 +55,19 @@ The hardware path is: **ESP32 device (WiFi) → Firebase Realtime Database → w
   award), add proper sensor **calibration** and a documented **ppm → BrAC** conversion,
   and label units correctly in the UI.
 
-## 🤔 Decide later (optional)
-| Legacy file | What it is | Recommendation |
-|---|---|---|
-| `src/app/api/oci-sync/route.ts`, `src/lib/oracle-storage.ts`, `src/lib/oracle-db.ts` | Dual-writes data to Oracle Cloud (no-ops if unconfigured) | Adds "Oracle Cloud" to the tech story but real complexity. Default: **skip for now**, revisit if the award framing needs it. |
+## ✅ Oracle Cloud mirror (DONE — LIVE 2026-06-27)
+Ported `oracle-db.ts`, `oracle-storage.ts`, `api/oci-sync/route.ts` into the clean app as a
+**co-equal write-through mirror**: every Firestore write (profile, drinks, AI chats) is also
+written to Oracle Autonomous DB; account deletion purges Oracle too (`deleteAllUserData`).
+Firestore stays primary (real-time + rules). Driver: thin-mode `oracledb` (1-way TLS, no
+wallet) — `serverExternalPackages: ["oracledb"]` + `@types/oracledb` dev dep.
+Security: **TLS + ACL `0.0.0.0/0`** (mTLS-required off; allow-all because Vercel egress IPs
+aren't static). Env: `ORACLE_USER`/`ORACLE_PASSWORD`/`ORACLE_CONNECT_STRING` (server-side).
+**Connect-string gotcha:** service is `..._recoverly_high` (DB name "recoverly"), NOT
+`..._appdb_high` — the stale legacy string caused `NJS-518 service not registered`.
+Dropped the Oracle path's complexity concerns in favour of keeping it (per owner: Oracle
+must be a co-equal store). Future hardening (optional): use a least-privilege app schema
+user instead of `ADMIN`.
 
 ## ❌ Leave behind (cruft)
 - Expo / React Native shell: `App.tsx`, `app.json`, `metro.config.js`, `.expo/`,
