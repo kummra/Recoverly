@@ -13,8 +13,31 @@ import {
   setDoc
 } from "firebase/firestore";
 
-import { firestore } from "@/lib/firebase";
+import { auth, firestore } from "@/lib/firebase";
 import { type DrinkRecordInput, type GoalInput } from "@/lib/schemas";
+
+/**
+ * Mirror a write to Oracle Cloud (best-effort, fire-and-forget).
+ *
+ * Firestore is the primary, real-time store; this keeps an equal copy of the
+ * data in Oracle via the server-side /api/oci-sync route (which holds the
+ * Oracle credentials). Failures never block or surface to the user — the
+ * primary write has already succeeded by the time this runs.
+ */
+async function syncToOracle(payload: Record<string, unknown>): Promise<void> {
+  try {
+    const token = await auth?.currentUser?.getIdToken();
+    if (!token) return;
+    void fetch("/api/oci-sync", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    }).catch(() => {});
+  } catch { /* fire-and-forget */ }
+}
 
 export type DrinkRecord = {
   id: string;
@@ -71,6 +94,14 @@ export async function saveUserPreferences(userId: string, input: GoalInput) {
     },
     { merge: true }
   );
+
+  void syncToOracle({
+    type: "user_profile",
+    data: {
+      goalWeeklyMl: input.goalWeeklyMl,
+      reminderTime: input.reminderTime ?? null,
+    },
+  });
 }
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
@@ -89,11 +120,22 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
 export async function addDrinkRecord(userId: string, record: DrinkRecordInput) {
   const db = getClientDb();
   const ref = collection(db, "users", userId, "drinkRecords");
-  await addDoc(ref, {
+  const created = await addDoc(ref, {
     quantity: record.quantity,
     type: record.type,
     mood: record.mood ?? null,
     createdAt: serverTimestamp()
+  });
+
+  void syncToOracle({
+    type: "drink_record",
+    recordId: created.id,
+    data: {
+      quantity: record.quantity,
+      type: record.type,
+      mood: record.mood ?? null,
+      createdAt: new Date().toISOString(),
+    },
   });
 }
 

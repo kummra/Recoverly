@@ -6,6 +6,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { aiRequestSchema } from "@/lib/schemas";
 import { CRISIS_HELP_MESSAGE, detectCrisis } from "@/lib/safety";
+import { syncChatSession, syncChatMessage } from "@/lib/oracle-storage";
 
 export const runtime = "nodejs";
 
@@ -114,26 +115,38 @@ export async function POST(request: NextRequest) {
     const sessionRef = adminDb.collection("users").doc(uid).collection("aiChats").doc(chatId);
     const sessionSnap = await sessionRef.get();
 
+    const sessionTitle = safeMessages[0]?.content?.slice(0, 60) || "Recovery guidance chat";
     if (sessionSnap.exists) {
       await sessionRef.update({ updatedAt: now });
     } else {
       await sessionRef.set({
-        title: safeMessages[0]?.content?.slice(0, 60) || "Recovery guidance chat",
+        title: sessionTitle,
         createdAt: now,
         updatedAt: now
       });
     }
 
-    await sessionRef.collection("messages").add({
+    const userContent = safeMessages[safeMessages.length - 1]?.content ?? "";
+    const userMsgRef = await sessionRef.collection("messages").add({
       role: "user",
-      content: safeMessages[safeMessages.length - 1]?.content ?? "",
+      content: userContent,
       createdAt: now
     });
-    await sessionRef.collection("messages").add({
+    const assistantMsgRef = await sessionRef.collection("messages").add({
       role: "assistant",
       content: reply,
       createdAt: now
     });
+
+    // Mirror the conversation to Oracle Cloud so it lives equally in both
+    // stores. Best-effort: oracle-storage swallows its own errors, and we await
+    // here only so the writes complete before the serverless function ends.
+    const nowIso = new Date().toISOString();
+    await Promise.all([
+      syncChatSession(chatId, uid, { title: sessionTitle, updatedAt: nowIso }),
+      syncChatMessage(userMsgRef.id, uid, chatId, { role: "user", content: userContent, createdAt: nowIso }),
+      syncChatMessage(assistantMsgRef.id, uid, chatId, { role: "assistant", content: reply, createdAt: nowIso }),
+    ]);
 
     return NextResponse.json({ chatId, reply });
   } catch (error) {

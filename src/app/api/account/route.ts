@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
+import { deleteAllUserData } from "@/lib/oracle-storage";
 
 export const runtime = "nodejs";
 
@@ -38,8 +39,10 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Delete all Firestore data under this user, then the auth account itself.
+    // Delete all Firestore data under this user, plus the Oracle Cloud mirror,
+    // then the auth account itself — so "delete everything" holds in BOTH stores.
     await adminDb.recursiveDelete(adminDb.collection("users").doc(uid));
+    await deleteAllUserData(uid);
     await adminAuth.deleteUser(uid);
 
     return NextResponse.json({ ok: true });
