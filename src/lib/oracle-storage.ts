@@ -185,6 +185,34 @@ export async function deleteSyncedDeviceLink(
   );
 }
 
+// ─── Sobriety signals (breathalyser-agnostic) ──────────────────────────────
+
+export async function syncSobrietySignal(
+  signalId: string,
+  userId: string,
+  source: string,
+  result: string,
+  data: Record<string, unknown>
+): Promise<void> {
+  await runSql(
+    `MERGE INTO sobriety_signals t
+       USING (SELECT :signal_id AS signal_id FROM dual) s
+       ON (t.signal_id = s.signal_id)
+     WHEN MATCHED THEN
+       UPDATE SET data_json = :data_json
+     WHEN NOT MATCHED THEN
+       INSERT (signal_id, user_id, source, result, data_json, created_at)
+       VALUES (:signal_id, :user_id, :source, :result, :data_json, SYSTIMESTAMP)`,
+    {
+      signal_id: signalId,
+      user_id: userId,
+      source,
+      result,
+      data_json: JSON.stringify(data)
+    }
+  );
+}
+
 // ─── Account deletion ───────────────────────────────────────────────────────
 
 /**
@@ -203,6 +231,7 @@ export async function deleteAllUserData(userId: string): Promise<void> {
       "chat_sessions",
       "drink_records",
       "device_data",
+      "sobriety_signals",
       "user_profiles",
     ];
     for (const table of tables) {

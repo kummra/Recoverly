@@ -32,7 +32,51 @@ export const aiRequestSchema = z.object({
   messages: z.array(aiMessageSchema).min(1).max(AI_CONTEXT_WINDOW)
 });
 
+// ─── Sobriety signals (breathalyser-agnostic) ───────────────────────────────
+// One record type for every input source so the app timeline is uniform:
+//  - guardian_ambient / guardian_breath : SEN0376 device — PRESENCE only (no BAC)
+//  - manual                              : a reading typed from any breathalyser (Jupiter, clinic, etc.)
+//  - bluetooth                           : future auto-sync from a BLE device
+export const SOBRIETY_SOURCES = [
+  "guardian_ambient",
+  "guardian_breath",
+  "manual",
+  "bluetooth"
+] as const;
+
+// Normalised presence outcome shown on the timeline for every source.
+export const SOBRIETY_RESULTS = ["clear", "detected"] as const;
+
+export const sobrietySignalSchema = z
+  .object({
+    source: z.enum(SOBRIETY_SOURCES),
+    result: z.enum(SOBRIETY_RESULTS),
+    // Raw ambient/breath sensor value (SEN0376, 0–5 ppm + headroom). Presence only.
+    ppm: z.number().min(0).max(50).optional(),
+    // Quantitative values — ONLY valid for manual/bluetooth (a real calibrated device).
+    bac: z.number().min(0).max(1).optional(), // % BAC (e.g. 0.08)
+    brac: z.number().min(0).max(10).optional(), // mg/L breath
+    deviceName: z.string().trim().max(60).optional(), // e.g. "Jupiter …" for manual entries
+    note: z.string().trim().max(200).optional(),
+    createdAt: z.date().optional()
+  })
+  // Guard the honesty rule at the schema layer: the SEN0376 guardian must never
+  // carry a BAC/BrAC number — only manual/bluetooth (truly calibrated) devices may.
+  .refine(
+    (s) => !((s.source === "guardian_ambient" || s.source === "guardian_breath") && (s.bac != null || s.brac != null)),
+    { message: "Guardian (presence) signals cannot carry a BAC/BrAC value." }
+  );
+
+// Device → user binding for IoT ingest. Token is sent in the Authorization header,
+// never in the body; the server stores only its hash.
+export const deviceRegisterSchema = z.object({
+  label: z.string().trim().min(1).max(60),
+  kind: z.enum(["sobriety_guardian"]).default("sobriety_guardian")
+});
+
 export type GoalInput = z.infer<typeof goalSchema>;
 export type DrinkRecordInput = z.infer<typeof drinkRecordSchema>;
 export type AIRequestInput = z.infer<typeof aiRequestSchema>;
 export type AIMessageInput = z.infer<typeof aiMessageSchema>;
+export type SobrietySignalInput = z.infer<typeof sobrietySignalSchema>;
+export type DeviceRegisterInput = z.infer<typeof deviceRegisterSchema>;

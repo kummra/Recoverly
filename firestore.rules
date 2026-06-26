@@ -66,6 +66,26 @@ service cloud.firestore {
           allow delete: if isOwner(userId);
         }
       }
+
+      // Sobriety signals (guardian device + manual breathalyser readings) are
+      // written ONLY server-side (Admin SDK in /api/device-ingest and /api/sobriety),
+      // so clients may read their own but never write — keeps the data trustworthy.
+      match /sobrietySignals/{signalId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+
+      // Live device-status tile — server-written only.
+      match /deviceStatus/{deviceId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+    }
+
+    // Device registry holds owner bindings + token HASHES. No client access at
+    // all; only the Admin SDK (server routes) may read or write it.
+    match /devices/{deviceId} {
+      allow read, write: if false;
     }
   }
 }

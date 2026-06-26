@@ -56,6 +56,14 @@ const TABLE_DDL = [
      data_json  CLOB,
      created_at TIMESTAMP DEFAULT SYSTIMESTAMP
    )`,
+  `CREATE TABLE sobriety_signals (
+     signal_id  VARCHAR2(128) PRIMARY KEY,
+     user_id    VARCHAR2(128) NOT NULL,
+     source     VARCHAR2(32),
+     result     VARCHAR2(16),
+     data_json  CLOB,
+     created_at TIMESTAMP DEFAULT SYSTIMESTAMP
+   )`,
 ];
 
 async function initPool(): Promise<oracledb.Pool> {
