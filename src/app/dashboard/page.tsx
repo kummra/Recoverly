@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Clock, Droplets, Target } from "lucide-react";
+import { Activity, Clock, Droplets, Flame, Sparkles, Target } from "lucide-react";
 import { format } from "date-fns";
 
 import { LogDrinkModal } from "@/components/log-drink-modal";
@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/components/protected-route";
 import { MedicalDisclaimer } from "@/components/safety-notice";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
+import { buildProgress } from "@/lib/analytics";
 import { type DrinkRecord, getDrinkRecords, getUserProfile } from "@/lib/firestore";
 
 export default function DashboardPage() {
@@ -51,6 +52,7 @@ function DashboardContent() {
 
   const weeklyProgress = weeklyGoal > 0 ? Math.min((weeklyTotal / weeklyGoal) * 100, 100) : 0;
   const recentRecords = useMemo(() => [...records].reverse().slice(0, 5), [records]);
+  const progress = useMemo(() => buildProgress(records), [records]);
 
   const refresh = async () => {
     if (!user) return;
@@ -74,6 +76,74 @@ function DashboardContent() {
         <h2 className="text-xl font-bold">Dashboard</h2>
         <p className="text-sm text-slate-400">Pause, breathe, and log intentionally.</p>
       </div>
+
+      {/* Identity + streak hero — the motivational anchor (never shaming) */}
+      <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 via-slate-900/80 to-slate-900/90">
+        <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+        <CardContent className="relative space-y-5 pt-6">
+          {!progress.hasHistory ? (
+            <div className="flex items-center gap-4">
+              <Sparkles className="h-8 w-8 shrink-0 text-emerald-400" />
+              <div>
+                <p className="text-lg font-semibold">Your journey starts here</p>
+                <p className="text-sm text-slate-400">
+                  Every step toward awareness counts. Your first check-in begins your progress.
+                </p>
+              </div>
+            </div>
+          ) : progress.currentStreakDays >= 1 ? (
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <div className="flex items-center gap-3">
+                <Flame className="h-9 w-9 shrink-0 text-emerald-400" />
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-emerald-300/80">choosing awareness</p>
+                  <p className="text-4xl font-bold leading-none">
+                    {progress.currentStreakDays}
+                    <span className="ml-2 text-base font-normal text-slate-400">
+                      day{progress.currentStreakDays === 1 ? "" : "s"} alcohol-free
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <p className="max-w-xs text-sm text-slate-400">
+                You are someone who is choosing awareness — one day at a time.
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Sparkles className="h-8 w-8 shrink-0 text-emerald-400" />
+              <div>
+                <p className="text-lg font-semibold">A fresh page today</p>
+                <p className="text-sm text-slate-400">
+                  Awareness is the win, and it carries forward. Your best run so far is{" "}
+                  <span className="font-semibold text-emerald-300">{progress.longestStreakDays}</span> day
+                  {progress.longestStreakDays === 1 ? "" : "s"}.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {progress.hasHistory && (
+            <div className="grid grid-cols-3 gap-3 border-t border-border pt-4 text-center">
+              <div>
+                <p className="text-xl font-bold text-emerald-400">{progress.longestStreakDays}</p>
+                <p className="text-[11px] text-slate-400">longest streak</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold text-sky-400">
+                  {progress.alcoholFreeDaysThisMonth}
+                  <span className="text-xs font-normal text-slate-500">/{progress.daysElapsedThisMonth}</span>
+                </p>
+                <p className="text-[11px] text-slate-400">alcohol-free days</p>
+              </div>
+              <div>
+                <p className="text-xl font-bold">{progress.totalCheckIns}</p>
+                <p className="text-[11px] text-slate-400">mindful check-ins</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Primary action */}
       <Card className="relative overflow-hidden border-emerald-500/20 bg-gradient-to-br from-slate-900/90 to-emerald-950/20">

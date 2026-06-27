@@ -1,7 +1,7 @@
 import { addDays, startOfMonth, subMonths } from "date-fns";
 import { describe, expect, it } from "vitest";
 
-import { buildAnalytics, suggestInsight } from "@/lib/analytics";
+import { buildAnalytics, buildProgress, suggestInsight } from "@/lib/analytics";
 import type { DrinkRecord } from "@/lib/firestore";
 
 function rec(quantity: number, createdAt: Date): DrinkRecord {
@@ -69,5 +69,58 @@ describe("suggestInsight", () => {
   });
   it("notes a stable pattern", () => {
     expect(suggestInsight({ ...base, currentMonthTotal: 100, improvementPercent: 0 })).toMatch(/stable/i);
+  });
+});
+
+describe("buildProgress (streaks)", () => {
+  const fixedNow = new Date(2026, 5, 27, 12, 0, 0); // Jun 27 2026
+  const day = (y: number, m: number, d: number) => new Date(y, m, d, 10, 0, 0);
+  const drink = (createdAt: Date): DrinkRecord => ({
+    id: Math.random().toString(36).slice(2),
+    quantity: 100,
+    type: "beer",
+    createdAt
+  });
+
+  it("new user: no history, no streak, whole month alcohol-free", () => {
+    const p = buildProgress([], fixedNow);
+    expect(p.hasHistory).toBe(false);
+    expect(p.currentStreakDays).toBe(0);
+    expect(p.longestStreakDays).toBe(0);
+    expect(p.totalCheckIns).toBe(0);
+    expect(p.daysElapsedThisMonth).toBe(27);
+    expect(p.alcoholFreeDaysThisMonth).toBe(27);
+  });
+
+  it("a drink logged today resets the current streak to 0", () => {
+    const p = buildProgress([drink(day(2026, 5, 27))], fixedNow);
+    expect(p.hasHistory).toBe(true);
+    expect(p.currentStreakDays).toBe(0);
+  });
+
+  it("counts days since the last drink", () => {
+    const p = buildProgress([drink(day(2026, 5, 24))], fixedNow);
+    expect(p.currentStreakDays).toBe(3); // Jun 24 -> Jun 27
+    expect(p.longestStreakDays).toBe(3);
+  });
+
+  it("longest streak is the best gap even when the current run is short", () => {
+    // drinks Jun 1, Jun 10, Jun 26 ; gaps 8 and 15 ; current run only 1 day
+    const p = buildProgress(
+      [drink(day(2026, 5, 1)), drink(day(2026, 5, 10)), drink(day(2026, 5, 26))],
+      fixedNow
+    );
+    expect(p.currentStreakDays).toBe(1);
+    expect(p.longestStreakDays).toBe(15);
+  });
+
+  it("treats multiple logs in one day as a single drink day", () => {
+    const p = buildProgress(
+      [drink(day(2026, 5, 20)), drink(day(2026, 5, 20)), drink(day(2026, 5, 20))],
+      fixedNow
+    );
+    expect(p.totalCheckIns).toBe(3);
+    expect(p.currentStreakDays).toBe(7); // Jun 20 -> Jun 27
+    expect(p.alcoholFreeDaysThisMonth).toBe(26); // 27 elapsed - 1 drink day
   });
 });

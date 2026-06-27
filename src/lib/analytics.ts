@@ -1,4 +1,11 @@
-import { differenceInCalendarDays, endOfMonth, format, startOfMonth, subMonths } from "date-fns";
+import {
+  differenceInCalendarDays,
+  endOfMonth,
+  format,
+  parseISO,
+  startOfMonth,
+  subMonths
+} from "date-fns";
 
 import type { DrinkRecord } from "@/lib/firestore";
 
@@ -64,6 +71,75 @@ export function buildAnalytics(records: DrinkRecord[]): AnalyticsSummary {
     projectionSixMonths,
     dailyLineData,
     monthlyBarData
+  };
+}
+
+// ─── Progress & streaks (behavioural design: identity + small wins) ─────────
+export type ProgressSummary = {
+  /** Days since the last logged drink (0 if a drink was logged today). */
+  currentStreakDays: number;
+  /** Best alcohol-free run, ever — a personal best that can only go up. */
+  longestStreakDays: number;
+  /** Alcohol-free calendar days so far this month. */
+  alcoholFreeDaysThisMonth: number;
+  /** Calendar days elapsed this month (the denominator for "X of Y"). */
+  daysElapsedThisMonth: number;
+  /** Total logs — reframed as "mindful check-ins", never failures. */
+  totalCheckIns: number;
+  /** False for a brand-new user with no logs yet (UI shows a gentle start state). */
+  hasHistory: boolean;
+};
+
+/**
+ * Encouraging progress metrics. Streaks are measured in *calendar days* and a
+ * "drink day" is any day with at least one logged drink. Pure + deterministic;
+ * pass `now` in tests.
+ */
+export function buildProgress(records: DrinkRecord[], now: Date = new Date()): ProgressSummary {
+  const totalCheckIns = records.length;
+  const startMonth = startOfMonth(now);
+  const daysElapsedThisMonth = differenceInCalendarDays(now, startMonth) + 1;
+
+  if (records.length === 0) {
+    return {
+      currentStreakDays: 0,
+      longestStreakDays: 0,
+      alcoholFreeDaysThisMonth: daysElapsedThisMonth,
+      daysElapsedThisMonth,
+      totalCheckIns: 0,
+      hasHistory: false
+    };
+  }
+
+  // Unique drink days (calendar), ascending.
+  const dayKeys = new Set<string>();
+  for (const r of records) dayKeys.add(format(r.createdAt, "yyyy-MM-dd"));
+  const drinkDays = Array.from(dayKeys)
+    .map((k) => parseISO(k))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  const lastDrinkDay = drinkDays[drinkDays.length - 1];
+  const currentStreakDays = Math.max(differenceInCalendarDays(now, lastDrinkDay), 0);
+
+  // Longest gap of alcohol-free days between consecutive drink days…
+  let maxGap = 0;
+  for (let i = 1; i < drinkDays.length; i++) {
+    const gap = differenceInCalendarDays(drinkDays[i], drinkDays[i - 1]) - 1;
+    if (gap > maxGap) maxGap = gap;
+  }
+  // …and the current ongoing streak counts as a run too.
+  const longestStreakDays = Math.max(maxGap, currentStreakDays);
+
+  const drinkDaysThisMonth = drinkDays.filter((d) => d >= startMonth && d <= now).length;
+  const alcoholFreeDaysThisMonth = Math.max(daysElapsedThisMonth - drinkDaysThisMonth, 0);
+
+  return {
+    currentStreakDays,
+    longestStreakDays,
+    alcoholFreeDaysThisMonth,
+    daysElapsedThisMonth,
+    totalCheckIns,
+    hasHistory: true
   };
 }
 
