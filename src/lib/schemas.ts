@@ -38,11 +38,16 @@ export const aiRequestSchema = z.object({
 //  - manual                              : a reading typed from any breathalyser (Jupiter, clinic, etc.)
 //  - bluetooth                           : future auto-sync from a BLE device
 export const SOBRIETY_SOURCES = [
-  "guardian_ambient",
-  "guardian_breath",
-  "manual",
-  "bluetooth"
+  "guardian_ambient", // SEN0376 ambient air — presence only
+  "guardian_breath", // SEN0376 breath — presence only
+  "breathalyser_mq3", // MQ-3 quantitative path (ESTIMATED BAC; auto-engaged when SEN0376 saturates)
+  "manual", // typed in from any external breathalyser (Jupiter/clinic)
+  "bluetooth" // future BLE auto-sync from a calibrated device
 ] as const;
+
+// Sources whose BAC/BrAC is only an estimate from an uncalibrated semiconductor
+// sensor — the app must label these "estimated, not for legal/medical use".
+export const ESTIMATED_BAC_SOURCES = ["breathalyser_mq3"] as const;
 
 // Normalised presence outcome shown on the timeline for every source.
 export const SOBRIETY_RESULTS = ["clear", "detected"] as const;
@@ -60,18 +65,22 @@ export const sobrietySignalSchema = z
     note: z.string().trim().max(200).optional(),
     createdAt: z.date().optional()
   })
-  // Guard the honesty rule at the schema layer: the SEN0376 guardian must never
-  // carry a BAC/BrAC number — only manual/bluetooth (truly calibrated) devices may.
+  // Guard the honesty rule at the schema layer: the SEN0376 presence sources must
+  // never carry a BAC/BrAC number. Quantitative values are only valid from the
+  // MQ-3 path (estimated) or manual/bluetooth (calibrated) devices.
   .refine(
     (s) => !((s.source === "guardian_ambient" || s.source === "guardian_breath") && (s.bac != null || s.brac != null)),
-    { message: "Guardian (presence) signals cannot carry a BAC/BrAC value." }
+    { message: "SEN0376 presence signals cannot carry a BAC/BrAC value." }
   );
 
 // Device → user binding for IoT ingest. Token is sent in the Authorization header,
 // never in the body; the server stores only its hash.
+//  - sobriety_guardian : personal ambient watch + blow-to-check
+//  - campus_detector   : NGO/facility "alcohol-free zone" ambient monitor
+//  - breathalyser      : blow-to-check with the SEN0376→MQ-3 BAC path
 export const deviceRegisterSchema = z.object({
   label: z.string().trim().min(1).max(60),
-  kind: z.enum(["sobriety_guardian"]).default("sobriety_guardian")
+  kind: z.enum(["sobriety_guardian", "campus_detector", "breathalyser"]).default("sobriety_guardian")
 });
 
 export type GoalInput = z.infer<typeof goalSchema>;
