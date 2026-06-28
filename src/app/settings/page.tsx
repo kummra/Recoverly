@@ -26,6 +26,7 @@ function SettingsContent() {
   const { user } = useAuth();
   const [goalWeeklyMl, setGoalWeeklyMl] = useState(0);
   const [reminderTime, setReminderTime] = useState("");
+  const [motivation, setMotivation] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const timezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
@@ -36,6 +37,7 @@ function SettingsContent() {
       if (!profile) return;
       setGoalWeeklyMl(profile.goalWeeklyMl ?? 0);
       setReminderTime(profile.reminderTime ?? "");
+      setMotivation(profile.motivation ?? "");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
@@ -43,7 +45,7 @@ function SettingsContent() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    const parsed = goalSchema.safeParse({ goalWeeklyMl, reminderTime: reminderTime || undefined });
+    const parsed = goalSchema.safeParse({ goalWeeklyMl, reminderTime: reminderTime || undefined, motivation: motivation.trim() || undefined });
     if (!parsed.success) {
       setMessage({ type: "error", text: `Goal must be a whole number between 0 and ${MAX_WEEKLY_GOAL_ML} ml, and reminder must be HH:MM.` });
       return;
@@ -87,6 +89,18 @@ function SettingsContent() {
               <div className="space-y-2">
                 <Label className="text-xs text-slate-500">Timezone</Label>
                 <Input value={timezone} readOnly className="bg-slate-900/50 text-slate-400" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="motivation">Your why</Label>
+                <textarea
+                  id="motivation"
+                  value={motivation}
+                  onChange={(e) => setMotivation(e.target.value.slice(0, 200))}
+                  rows={2}
+                  placeholder="My family, my health, the person I want to be…"
+                  className="w-full rounded-xl border border-border bg-slate-900/50 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:border-emerald-500/50 focus:outline-none"
+                />
+                <p className="text-xs text-slate-500">Your anchor on hard days — shown on your dashboard.</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="goal">Weekly Goal (ml)</Label>

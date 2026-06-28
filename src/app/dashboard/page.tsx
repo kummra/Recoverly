@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Clock, Droplets, Flame, Sparkles, Target } from "lucide-react";
+import { Activity, Clock, Droplets, Flame, Heart, Sparkles, Target } from "lucide-react";
 import { format } from "date-fns";
 
 import { LogDrinkModal } from "@/components/log-drink-modal";
+import { Onboarding } from "@/components/onboarding";
 import { ProtectedRoute } from "@/components/protected-route";
 import { MedicalDisclaimer } from "@/components/safety-notice";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,10 @@ function DashboardContent() {
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
   const [weeklyGoal, setWeeklyGoal] = useState(0);
+  const [motivation, setMotivation] = useState("");
+  const [hasProfile, setHasProfile] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [dismissedOnboarding, setDismissedOnboarding] = useState(false);
 
   // Derive month label, filtered records, and total from a single Date so they
   // can never desync across a month boundary. Recomputes whenever records change.
@@ -61,13 +66,34 @@ function DashboardContent() {
       getUserProfile(user.uid)
     ]);
     setRecords(fetchedRecords);
-    if (profile) setWeeklyGoal(profile.goalWeeklyMl);
+    setHasProfile(profile !== null);
+    if (profile) {
+      setWeeklyGoal(profile.goalWeeklyMl);
+      setMotivation(profile.motivation ?? "");
+    }
+    setLoaded(true);
   };
+
+  // A truly new user (no saved profile and no logs) gets the gentle first-run
+  // flow instead of an empty dashboard. Existing users never see it.
+  const needsOnboarding = loaded && !hasProfile && records.length === 0 && !dismissedOnboarding;
 
   useEffect(() => {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
+
+  if (needsOnboarding && user) {
+    return (
+      <div className="stagger-children space-y-6">
+        <div>
+          <h2 className="text-xl font-bold">Welcome</h2>
+          <p className="text-sm text-slate-400">Let&apos;s set up your space — it takes a moment.</p>
+        </div>
+        <Onboarding userId={user.uid} onComplete={refresh} onSkip={() => setDismissedOnboarding(true)} />
+      </div>
+    );
+  }
 
   return (
     <div className="stagger-children space-y-6">
@@ -121,6 +147,12 @@ function DashboardContent() {
                 </p>
               </div>
             </div>
+          )}
+
+          {motivation && (
+            <p className="flex items-start gap-1.5 text-sm italic text-emerald-200/70">
+              <Heart className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {motivation}
+            </p>
           )}
 
           {progress.hasHistory && (

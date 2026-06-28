@@ -50,6 +50,7 @@ export type DrinkRecord = {
 export type UserProfile = {
   goalWeeklyMl: number;
   reminderTime?: string;
+  motivation?: string;
   updatedAt?: Date;
 };
 
@@ -87,9 +88,10 @@ export async function saveUserPreferences(userId: string, input: GoalInput) {
     ref,
     {
       goalWeeklyMl: input.goalWeeklyMl,
-      // Explicitly write null when reminderTime is absent so merge:true
-      // actually clears the field instead of silently preserving the old value.
+      // Explicitly write null when a field is absent so merge:true actually
+      // clears it instead of silently preserving the old value.
       reminderTime: input.reminderTime ?? null,
+      motivation: input.motivation ?? null,
       updatedAt: serverTimestamp()
     },
     { merge: true }
@@ -100,6 +102,7 @@ export async function saveUserPreferences(userId: string, input: GoalInput) {
     data: {
       goalWeeklyMl: input.goalWeeklyMl,
       reminderTime: input.reminderTime ?? null,
+      motivation: input.motivation ?? null,
     },
   });
 }
@@ -113,6 +116,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
   return {
     goalWeeklyMl: Number(data.goalWeeklyMl ?? 0),
     reminderTime: data.reminderTime,
+    motivation: typeof data.motivation === "string" ? data.motivation : undefined,
     updatedAt: data.updatedAt ? toDate(data.updatedAt) : undefined
   };
 }

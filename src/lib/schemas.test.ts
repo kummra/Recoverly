@@ -35,6 +35,10 @@ describe("goalSchema", () => {
     expect(goalSchema.safeParse({ goalWeeklyMl: 0, reminderTime: "09:30" }).success).toBe(true);
     expect(goalSchema.safeParse({ goalWeeklyMl: 0, reminderTime: "25:00" }).success).toBe(false);
   });
+  it("accepts an optional motivation but caps its length", () => {
+    expect(goalSchema.safeParse({ goalWeeklyMl: 0, motivation: "For my family" }).success).toBe(true);
+    expect(goalSchema.safeParse({ goalWeeklyMl: 0, motivation: "x".repeat(201) }).success).toBe(false);
+  });
 });
 
 describe("sobrietySignalSchema — honesty guard", () => {

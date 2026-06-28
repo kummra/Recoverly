@@ -9,7 +9,9 @@ export const goalSchema = z.object({
   reminderTime: z
     .string()
     .regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
-    .optional()
+    .optional(),
+  // The user's "why" — their anchor on hard days (identity-based reinforcement).
+  motivation: z.string().trim().max(200).optional()
 });
 
 export const drinkRecordSchema = z.object({

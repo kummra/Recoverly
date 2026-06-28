@@ -11,11 +11,12 @@ service cloud.firestore {
     }
 
     function validUserDoc() {
-      return request.resource.data.keys().hasOnly(['goalWeeklyMl', 'reminderTime', 'updatedAt'])
+      return request.resource.data.keys().hasOnly(['goalWeeklyMl', 'reminderTime', 'motivation', 'updatedAt'])
         && request.resource.data.goalWeeklyMl is int
         && request.resource.data.goalWeeklyMl >= 0
         && request.resource.data.goalWeeklyMl <= 5000
-        && (!('reminderTime' in request.resource.data) || request.resource.data.reminderTime == null || validReminderTime(request.resource.data.reminderTime));
+        && (!('reminderTime' in request.resource.data) || request.resource.data.reminderTime == null || validReminderTime(request.resource.data.reminderTime))
+        && (!('motivation' in request.resource.data) || request.resource.data.motivation == null || (request.resource.data.motivation is string && request.resource.data.motivation.size() <= 200));
     }
 
     function validDrinkRecord() {
