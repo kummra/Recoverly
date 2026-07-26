@@ -143,6 +143,42 @@ export function buildProgress(records: DrinkRecord[], now: Date = new Date()): P
   };
 }
 
+// ─── Daily check-in reminder ────────────────────────────────────────────────
+
+/** Local-day key (YYYY-MM-DD) used to show the nudge at most once per day. */
+export function dayKey(date: Date = new Date()): string {
+  return format(date, "yyyy-MM-dd");
+}
+
+/**
+ * Should the gentle daily check-in nudge be shown right now?
+ *
+ * True only when the user set a reminder time, that time has passed today, and
+ * they haven't already dismissed it today. Deliberately quiet: this is an
+ * in-app nudge, never a nag, and it never mentions failure.
+ *
+ * NOTE: real background/push notifications need a PWA service worker or a
+ * native app — this only fires while the app is open.
+ */
+export function shouldShowReminder(opts: {
+  reminderTime?: string; // "HH:MM"
+  lastDismissedDayKey?: string | null;
+  now?: Date;
+}): boolean {
+  const { reminderTime, lastDismissedDayKey } = opts;
+  const now = opts.now ?? new Date();
+  if (!reminderTime) return false;
+
+  const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(reminderTime);
+  if (!match) return false;
+
+  if (lastDismissedDayKey === dayKey(now)) return false;
+
+  const minutesNow = now.getHours() * 60 + now.getMinutes();
+  const minutesTarget = Number(match[1]) * 60 + Number(match[2]);
+  return minutesNow >= minutesTarget;
+}
+
 export function suggestInsight(summary: AnalyticsSummary) {
   if (summary.currentMonthTotal === 0) {
     return "You have no logged drinks this month. Keep reinforcing the routines helping you stay steady.";

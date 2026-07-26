@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Activity, Clock, Droplets, Flame, Heart, Sparkles, Target } from "lucide-react";
 import { format } from "date-fns";
 
+import { DailyNudge } from "@/components/daily-nudge";
 import { LogDrinkModal } from "@/components/log-drink-modal";
 import { Onboarding } from "@/components/onboarding";
 import { ProtectedRoute } from "@/components/protected-route";
@@ -26,6 +27,7 @@ function DashboardContent() {
   const [records, setRecords] = useState<DrinkRecord[]>([]);
   const [weeklyGoal, setWeeklyGoal] = useState(0);
   const [motivation, setMotivation] = useState("");
+  const [reminderTime, setReminderTime] = useState<string | undefined>(undefined);
   const [hasProfile, setHasProfile] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [dismissedOnboarding, setDismissedOnboarding] = useState(false);
@@ -70,6 +72,7 @@ function DashboardContent() {
     if (profile) {
       setWeeklyGoal(profile.goalWeeklyMl);
       setMotivation(profile.motivation ?? "");
+      setReminderTime(profile.reminderTime);
     }
     setLoaded(true);
   };
@@ -102,6 +105,8 @@ function DashboardContent() {
         <h2 className="text-xl font-bold">Dashboard</h2>
         <p className="text-sm text-slate-400">Pause, breathe, and log intentionally.</p>
       </div>
+
+      <DailyNudge reminderTime={reminderTime} />
 
       {/* Identity + streak hero — the motivational anchor (never shaming) */}
       <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 via-slate-900/80 to-slate-900/90">

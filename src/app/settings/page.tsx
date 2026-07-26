@@ -122,6 +122,10 @@ function SettingsContent() {
                   value={reminderTime}
                   onChange={(e) => setReminderTime(e.target.value)}
                 />
+                <p className="text-xs text-slate-500">
+                  After this time, a gentle check-in prompt appears on your dashboard (once a day).
+                  It shows while the app is open — it is not a phone notification.
+                </p>
               </div>
 
               {message && (

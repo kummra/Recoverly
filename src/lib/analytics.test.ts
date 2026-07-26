@@ -1,7 +1,7 @@
 import { addDays, startOfMonth, subMonths } from "date-fns";
 import { describe, expect, it } from "vitest";
 
-import { buildAnalytics, buildProgress, suggestInsight } from "@/lib/analytics";
+import { buildAnalytics, buildProgress, dayKey, shouldShowReminder, suggestInsight } from "@/lib/analytics";
 import type { DrinkRecord } from "@/lib/firestore";
 
 function rec(quantity: number, createdAt: Date): DrinkRecord {
@@ -122,5 +122,34 @@ describe("buildProgress (streaks)", () => {
     expect(p.totalCheckIns).toBe(3);
     expect(p.currentStreakDays).toBe(7); // Jun 20 -> Jun 27
     expect(p.alcoholFreeDaysThisMonth).toBe(26); // 27 elapsed - 1 drink day
+  });
+});
+
+describe("shouldShowReminder", () => {
+  const at = (h: number, m: number) => new Date(2026, 5, 27, h, m, 0);
+
+  it("stays silent when no reminder time is set", () => {
+    expect(shouldShowReminder({ now: at(21, 0) })).toBe(false);
+    expect(shouldShowReminder({ reminderTime: "", now: at(21, 0) })).toBe(false);
+  });
+
+  it("stays silent before the reminder time", () => {
+    expect(shouldShowReminder({ reminderTime: "20:00", now: at(19, 59) })).toBe(false);
+  });
+
+  it("shows at and after the reminder time", () => {
+    expect(shouldShowReminder({ reminderTime: "20:00", now: at(20, 0) })).toBe(true);
+    expect(shouldShowReminder({ reminderTime: "20:00", now: at(23, 30) })).toBe(true);
+  });
+
+  it("stays silent once dismissed today, but returns the next day", () => {
+    const now = at(21, 0);
+    expect(shouldShowReminder({ reminderTime: "20:00", lastDismissedDayKey: dayKey(now), now })).toBe(false);
+    expect(shouldShowReminder({ reminderTime: "20:00", lastDismissedDayKey: "2026-06-26", now })).toBe(true);
+  });
+
+  it("ignores a malformed reminder time", () => {
+    expect(shouldShowReminder({ reminderTime: "25:00", now: at(23, 0) })).toBe(false);
+    expect(shouldShowReminder({ reminderTime: "8pm", now: at(23, 0) })).toBe(false);
   });
 });
