@@ -44,6 +44,8 @@ export type DrinkRecord = {
   id: string;
   quantity: number;
   type: string;
+  /** Free-text name when type is "other". */
+  otherType?: string;
   mood?: string;
   createdAt: Date;
 };
@@ -132,6 +134,7 @@ export async function addDrinkRecord(userId: string, record: DrinkRecordInput) {
   const created = await addDoc(ref, {
     quantity: record.quantity,
     type: record.type,
+    otherType: record.otherType ?? null,
     mood: record.mood ?? null,
     createdAt: serverTimestamp()
   });
@@ -142,6 +145,7 @@ export async function addDrinkRecord(userId: string, record: DrinkRecordInput) {
     data: {
       quantity: record.quantity,
       type: record.type,
+      otherType: record.otherType ?? null,
       mood: record.mood ?? null,
       createdAt: new Date().toISOString(),
     },
@@ -159,6 +163,7 @@ export async function getDrinkRecords(userId: string): Promise<DrinkRecord[]> {
       id: item.id,
       quantity: Number(data.quantity ?? 0),
       type: String(data.type ?? "other"),
+      otherType: typeof data.otherType === "string" ? data.otherType : undefined,
       mood: typeof data.mood === "string" ? data.mood : undefined,
       createdAt: toDate(data.createdAt)
     };

@@ -21,6 +21,20 @@ describe("drinkRecordSchema", () => {
   it("rejects an over-long mood note", () => {
     expect(drinkRecordSchema.safeParse({ quantity: 100, type: "wine", mood: "x".repeat(121) }).success).toBe(false);
   });
+
+  it("accepts an optional otherType for the 'other' drink type", () => {
+    const parsed = drinkRecordSchema.safeParse({ quantity: 60, type: "other", otherType: "rum" });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data.otherType).toBe("rum");
+  });
+
+  it("still accepts 'other' with no detail (logging is never blocked)", () => {
+    expect(drinkRecordSchema.safeParse({ quantity: 60, type: "other" }).success).toBe(true);
+  });
+
+  it("rejects an over-long otherType", () => {
+    expect(drinkRecordSchema.safeParse({ quantity: 60, type: "other", otherType: "x".repeat(41) }).success).toBe(false);
+  });
 });
 
 describe("goalSchema", () => {

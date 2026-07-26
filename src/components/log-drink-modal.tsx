@@ -67,6 +67,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [drinkType, setDrinkType] = useState<(typeof DRINK_TYPES)[number]>("beer");
+  const [otherType, setOtherType] = useState("");
   const [mood, setMood] = useState("");
   const [countdown, setCountdown] = useState(5);
   const [error, setError] = useState("");
@@ -91,6 +92,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
     const parsed = drinkRecordSchema.safeParse({
       quantity: Number(quantity),
       type: drinkType,
+      otherType: drinkType === "other" && otherType.trim() ? otherType.trim() : undefined,
       mood: mood.trim() ? mood.trim() : undefined
     });
 
@@ -106,6 +108,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
       setQuantity("");
       setMood("");
       setDrinkType("beer");
+      setOtherType("");
       onSaved?.();
     } catch {
       setError("Could not save this record. Please try again.");
@@ -165,6 +168,20 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
               </SelectContent>
             </Select>
           </div>
+          {drinkType === "other" ? (
+            <div className="space-y-2">
+              <Label htmlFor="otherType">
+                What did you have? <span className="text-xs text-slate-500">(optional)</span>
+              </Label>
+              <Input
+                id="otherType"
+                value={otherType}
+                onChange={(e) => setOtherType(e.target.value)}
+                maxLength={40}
+                placeholder="e.g. rum, cider, cocktail"
+              />
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Label htmlFor="mood">How are you feeling? <span className="text-xs text-slate-500">(optional)</span></Label>
             <Textarea

@@ -271,7 +271,7 @@ function DashboardContent() {
                       {record.type.slice(0, 2)}
                     </div>
                     <div>
-                      <span className="font-medium capitalize">{record.type}</span>
+                      <span className="font-medium capitalize">{record.otherType || record.type}</span>
                       {record.mood && <span className="ml-2 text-xs text-slate-500">{record.mood}</span>}
                     </div>
                   </div>

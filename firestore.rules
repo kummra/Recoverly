@@ -21,12 +21,13 @@ service cloud.firestore {
     }
 
     function validDrinkRecord() {
-      return request.resource.data.keys().hasOnly(['quantity', 'type', 'mood', 'createdAt'])
+      return request.resource.data.keys().hasOnly(['quantity', 'type', 'otherType', 'mood', 'createdAt'])
         && request.resource.data.quantity is int
         && request.resource.data.quantity > 0
         && request.resource.data.quantity <= 5000
         && request.resource.data.type is string
         && request.resource.data.type in ['beer', 'wine', 'whiskey', 'vodka', 'other']
+        && (!('otherType' in request.resource.data) || request.resource.data.otherType == null || (request.resource.data.otherType is string && request.resource.data.otherType.size() <= 40))
         && (!('mood' in request.resource.data) || request.resource.data.mood == null || (request.resource.data.mood is string && request.resource.data.mood.size() <= 120));
     }
 

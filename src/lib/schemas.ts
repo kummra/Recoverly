@@ -19,6 +19,9 @@ export const goalSchema = z.object({
 export const drinkRecordSchema = z.object({
   quantity: z.number().int().min(1).max(5000),
   type: z.enum(DRINK_TYPES),
+  // Free-text name when type is "other". Optional on purpose — logging honestly
+  // matters more than completeness, so we never block a log to demand it.
+  otherType: z.string().trim().max(40).optional(),
   mood: z.string().trim().max(120).optional(),
   createdAt: z.date().optional()
 });
