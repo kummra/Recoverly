@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn } from "lucide-react";
+import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn, LifeBuoy } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -105,6 +105,20 @@ export function TopNav() {
               </Link>
             );
           })}
+
+          {/* Crisis support must always be one tap away on mobile, where the
+              footer links are a long scroll below the fold. */}
+          <Link
+            href="/support"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "mt-1 flex items-center gap-2 rounded-xl border-t border-border px-3 pb-2.5 pt-3.5 text-sm text-sky-300 transition-all hover:bg-slate-800",
+              pathname === "/support" && "bg-slate-800 text-sky-200"
+            )}
+          >
+            <LifeBuoy className="h-4 w-4" />
+            Support &amp; helplines
+          </Link>
         </nav>
       )}
     </header>
