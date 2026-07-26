@@ -10,7 +10,8 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  setDoc
+  setDoc,
+  writeBatch
 } from "firebase/firestore";
 
 import { auth, firestore } from "@/lib/firebase";
@@ -51,6 +52,7 @@ export type UserProfile = {
   goalWeeklyMl: number;
   reminderTime?: string;
   motivation?: string;
+  displayName?: string;
   updatedAt?: Date;
 };
 
@@ -92,6 +94,7 @@ export async function saveUserPreferences(userId: string, input: GoalInput) {
       // clears it instead of silently preserving the old value.
       reminderTime: input.reminderTime ?? null,
       motivation: input.motivation ?? null,
+      displayName: input.displayName ?? null,
       updatedAt: serverTimestamp()
     },
     { merge: true }
@@ -103,6 +106,7 @@ export async function saveUserPreferences(userId: string, input: GoalInput) {
       goalWeeklyMl: input.goalWeeklyMl,
       reminderTime: input.reminderTime ?? null,
       motivation: input.motivation ?? null,
+      displayName: input.displayName ?? null,
     },
   });
 }
@@ -117,6 +121,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     goalWeeklyMl: Number(data.goalWeeklyMl ?? 0),
     reminderTime: data.reminderTime,
     motivation: typeof data.motivation === "string" ? data.motivation : undefined,
+    displayName: typeof data.displayName === "string" ? data.displayName : undefined,
     updatedAt: data.updatedAt ? toDate(data.updatedAt) : undefined
   };
 }
@@ -177,6 +182,50 @@ export function subscribeDrinkRecords(userId: string, callback: (records: DrinkR
     });
     callback(records);
   });
+}
+
+/** Firestore caps a batch at 500 writes; stay under it. */
+const BATCH_LIMIT = 400;
+
+async function deleteDocsInBatches(
+  db: ReturnType<typeof getClientDb>,
+  docs: Array<{ ref: Parameters<ReturnType<typeof writeBatch>["delete"]>[0] }>
+) {
+  for (let i = 0; i < docs.length; i += BATCH_LIMIT) {
+    const batch = writeBatch(db);
+    for (const d of docs.slice(i, i + BATCH_LIMIT)) batch.delete(d.ref);
+    await batch.commit();
+  }
+}
+
+/** Delete every drink record for this user. Returns how many were removed. */
+export async function deleteAllDrinkRecords(userId: string): Promise<number> {
+  const db = getClientDb();
+  const snap = await getDocs(collection(db, "users", userId, "drinkRecords"));
+  if (snap.empty) return 0;
+
+  await deleteDocsInBatches(db, snap.docs);
+  void syncToOracle({ type: "delete_drink_records" });
+  return snap.size;
+}
+
+/** Delete every AI chat session (and its messages). Returns sessions removed. */
+export async function deleteAllChatSessions(userId: string): Promise<number> {
+  const db = getClientDb();
+  const sessionsSnap = await getDocs(collection(db, "users", userId, "aiChats"));
+  if (sessionsSnap.empty) return 0;
+
+  // Messages are a subcollection — deleting the parent doc would orphan them.
+  for (const session of sessionsSnap.docs) {
+    const messagesSnap = await getDocs(
+      collection(db, "users", userId, "aiChats", session.id, "messages")
+    );
+    if (!messagesSnap.empty) await deleteDocsInBatches(db, messagesSnap.docs);
+  }
+
+  await deleteDocsInBatches(db, sessionsSnap.docs);
+  void syncToOracle({ type: "delete_chat_sessions" });
+  return sessionsSnap.size;
 }
 
 export async function createChatSession(userId: string, title: string) {

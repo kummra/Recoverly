@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, AlertCircle, User, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
+import { DataManagement } from "@/components/data-management";
 import { DeleteAccount } from "@/components/delete-account";
+import { PasswordChange } from "@/components/password-change";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +29,7 @@ function SettingsContent() {
   const [goalWeeklyMl, setGoalWeeklyMl] = useState(0);
   const [reminderTime, setReminderTime] = useState("");
   const [motivation, setMotivation] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const timezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
@@ -38,6 +41,7 @@ function SettingsContent() {
       setGoalWeeklyMl(profile.goalWeeklyMl ?? 0);
       setReminderTime(profile.reminderTime ?? "");
       setMotivation(profile.motivation ?? "");
+      setDisplayName(profile.displayName ?? "");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
@@ -45,7 +49,7 @@ function SettingsContent() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    const parsed = goalSchema.safeParse({ goalWeeklyMl, reminderTime: reminderTime || undefined, motivation: motivation.trim() || undefined });
+    const parsed = goalSchema.safeParse({ goalWeeklyMl, reminderTime: reminderTime || undefined, motivation: motivation.trim() || undefined, displayName: displayName.trim() || undefined });
     if (!parsed.success) {
       setMessage({ type: "error", text: `Goal must be a whole number between 0 and ${MAX_WEEKLY_GOAL_ML} ml, and reminder must be HH:MM.` });
       return;
@@ -101,6 +105,16 @@ function SettingsContent() {
                   className="w-full rounded-xl border border-border bg-slate-900/50 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:border-emerald-500/50 focus:outline-none"
                 />
                 <p className="text-xs text-slate-500">Your anchor on hard days — shown on your dashboard.</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="displayName">Display name</Label>
+                <Input
+                  id="displayName"
+                  value={displayName}
+                  maxLength={60}
+                  placeholder="What should we call you?"
+                  onChange={(e) => setDisplayName(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="goal">Weekly Goal (ml)</Label>
@@ -181,6 +195,10 @@ function SettingsContent() {
               </div>
             </CardContent>
           </Card>
+
+          <PasswordChange />
+
+          <DataManagement />
 
           <DeleteAccount />
         </div>

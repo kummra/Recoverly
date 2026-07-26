@@ -11,12 +11,13 @@ service cloud.firestore {
     }
 
     function validUserDoc() {
-      return request.resource.data.keys().hasOnly(['goalWeeklyMl', 'reminderTime', 'motivation', 'updatedAt'])
+      return request.resource.data.keys().hasOnly(['goalWeeklyMl', 'reminderTime', 'motivation', 'displayName', 'updatedAt'])
         && request.resource.data.goalWeeklyMl is int
         && request.resource.data.goalWeeklyMl >= 0
         && request.resource.data.goalWeeklyMl <= 5000
         && (!('reminderTime' in request.resource.data) || request.resource.data.reminderTime == null || validReminderTime(request.resource.data.reminderTime))
-        && (!('motivation' in request.resource.data) || request.resource.data.motivation == null || (request.resource.data.motivation is string && request.resource.data.motivation.size() <= 200));
+        && (!('motivation' in request.resource.data) || request.resource.data.motivation == null || (request.resource.data.motivation is string && request.resource.data.motivation.size() <= 200))
+        && (!('displayName' in request.resource.data) || request.resource.data.displayName == null || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 60));
     }
 
     function validDrinkRecord() {

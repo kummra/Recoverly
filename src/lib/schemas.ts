@@ -11,7 +11,9 @@ export const goalSchema = z.object({
     .regex(/^([01]\d|2[0-3]):([0-5]\d)$/)
     .optional(),
   // The user's "why" — their anchor on hard days (identity-based reinforcement).
-  motivation: z.string().trim().max(200).optional()
+  motivation: z.string().trim().max(200).optional(),
+  // What they'd like to be called.
+  displayName: z.string().trim().max(60).optional()
 });
 
 export const drinkRecordSchema = z.object({
