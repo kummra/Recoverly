@@ -198,17 +198,6 @@ async function deleteDocsInBatches(
   }
 }
 
-/** Delete every drink record for this user. Returns how many were removed. */
-export async function deleteAllDrinkRecords(userId: string): Promise<number> {
-  const db = getClientDb();
-  const snap = await getDocs(collection(db, "users", userId, "drinkRecords"));
-  if (snap.empty) return 0;
-
-  await deleteDocsInBatches(db, snap.docs);
-  void syncToOracle({ type: "delete_drink_records" });
-  return snap.size;
-}
-
 /** Delete every AI chat session (and its messages). Returns sessions removed. */
 export async function deleteAllChatSessions(userId: string): Promise<number> {
   const db = getClientDb();

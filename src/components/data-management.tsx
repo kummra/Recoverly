@@ -6,7 +6,7 @@ import { AlertCircle, Check, Database, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { deleteAllChatSessions, deleteAllDrinkRecords, getDrinkRecords } from "@/lib/firestore";
+import { deleteAllChatSessions, getDrinkRecords } from "@/lib/firestore";
 
 type Status = { type: "success" | "error"; text: string };
 
@@ -22,8 +22,8 @@ function csvCell(value: string): string {
  */
 export function DataManagement() {
   const { user } = useAuth();
-  const [busy, setBusy] = useState<null | "export" | "records" | "chats">(null);
-  const [confirm, setConfirm] = useState<null | "records" | "chats">(null);
+  const [busy, setBusy] = useState<null | "export" | "chats">(null);
+  const [confirmChats, setConfirmChats] = useState(false);
   const [status, setStatus] = useState<Status | null>(null);
 
   const exportCsv = async () => {
@@ -55,23 +55,14 @@ export function DataManagement() {
     }
   };
 
-  const wipe = async (kind: "records" | "chats") => {
+  const wipeChats = async () => {
     if (!user) return;
-    setBusy(kind);
+    setBusy("chats");
     setStatus(null);
     try {
-      const n =
-        kind === "records"
-          ? await deleteAllDrinkRecords(user.uid)
-          : await deleteAllChatSessions(user.uid);
-      setConfirm(null);
-      setStatus({
-        type: "success",
-        text:
-          kind === "records"
-            ? `Deleted ${n} record${n === 1 ? "" : "s"}.`
-            : `Deleted ${n} conversation${n === 1 ? "" : "s"}.`
-      });
+      const n = await deleteAllChatSessions(user.uid);
+      setConfirmChats(false);
+      setStatus({ type: "success", text: `Deleted ${n} conversation${n === 1 ? "" : "s"}.` });
     } catch {
       setStatus({ type: "error", text: "Could not delete. Please try again." });
     } finally {
@@ -100,45 +91,39 @@ export function DataManagement() {
           {busy === "export" ? "Preparing…" : "Export my records (CSV)"}
         </Button>
 
-        {(["records", "chats"] as const).map((kind) => {
-          const label = kind === "records" ? "Delete all drink records" : "Delete all AI conversations";
-          const warning =
-            kind === "records"
-              ? "This permanently removes every drink record. Your account and goals stay."
-              : "This permanently removes every AI conversation. Your records stay.";
-          return confirm === kind ? (
-            <div key={kind} className="space-y-2 rounded-xl border border-red-500/30 bg-red-950/10 p-3">
-              <p className="text-sm text-slate-300">{warning}</p>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="border-red-500/40 text-red-300 hover:bg-red-500/10"
-                  onClick={() => wipe(kind)}
-                  disabled={busy !== null}
-                >
-                  {busy === kind ? "Deleting…" : "Yes, delete"}
-                </Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setConfirm(null)} disabled={busy !== null}>
-                  Cancel
-                </Button>
-              </div>
+        {confirmChats ? (
+          <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-950/10 p-3">
+            <p className="text-sm text-slate-300">
+              This permanently removes every AI conversation. Your records and goals stay.
+            </p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="border-red-500/40 text-red-300 hover:bg-red-500/10"
+                onClick={wipeChats}
+                disabled={busy !== null}
+              >
+                {busy === "chats" ? "Deleting…" : "Yes, delete"}
+              </Button>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmChats(false)} disabled={busy !== null}>
+                Cancel
+              </Button>
             </div>
-          ) : (
-            <Button
-              key={kind}
-              type="button"
-              variant="outline"
-              className="w-full justify-start gap-2"
-              onClick={() => { setConfirm(kind); setStatus(null); }}
-              disabled={busy !== null}
-            >
-              <Trash2 className="h-4 w-4" />
-              {label}
-            </Button>
-          );
-        })}
+          </div>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-start gap-2"
+            onClick={() => { setConfirmChats(true); setStatus(null); }}
+            disabled={busy !== null}
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete all AI conversations
+          </Button>
+        )}
 
         {status && (
           <div
