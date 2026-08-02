@@ -36,3 +36,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 codelab-dataconnect-web/
+.env*
+!.env.example
+# Never commit service-account keys
+*firebase-adminsdk*.json
