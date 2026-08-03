@@ -55,6 +55,10 @@ export default function HomePage() {
       );
       setMonthlyTotal(thisMonth.reduce((sum, item) => sum + item.quantity, 0));
       setRecordCount(records.length);
+    }).catch(() => {
+      // Decorative summary only — leave it blank rather than surfacing an error here.
+      setMonthlyTotal(null);
+      setRecordCount(0);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);

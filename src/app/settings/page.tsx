@@ -42,6 +42,11 @@ function SettingsContent() {
       setReminderTime(profile.reminderTime ?? "");
       setMotivation(profile.motivation ?? "");
       setDisplayName(profile.displayName ?? "");
+    }).catch(() => {
+      setMessage({
+        type: "error",
+        text: "Could not load your current preferences. Refresh before saving, so you don't overwrite them."
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);

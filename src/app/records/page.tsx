@@ -23,13 +23,28 @@ function RecordsContent() {
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     if (!user) return;
+    let cancelled = false;
     setLoading(true);
+    setLoadFailed(false);
     getDrinkRecords(user.uid)
-      .then(setRecords)
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!cancelled) setRecords(data);
+      })
+      .catch(() => {
+        // Without this the user sees the "no records yet" empty state, which
+        // reads as "your history is gone" — alarming when it's just a failed load.
+        if (!cancelled) setLoadFailed(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
 
@@ -37,6 +52,20 @@ function RecordsContent() {
   const insight = useMemo(() => suggestInsight(summary), [summary]);
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading records...</p>;
+
+  if (loadFailed) {
+    return (
+      <Card className="animate-fade-in-up border-amber-500/30">
+        <CardHeader>
+          <CardTitle>Couldn&apos;t load your records</CardTitle>
+          <CardDescription>
+            Your data is safe — we just couldn&apos;t reach it right now. Check your connection and refresh
+            the page to try again.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   if (!records.length) {
     return (

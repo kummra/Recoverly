@@ -31,6 +31,7 @@ function DashboardContent() {
   const [hasProfile, setHasProfile] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [dismissedOnboarding, setDismissedOnboarding] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   // Derive month label, filtered records, and total from a single Date so they
   // can never desync across a month boundary. Recomputes whenever records change.
@@ -63,23 +64,31 @@ function DashboardContent() {
 
   const refresh = async () => {
     if (!user) return;
-    const [fetchedRecords, profile] = await Promise.all([
-      getDrinkRecords(user.uid),
-      getUserProfile(user.uid)
-    ]);
-    setRecords(fetchedRecords);
-    setHasProfile(profile !== null);
-    if (profile) {
-      setWeeklyGoal(profile.goalWeeklyMl);
-      setMotivation(profile.motivation ?? "");
-      setReminderTime(profile.reminderTime);
+    try {
+      const [fetchedRecords, profile] = await Promise.all([
+        getDrinkRecords(user.uid),
+        getUserProfile(user.uid)
+      ]);
+      setRecords(fetchedRecords);
+      setHasProfile(profile !== null);
+      if (profile) {
+        setWeeklyGoal(profile.goalWeeklyMl);
+        setMotivation(profile.motivation ?? "");
+        setReminderTime(profile.reminderTime);
+      }
+      setLoadFailed(false);
+    } catch {
+      // Never let a failed load masquerade as "no data" — an existing user
+      // being shown the new-user welcome would read as losing their history.
+      setLoadFailed(true);
+    } finally {
+      setLoaded(true);
     }
-    setLoaded(true);
   };
 
   // A truly new user (no saved profile and no logs) gets the gentle first-run
   // flow instead of an empty dashboard. Existing users never see it.
-  const needsOnboarding = loaded && !hasProfile && records.length === 0 && !dismissedOnboarding;
+  const needsOnboarding = loaded && !loadFailed && !hasProfile && records.length === 0 && !dismissedOnboarding;
 
   useEffect(() => {
     refresh();
@@ -105,6 +114,17 @@ function DashboardContent() {
         <h2 className="text-xl font-bold">Dashboard</h2>
         <p className="text-sm text-muted-foreground">Pause, breathe, and log intentionally.</p>
       </div>
+
+      {loadFailed && (
+        <Card className="border-amber-500/30">
+          <CardContent className="pt-6">
+            <p className="text-sm text-body">
+              We couldn&apos;t load your data just now — your records are safe. Check your connection and
+              refresh to try again.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       <DailyNudge reminderTime={reminderTime} />
 

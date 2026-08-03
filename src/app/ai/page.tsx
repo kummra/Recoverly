@@ -93,6 +93,11 @@ function AIContent() {
           setMessages(data);
         }
       })
+      .catch(() => {
+        if (!cancelled) {
+          setMessages([]);
+        }
+      })
       .finally(() => {
         if (!cancelled) {
           setLoading(false);
