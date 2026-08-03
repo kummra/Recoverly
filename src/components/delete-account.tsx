@@ -50,7 +50,7 @@ export function DeleteAccount() {
   return (
     <Card className="border-red-500/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base text-red-300">
+        <CardTitle className="flex items-center gap-2 text-base text-red-700 dark:text-red-300">
           <AlertTriangle className="h-4 w-4" />
           Delete account
         </CardTitle>
@@ -62,7 +62,7 @@ export function DeleteAccount() {
       <CardContent>
         <Dialog open={open} onOpenChange={(next) => { setOpen(next); setConfirmText(""); setError(""); }}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="gap-2 border-red-500/30 text-red-300 hover:bg-red-500/10 hover:text-red-200">
+            <Button variant="outline" className="gap-2 border-red-500/30 text-red-700 dark:text-red-300 hover:bg-red-500/10 hover:text-red-800 dark:hover:text-red-200">
               <Trash2 className="h-4 w-4" />
               Delete my account &amp; data
             </Button>
@@ -72,7 +72,7 @@ export function DeleteAccount() {
               <DialogTitle>Delete your account?</DialogTitle>
               <DialogDescription>
                 This permanently deletes your account and every record tied to it. There is
-                no way to recover it. Type <span className="font-semibold text-red-300">{CONFIRM_WORD}</span> to confirm.
+                no way to recover it. Type <span className="font-semibold text-red-700 dark:text-red-300">{CONFIRM_WORD}</span> to confirm.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-2 py-2">
@@ -85,7 +85,7 @@ export function DeleteAccount() {
                 autoComplete="off"
               />
               {error ? (
-                <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
                   {error}
                 </p>
               ) : null}
@@ -98,7 +98,7 @@ export function DeleteAccount() {
                 type="button"
                 onClick={onDelete}
                 disabled={deleting || confirmText !== CONFIRM_WORD}
-                className="bg-red-600 text-white hover:bg-red-700"
+                className="bg-red-600 text-foreground hover:bg-red-700"
               >
                 {deleting ? "Deleting..." : "Permanently delete"}
               </Button>

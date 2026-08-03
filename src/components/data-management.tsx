@@ -80,7 +80,7 @@ export function DataManagement() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Database className="h-4 w-4 text-amber-400" />
+          <Database className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           Your data
         </CardTitle>
         <CardDescription>Take a copy with you, or clear what you no longer need.</CardDescription>
@@ -98,8 +98,8 @@ export function DataManagement() {
         </Button>
 
         {confirmChats ? (
-          <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-950/10 p-3">
-            <p className="text-sm text-slate-300">
+          <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-950/10 p-3">
+            <p className="text-sm text-body">
               This permanently removes every AI conversation. Your records and goals stay.
             </p>
             <div className="flex gap-2">
@@ -107,7 +107,7 @@ export function DataManagement() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="border-red-500/40 text-red-300 hover:bg-red-500/10"
+                className="border-red-500/40 text-red-700 dark:text-red-300 hover:bg-red-500/10"
                 onClick={wipeChats}
                 disabled={busy !== null}
               >
@@ -134,7 +134,7 @@ export function DataManagement() {
         {status && (
           <div
             className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm ${
-              status.type === "success" ? "bg-emerald-500/10 text-emerald-300" : "bg-red-500/10 text-red-300"
+              status.type === "success" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-red-500/10 text-red-700 dark:text-red-300"
             }`}
           >
             {status.type === "success" ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}

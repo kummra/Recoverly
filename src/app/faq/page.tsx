@@ -53,10 +53,10 @@ export default function FaqPage() {
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold">
-          <HelpCircle className="h-5 w-5 text-emerald-400" />
+          <HelpCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           Frequently Asked Questions
         </h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-muted-foreground">
           Honest answers about how Recoverly works and how we keep you safe.
         </p>
       </div>
@@ -67,14 +67,14 @@ export default function FaqPage() {
             <CardTitle className="text-base">{item.q}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm leading-relaxed text-slate-300">{item.a}</p>
+            <p className="text-sm leading-relaxed text-body">{item.a}</p>
           </CardContent>
         </Card>
       ))}
 
-      <p className="px-1 text-center text-xs text-slate-500">
+      <p className="px-1 text-center text-xs text-subtle">
         Still have a question? If it&apos;s urgent or about your health, please reach out via the{" "}
-        <a href="/support" className="underline underline-offset-2 hover:text-slate-300">
+        <a href="/support" className="underline underline-offset-2 hover:text-foreground">
           Support page
         </a>
         .

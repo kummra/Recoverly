@@ -47,12 +47,12 @@ export function DailyNudge({ reminderTime }: { reminderTime?: string }) {
   if (!visible) return null;
 
   return (
-    <Card className="border-sky-500/30 bg-sky-950/10">
+    <Card className="border-sky-500/30 bg-sky-50 dark:bg-sky-950/10">
       <CardContent className="flex items-start gap-3 pt-6">
-        <Bell className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" />
+        <Bell className="mt-0.5 h-5 w-5 shrink-0 text-sky-600 dark:text-sky-400" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-sky-200">Your daily check-in</p>
-          <p className="mt-0.5 text-sm text-slate-400">
+          <p className="text-sm font-medium text-sky-800 dark:text-sky-200">Your daily check-in</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">
             However today went, showing up here is the win. Take a moment to reflect — no judgment either way.
           </p>
         </div>

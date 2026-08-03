@@ -56,7 +56,7 @@ function RecordsContent() {
       {/* Page heading */}
       <div>
         <h2 className="text-xl font-bold">Records & Insights</h2>
-        <p className="text-sm text-slate-400">Your data tells the story of progress.</p>
+        <p className="text-sm text-muted-foreground">Your data tells the story of progress.</p>
       </div>
 
       {/* Stats row - color coded */}
@@ -99,12 +99,12 @@ function RecordsContent() {
       </div>
 
       {/* Insight */}
-      <Card className="border-indigo-500/15 bg-gradient-to-r from-slate-900/80 to-indigo-950/15">
+      <Card className="border-indigo-500/15 bg-gradient-to-r from-card to-indigo-50 dark:to-indigo-950/15">
         <CardHeader>
           <CardTitle className="text-base">Insight</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm leading-relaxed text-slate-300">{insight}</p>
+          <p className="text-sm leading-relaxed text-body">{insight}</p>
         </CardContent>
       </Card>
 
@@ -136,12 +136,12 @@ function RecordsContent() {
 type StatColor = "emerald" | "sky" | "amber" | "indigo" | "violet" | "slate";
 
 const colorMap: Record<StatColor, { border: string; bg: string; text: string }> = {
-  emerald: { border: "border-emerald-500/20", bg: "bg-emerald-950/15", text: "text-emerald-400" },
-  sky: { border: "border-sky-500/20", bg: "bg-sky-950/15", text: "text-sky-400" },
-  amber: { border: "border-amber-500/20", bg: "bg-amber-950/15", text: "text-amber-400" },
-  indigo: { border: "border-indigo-500/20", bg: "bg-indigo-950/15", text: "text-indigo-400" },
+  emerald: { border: "border-emerald-500/20", bg: "bg-emerald-50 dark:bg-emerald-950/15", text: "text-emerald-600 dark:text-emerald-400" },
+  sky: { border: "border-sky-500/20", bg: "bg-sky-50 dark:bg-sky-950/15", text: "text-sky-600 dark:text-sky-400" },
+  amber: { border: "border-amber-500/20", bg: "bg-amber-50 dark:bg-amber-950/15", text: "text-amber-600 dark:text-amber-400" },
+  indigo: { border: "border-indigo-500/20", bg: "bg-indigo-50 dark:bg-indigo-950/15", text: "text-indigo-600 dark:text-indigo-400" },
   violet: { border: "border-violet-500/20", bg: "bg-violet-950/15", text: "text-violet-400" },
-  slate: { border: "", bg: "", text: "text-slate-400" }
+  slate: { border: "", bg: "", text: "text-muted-foreground" }
 };
 
 function StatCard({
@@ -167,7 +167,7 @@ function StatCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-xl font-bold">{value} <span className="text-sm font-normal text-slate-400">{unit}</span></p>
+        <p className="text-xl font-bold">{value} <span className="text-sm font-normal text-muted-foreground">{unit}</span></p>
       </CardContent>
     </Card>
   );

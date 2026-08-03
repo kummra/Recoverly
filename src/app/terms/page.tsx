@@ -29,10 +29,10 @@ export default function TermsPage() {
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold">
-          <FileText className="h-5 w-5 text-sky-400" />
+          <FileText className="h-5 w-5 text-sky-600 dark:text-sky-400" />
           Terms of Use
         </h2>
-        <p className="mt-1 text-sm text-slate-400">Last updated: February 2026</p>
+        <p className="mt-1 text-sm text-muted-foreground">Last updated: February 2026</p>
       </div>
       {sections.map((section) => (
         <Card key={section.title}>
@@ -40,7 +40,7 @@ export default function TermsPage() {
             <CardTitle className="text-base">{section.title}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm leading-relaxed text-slate-300">{section.content}</p>
+            <p className="text-sm leading-relaxed text-body">{section.content}</p>
           </CardContent>
         </Card>
       ))}

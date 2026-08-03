@@ -1,3 +1,3 @@
 export default function LoginLoading() {
-  return <div className="mx-auto h-[360px] max-w-md animate-pulse rounded-2xl bg-slate-800" />;
+  return <div className="mx-auto h-[360px] max-w-md animate-pulse rounded-2xl bg-surface" />;
 }

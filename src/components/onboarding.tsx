@@ -53,22 +53,22 @@ export function Onboarding({
   };
 
   return (
-    <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 via-slate-900/80 to-slate-900/90">
+    <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-50 dark:from-emerald-950/30 via-card to-card">
       <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
       <CardContent className="relative space-y-5 pt-6">
         {step === 1 ? (
           <>
             <div className="flex items-center gap-3">
-              <Sparkles className="h-7 w-7 shrink-0 text-emerald-400" />
+              <Sparkles className="h-7 w-7 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
                 <h3 className="text-lg font-semibold">Welcome to Recoverly</h3>
-                <p className="text-sm text-slate-400">A calm, judgment-free space. Let&apos;s set you up in two small steps.</p>
+                <p className="text-sm text-muted-foreground">A calm, judgment-free space. Let&apos;s set you up in two small steps.</p>
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="why" className="flex items-center gap-1.5">
-                <Heart className="h-3.5 w-3.5 text-emerald-400" />
+                <Heart className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 What&apos;s bringing you here?
               </Label>
               <textarea
@@ -77,9 +77,9 @@ export function Onboarding({
                 onChange={(e) => setMotivation(e.target.value.slice(0, 200))}
                 rows={3}
                 placeholder="My family, my health, the person I want to be…"
-                className="w-full rounded-xl border border-border bg-slate-900/50 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:border-emerald-500/50 focus:outline-none"
+                className="w-full rounded-xl border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-subtle focus:border-emerald-500/50 focus:outline-none"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-subtle">
                 This becomes your anchor on hard days. Optional — you can add it later in Settings.
               </p>
             </div>
@@ -96,10 +96,10 @@ export function Onboarding({
         ) : (
           <>
             <div className="flex items-center gap-3">
-              <Target className="h-7 w-7 shrink-0 text-emerald-400" />
+              <Target className="h-7 w-7 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
                 <h3 className="text-lg font-semibold">Set a gentle goal</h3>
-                <p className="text-sm text-slate-400">Small and realistic beats all-or-nothing. You can change this any time.</p>
+                <p className="text-sm text-muted-foreground">Small and realistic beats all-or-nothing. You can change this any time.</p>
               </div>
             </div>
 
@@ -117,14 +117,14 @@ export function Onboarding({
               <button
                 type="button"
                 onClick={() => setGoalWeeklyMl(0)}
-                className="text-xs text-emerald-300 underline-offset-2 hover:underline"
+                className="text-xs text-emerald-700 dark:text-emerald-300 underline-offset-2 hover:underline"
               >
                 I&apos;m aiming to stop entirely (0 ml)
               </button>
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-300">
+              <div className="flex items-center gap-2 rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">
                 <AlertCircle className="h-4 w-4" /> {error}
               </div>
             )}

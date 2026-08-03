@@ -11,11 +11,11 @@ export function MedicalDisclaimer({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-amber-500/20 bg-amber-950/10 p-3 text-xs leading-relaxed text-slate-400",
+        "rounded-xl border border-amber-500/20 bg-amber-50 dark:bg-amber-950/10 p-3 text-xs leading-relaxed text-muted-foreground",
         className
       )}
     >
-      <p className="flex items-center gap-1.5 font-medium text-amber-300">
+      <p className="flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-300">
         <AlertTriangle className="h-3.5 w-3.5" />
         Support, not medical advice
       </p>
@@ -37,11 +37,11 @@ export function CrisisHelpline({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-sky-500/20 bg-sky-950/10 p-3 text-xs leading-relaxed text-slate-400",
+        "rounded-xl border border-sky-500/20 bg-sky-50 dark:bg-sky-950/10 p-3 text-xs leading-relaxed text-muted-foreground",
         className
       )}
     >
-      <p className="flex items-center gap-1.5 font-medium text-sky-300">
+      <p className="flex items-center gap-1.5 font-medium text-sky-700 dark:text-sky-300">
         <LifeBuoy className="h-3.5 w-3.5" />
         In crisis or thinking about self-harm? Help is available now
       </p>
@@ -52,7 +52,7 @@ export function CrisisHelpline({ className }: { className?: string }) {
           href={HELPLINES.internationalDirectoryUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline underline-offset-2 hover:text-sky-200"
+          className="underline underline-offset-2 hover:text-sky-800 dark:hover:text-sky-200"
         >
           findahelpline.com
         </a>

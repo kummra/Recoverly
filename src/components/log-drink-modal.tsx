@@ -48,7 +48,7 @@ function CountdownRing({ seconds, total }: { seconds: number; total: number }) {
           className="transition-all duration-1000 ease-linear"
         />
       </svg>
-      <span className="absolute text-xs font-bold text-slate-200">
+      <span className="absolute text-xs font-bold text-foreground">
         {seconds > 0 ? seconds : <Pause className="h-3 w-3" />}
       </span>
     </div>
@@ -128,7 +128,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Pause className="h-4 w-4 text-emerald-400" />
+            <Pause className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             Pause before logging
           </DialogTitle>
           <DialogDescription>
@@ -158,7 +158,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
                 {DRINK_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>
                     <span className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded bg-slate-800 text-[10px] font-bold text-slate-300">
+                      <span className="flex h-5 w-5 items-center justify-center rounded bg-surface text-[10px] font-bold text-body">
                         {drinkEmoji[type] ?? type.slice(0, 2)}
                       </span>
                       <span className="capitalize">{type}</span>
@@ -171,7 +171,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
           {drinkType === "other" ? (
             <div className="space-y-2">
               <Label htmlFor="otherType">
-                What did you have? <span className="text-xs text-slate-500">(optional)</span>
+                What did you have? <span className="text-xs text-subtle">(optional)</span>
               </Label>
               <Input
                 id="otherType"
@@ -183,7 +183,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
             </div>
           ) : null}
           <div className="space-y-2">
-            <Label htmlFor="mood">How are you feeling? <span className="text-xs text-slate-500">(optional)</span></Label>
+            <Label htmlFor="mood">How are you feeling? <span className="text-xs text-subtle">(optional)</span></Label>
             <Textarea
               id="mood"
               value={mood}
@@ -194,7 +194,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
             />
           </div>
           {error ? (
-            <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
               {error}
             </p>
           ) : null}

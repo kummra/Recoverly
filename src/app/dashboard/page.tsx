@@ -91,7 +91,7 @@ function DashboardContent() {
       <div className="stagger-children space-y-6">
         <div>
           <h2 className="text-xl font-bold">Welcome</h2>
-          <p className="text-sm text-slate-400">Let&apos;s set up your space — it takes a moment.</p>
+          <p className="text-sm text-muted-foreground">Let&apos;s set up your space — it takes a moment.</p>
         </div>
         <Onboarding userId={user.uid} onComplete={refresh} onSkip={() => setDismissedOnboarding(true)} />
       </div>
@@ -103,21 +103,21 @@ function DashboardContent() {
       {/* Page heading */}
       <div>
         <h2 className="text-xl font-bold">Dashboard</h2>
-        <p className="text-sm text-slate-400">Pause, breathe, and log intentionally.</p>
+        <p className="text-sm text-muted-foreground">Pause, breathe, and log intentionally.</p>
       </div>
 
       <DailyNudge reminderTime={reminderTime} />
 
       {/* Identity + streak hero — the motivational anchor (never shaming) */}
-      <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 via-slate-900/80 to-slate-900/90">
+      <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-50 dark:from-emerald-950/30 via-card to-card">
         <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
         <CardContent className="relative space-y-5 pt-6">
           {!progress.hasHistory ? (
             <div className="flex items-center gap-4">
-              <Sparkles className="h-8 w-8 shrink-0 text-emerald-400" />
+              <Sparkles className="h-8 w-8 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
                 <p className="text-lg font-semibold">Your journey starts here</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   Every step toward awareness counts. Your first check-in begins your progress.
                 </p>
               </div>
@@ -125,29 +125,29 @@ function DashboardContent() {
           ) : progress.currentStreakDays >= 1 ? (
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <div className="flex items-center gap-3">
-                <Flame className="h-9 w-9 shrink-0 text-emerald-400" />
+                <Flame className="h-9 w-9 shrink-0 text-emerald-600 dark:text-emerald-400" />
                 <div>
-                  <p className="text-[11px] uppercase tracking-wide text-emerald-300/80">choosing awareness</p>
+                  <p className="text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-300/80">choosing awareness</p>
                   <p className="text-4xl font-bold leading-none">
                     {progress.currentStreakDays}
-                    <span className="ml-2 text-base font-normal text-slate-400">
+                    <span className="ml-2 text-base font-normal text-muted-foreground">
                       day{progress.currentStreakDays === 1 ? "" : "s"} alcohol-free
                     </span>
                   </p>
                 </div>
               </div>
-              <p className="max-w-xs text-sm text-slate-400">
+              <p className="max-w-xs text-sm text-muted-foreground">
                 You are someone who is choosing awareness — one day at a time.
               </p>
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <Sparkles className="h-8 w-8 shrink-0 text-emerald-400" />
+              <Sparkles className="h-8 w-8 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
                 <p className="text-lg font-semibold">A fresh page today</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   Awareness is the win, and it carries forward. Your best run so far is{" "}
-                  <span className="font-semibold text-emerald-300">{progress.longestStreakDays}</span> day
+                  <span className="font-semibold text-emerald-700 dark:text-emerald-300">{progress.longestStreakDays}</span> day
                   {progress.longestStreakDays === 1 ? "" : "s"}.
                 </p>
               </div>
@@ -163,19 +163,19 @@ function DashboardContent() {
           {progress.hasHistory && (
             <div className="grid grid-cols-3 gap-3 border-t border-border pt-4 text-center">
               <div>
-                <p className="text-xl font-bold text-emerald-400">{progress.longestStreakDays}</p>
-                <p className="text-[11px] text-slate-400">longest streak</p>
+                <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{progress.longestStreakDays}</p>
+                <p className="text-[11px] text-muted-foreground">longest streak</p>
               </div>
               <div>
-                <p className="text-xl font-bold text-sky-400">
+                <p className="text-xl font-bold text-sky-600 dark:text-sky-400">
                   {progress.alcoholFreeDaysThisMonth}
-                  <span className="text-xs font-normal text-slate-500">/{progress.daysElapsedThisMonth}</span>
+                  <span className="text-xs font-normal text-subtle">/{progress.daysElapsedThisMonth}</span>
                 </p>
-                <p className="text-[11px] text-slate-400">alcohol-free days</p>
+                <p className="text-[11px] text-muted-foreground">alcohol-free days</p>
               </div>
               <div>
                 <p className="text-xl font-bold">{progress.totalCheckIns}</p>
-                <p className="text-[11px] text-slate-400">mindful check-ins</p>
+                <p className="text-[11px] text-muted-foreground">mindful check-ins</p>
               </div>
             </div>
           )}
@@ -183,11 +183,11 @@ function DashboardContent() {
       </Card>
 
       {/* Primary action */}
-      <Card className="relative overflow-hidden border-emerald-500/20 bg-gradient-to-br from-slate-900/90 to-emerald-950/20">
+      <Card className="relative overflow-hidden border-emerald-500/20 bg-gradient-to-br from-card to-emerald-50 dark:to-emerald-950/20">
         <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-500/5 blur-3xl" />
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-emerald-400" />
+            <Activity className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             Quick Check-in
           </CardTitle>
           <CardDescription>
@@ -203,19 +203,19 @@ function DashboardContent() {
 
       {/* Stats grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-sky-500/20 bg-sky-950/10">
+        <Card className="border-sky-500/20 bg-sky-50 dark:bg-sky-950/10">
           <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5 text-sky-400">
+            <CardDescription className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400">
               <Droplets className="h-3.5 w-3.5" />
               {monthName} total
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{monthlyTotal} <span className="text-sm font-normal text-slate-400">ml</span></p>
+            <p className="text-2xl font-bold">{monthlyTotal} <span className="text-sm font-normal text-muted-foreground">ml</span></p>
           </CardContent>
         </Card>
 
-        <Card className={weeklyGoal > 0 ? (weeklyTotal <= weeklyGoal ? "border-emerald-500/20 bg-emerald-950/10" : "border-amber-500/20 bg-amber-950/10") : ""}>
+        <Card className={weeklyGoal > 0 ? (weeklyTotal <= weeklyGoal ? "border-emerald-500/20 bg-emerald-50 dark:bg-emerald-950/10" : "border-amber-500/20 bg-amber-50 dark:bg-amber-950/10") : ""}>
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1.5">
               <Target className="h-3.5 w-3.5" />
@@ -224,10 +224,10 @@ function DashboardContent() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {weeklyTotal} <span className="text-sm font-normal text-slate-400">/ {weeklyGoal || "no goal"} ml</span>
+              {weeklyTotal} <span className="text-sm font-normal text-muted-foreground">/ {weeklyGoal || "no goal"} ml</span>
             </p>
             {weeklyGoal > 0 && (
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-800">
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${weeklyTotal <= weeklyGoal ? "bg-emerald-500" : "bg-amber-500"}`}
                   style={{ width: `${weeklyProgress}%` }}
@@ -245,7 +245,7 @@ function DashboardContent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{monthRecords.length} <span className="text-sm font-normal text-slate-400">check-ins</span></p>
+            <p className="text-2xl font-bold">{monthRecords.length} <span className="text-sm font-normal text-muted-foreground">check-ins</span></p>
           </CardContent>
         </Card>
       </div>
@@ -258,26 +258,26 @@ function DashboardContent() {
         </CardHeader>
         <CardContent>
           {recentRecords.length === 0 ? (
-            <p className="text-sm text-slate-500">No records yet. Your first log will appear here.</p>
+            <p className="text-sm text-subtle">No records yet. Your first log will appear here.</p>
           ) : (
             <div className="space-y-2">
               {recentRecords.map((record) => (
                 <div
                   key={record.id}
-                  className="flex items-center justify-between rounded-xl border border-border bg-slate-900/50 px-3 py-2.5 text-sm"
+                  className="flex items-center justify-between rounded-xl border border-border bg-surface-muted px-3 py-2.5 text-sm"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-xs font-medium capitalize text-slate-300">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface text-xs font-medium capitalize text-body">
                       {record.type.slice(0, 2)}
                     </div>
                     <div>
                       <span className="font-medium capitalize">{record.otherType || record.type}</span>
-                      {record.mood && <span className="ml-2 text-xs text-slate-500">{record.mood}</span>}
+                      {record.mood && <span className="ml-2 text-xs text-subtle">{record.mood}</span>}
                     </div>
                   </div>
                   <div className="text-right">
                     <span className="font-semibold">{record.quantity} ml</span>
-                    <p className="text-xs text-slate-500">{format(record.createdAt, "MMM d, h:mm a")}</p>
+                    <p className="text-xs text-subtle">{format(record.createdAt, "MMM d, h:mm a")}</p>
                   </div>
                 </div>
               ))}

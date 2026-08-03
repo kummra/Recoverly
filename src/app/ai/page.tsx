@@ -23,12 +23,12 @@ export default function AIPage() {
 
 function TypingIndicator() {
   return (
-    <div className="flex max-w-[90%] items-start gap-2.5 rounded-2xl bg-slate-800/80 px-4 py-3">
-      <Bot className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+    <div className="flex max-w-[90%] items-start gap-2.5 rounded-2xl bg-surface px-4 py-3">
+      <Bot className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
       <div className="flex items-center gap-1 py-1">
-        <span className="typing-dot h-1.5 w-1.5 rounded-full bg-slate-400" />
-        <span className="typing-dot h-1.5 w-1.5 rounded-full bg-slate-400" />
-        <span className="typing-dot h-1.5 w-1.5 rounded-full bg-slate-400" />
+        <span className="typing-dot h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+        <span className="typing-dot h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+        <span className="typing-dot h-1.5 w-1.5 rounded-full bg-muted-foreground" />
       </div>
     </div>
   );
@@ -198,7 +198,7 @@ function AIContent() {
       {/* Page heading */}
       <div>
         <h2 className="text-xl font-bold">Recovery AI</h2>
-        <p className="text-sm text-slate-400">A compassionate, non-judgmental conversation partner.</p>
+        <p className="text-sm text-muted-foreground">A compassionate, non-judgmental conversation partner.</p>
       </div>
 
       <CrisisHelpline />
@@ -222,8 +222,8 @@ function AIContent() {
                   aria-pressed={chatId === session.id}
                   className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition-all ${
                     chatId === session.id
-                      ? "border-emerald-400/40 bg-emerald-500/10 text-white shadow-sm"
-                      : "border-border text-slate-300 hover:bg-slate-800/60"
+                      ? "border-emerald-400/40 bg-emerald-500/10 text-foreground shadow-sm"
+                      : "border-border text-body hover:bg-surface"
                   }`}
                   onClick={() => setChatId(session.id)}
                 >
@@ -241,14 +241,14 @@ function AIContent() {
         <Card className="flex flex-col">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Bot className="h-4 w-4 text-emerald-400" />
+              <Bot className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               {activeSessionTitle}
             </CardTitle>
             <CardDescription>This assistant focuses on non-judgmental recovery support.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-3">
             <div
-              className="flex max-h-[460px] flex-1 flex-col gap-3 overflow-auto rounded-2xl border border-border bg-slate-950/40 p-4"
+              className="flex max-h-[460px] flex-1 flex-col gap-3 overflow-auto rounded-2xl border border-border bg-surface-muted p-4"
               role="log"
               aria-live="polite"
               aria-label="AI conversation log"
@@ -259,7 +259,7 @@ function AIContent() {
               {!loading && messages.length === 0 ? (
                 <div className="my-auto flex flex-col items-center gap-3 py-12 text-center">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10">
-                    <Bot className="h-6 w-6 text-emerald-400" />
+                    <Bot className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Start a conversation. I&apos;m here to listen without judgment.
@@ -273,15 +273,15 @@ function AIContent() {
                 >
                   <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${
                     message.role === "assistant"
-                      ? "bg-emerald-500/15 text-emerald-400"
-                      : "bg-sky-500/15 text-sky-400"
+                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                      : "bg-sky-500/15 text-sky-600 dark:text-sky-400"
                   }`}>
                     {message.role === "assistant" ? <Bot className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
                   </div>
                   <div
                     className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                       message.role === "assistant"
-                        ? "bg-slate-800/80 text-slate-100"
+                        ? "bg-surface text-foreground"
                         : "bg-emerald-600/15 text-emerald-50"
                     }`}
                   >
@@ -293,7 +293,7 @@ function AIContent() {
               <div ref={messagesEndRef} />
             </div>
             {error ? (
-              <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
                 {error}
               </p>
             ) : null}

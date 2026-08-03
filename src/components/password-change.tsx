@@ -76,7 +76,7 @@ export function PasswordChange() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <KeyRound className="h-4 w-4 text-sky-400" />
+          <KeyRound className="h-4 w-4 text-sky-600 dark:text-sky-400" />
           Change password
         </CardTitle>
         <CardDescription>You&apos;ll need your current password to confirm it&apos;s you.</CardDescription>
@@ -104,7 +104,7 @@ export function PasswordChange() {
               onChange={(e) => setNext(e.target.value)}
               required
             />
-            <p className="text-xs text-slate-500">At least {MIN_LENGTH} characters.</p>
+            <p className="text-xs text-subtle">At least {MIN_LENGTH} characters.</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPw">Confirm new password</Label>
@@ -121,7 +121,7 @@ export function PasswordChange() {
           {status && (
             <div
               className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm ${
-                status.type === "success" ? "bg-emerald-500/10 text-emerald-300" : "bg-red-500/10 text-red-300"
+                status.type === "success" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-red-500/10 text-red-700 dark:text-red-300"
               }`}
             >
               {status.type === "success" ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}

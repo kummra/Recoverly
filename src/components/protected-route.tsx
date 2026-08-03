@@ -19,15 +19,15 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className="h-7 w-7 animate-pulse rounded-xl bg-slate-800" />
-          <div className="h-5 w-32 animate-pulse rounded-lg bg-slate-800" />
+          <div className="h-7 w-7 animate-pulse rounded-xl bg-surface" />
+          <div className="h-5 w-32 animate-pulse rounded-lg bg-surface" />
         </div>
-        <div className="h-3 w-48 animate-pulse rounded-lg bg-slate-800/60" />
-        <div className="mt-2 h-36 animate-pulse rounded-2xl bg-slate-800/40" />
+        <div className="h-3 w-48 animate-pulse rounded-lg bg-surface" />
+        <div className="mt-2 h-36 animate-pulse rounded-2xl bg-surface" />
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="h-20 animate-pulse rounded-2xl bg-slate-800/40" />
-          <div className="h-20 animate-pulse rounded-2xl bg-slate-800/40" />
-          <div className="h-20 animate-pulse rounded-2xl bg-slate-800/40" />
+          <div className="h-20 animate-pulse rounded-2xl bg-surface" />
+          <div className="h-20 animate-pulse rounded-2xl bg-surface" />
+          <div className="h-20 animate-pulse rounded-2xl bg-surface" />
         </div>
       </div>
     );

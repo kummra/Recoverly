@@ -49,10 +49,10 @@ export default function GuidePage() {
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold">
-          <Compass className="h-5 w-5 text-emerald-400" />
+          <Compass className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           How Recoverly works
         </h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-muted-foreground">
           Six simple steps. Go at your own pace — every step toward awareness counts.
         </p>
       </div>
@@ -65,11 +65,11 @@ export default function GuidePage() {
               <Card>
                 <CardContent className="flex gap-4 pt-6">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15">
-                    <Icon className="h-5 w-5 text-emerald-400" />
+                    <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="font-semibold text-white">{step.title}</h3>
-                    <p className="text-sm leading-relaxed text-slate-300">{step.body}</p>
+                    <h3 className="font-semibold text-foreground">{step.title}</h3>
+                    <p className="text-sm leading-relaxed text-body">{step.body}</p>
                   </div>
                 </CardContent>
               </Card>

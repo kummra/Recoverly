@@ -72,14 +72,14 @@ function SettingsContent() {
       {/* Page heading */}
       <div>
         <h2 className="text-xl font-bold">Settings</h2>
-        <p className="text-sm text-slate-400">Customize your recovery experience.</p>
+        <p className="text-sm text-muted-foreground">Customize your recovery experience.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <User className="h-4 w-4 text-emerald-400" />
+              <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               Profile & Preferences
             </CardTitle>
             <CardDescription>Keep your goals realistic and consistent.</CardDescription>
@@ -87,12 +87,12 @@ function SettingsContent() {
           <CardContent>
             <form onSubmit={submit} className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs text-slate-500">Account</Label>
-                <Input value={user?.email ?? user?.phoneNumber ?? "Unknown"} readOnly className="bg-slate-900/50 text-slate-400" />
+                <Label className="text-xs text-subtle">Account</Label>
+                <Input value={user?.email ?? user?.phoneNumber ?? "Unknown"} readOnly className="bg-surface-muted text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-slate-500">Timezone</Label>
-                <Input value={timezone} readOnly className="bg-slate-900/50 text-slate-400" />
+                <Label className="text-xs text-subtle">Timezone</Label>
+                <Input value={timezone} readOnly className="bg-surface-muted text-muted-foreground" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="motivation">Your why</Label>
@@ -102,9 +102,9 @@ function SettingsContent() {
                   onChange={(e) => setMotivation(e.target.value.slice(0, 200))}
                   rows={2}
                   placeholder="My family, my health, the person I want to be…"
-                  className="w-full rounded-xl border border-border bg-slate-900/50 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:border-emerald-500/50 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-subtle focus:border-emerald-500/50 focus:outline-none"
                 />
-                <p className="text-xs text-slate-500">Your anchor on hard days — shown on your dashboard.</p>
+                <p className="text-xs text-subtle">Your anchor on hard days — shown on your dashboard.</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="displayName">Display name</Label>
@@ -126,7 +126,7 @@ function SettingsContent() {
                   value={goalWeeklyMl}
                   onChange={(e) => setGoalWeeklyMl(Number(e.target.value))}
                 />
-                <p className="text-xs text-slate-500">Set a weekly consumption limit to track against. 0 means no limit.</p>
+                <p className="text-xs text-subtle">Set a weekly consumption limit to track against. 0 means no limit.</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="reminder">Preferred reminder time</Label>
@@ -136,7 +136,7 @@ function SettingsContent() {
                   value={reminderTime}
                   onChange={(e) => setReminderTime(e.target.value)}
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-subtle">
                   After this time, a gentle check-in prompt appears on your dashboard (once a day).
                   It shows while the app is open — it is not a phone notification.
                 </p>
@@ -145,8 +145,8 @@ function SettingsContent() {
               {message && (
                 <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm ${
                   message.type === "success"
-                    ? "bg-emerald-500/10 text-emerald-300"
-                    : "bg-red-500/10 text-red-300"
+                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                    : "bg-red-500/10 text-red-700 dark:text-red-300"
                 }`}>
                   {message.type === "success" ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                   {message.text}
@@ -164,15 +164,15 @@ function SettingsContent() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Shield className="h-4 w-4 text-sky-400" />
+                <Shield className="h-4 w-4 text-sky-600 dark:text-sky-400" />
                 App & Safety
               </CardTitle>
               <CardDescription>Use this app as support, not as medical replacement.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
-              <div className="rounded-xl border border-amber-500/20 bg-amber-950/10 p-3">
-                <p className="font-medium text-amber-300">Important notice</p>
-                <p className="mt-1 text-xs leading-relaxed text-slate-400">
+              <div className="rounded-xl border border-amber-500/20 bg-amber-50 dark:bg-amber-950/10 p-3">
+                <p className="font-medium text-amber-700 dark:text-amber-300">Important notice</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   This app is not a substitute for professional medical advice. If you feel in danger
                   or at risk of self-harm, please seek immediate help from a trusted professional or emergency service.
                 </p>
@@ -180,16 +180,16 @@ function SettingsContent() {
               <div className="flex flex-col gap-2">
                 <Link
                   href="/privacy"
-                  className="flex items-center gap-2 rounded-xl border border-border p-3 text-sm text-slate-300 transition hover:bg-slate-900/50"
+                  className="flex items-center gap-2 rounded-xl border border-border p-3 text-sm text-body transition hover:bg-surface-muted"
                 >
-                  <ExternalLink className="h-4 w-4 text-slate-500" />
+                  <ExternalLink className="h-4 w-4 text-subtle" />
                   Privacy Policy
                 </Link>
                 <Link
                   href="/terms"
-                  className="flex items-center gap-2 rounded-xl border border-border p-3 text-sm text-slate-300 transition hover:bg-slate-900/50"
+                  className="flex items-center gap-2 rounded-xl border border-border p-3 text-sm text-body transition hover:bg-surface-muted"
                 >
-                  <ExternalLink className="h-4 w-4 text-slate-500" />
+                  <ExternalLink className="h-4 w-4 text-subtle" />
                   Terms of Use
                 </Link>
               </div>
