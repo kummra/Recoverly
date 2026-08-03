@@ -84,7 +84,7 @@ export default function SupportPage() {
               href={HELPLINES.internationalDirectoryUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-700 dark:text-emerald-300 underline underline-offset-2 hover:text-emerald-200"
+              className="text-emerald-700 dark:text-emerald-300 underline underline-offset-2 hover:text-emerald-900 dark:hover:text-emerald-200"
             >
               findahelpline.com
             </a>
@@ -104,7 +104,7 @@ export default function SupportPage() {
         <CardContent className="space-y-2">
           <p className="text-sm leading-relaxed text-body">
             If you drink heavily or every day, stopping suddenly can be{" "}
-            <span className="font-semibold text-amber-200">medically dangerous</span> — abrupt withdrawal
+            <span className="font-semibold text-amber-800 dark:text-amber-200">medically dangerous</span> — abrupt withdrawal
             can cause seizures or delirium tremens, which can be life-threatening.
           </p>
           <p className="text-sm leading-relaxed text-body">

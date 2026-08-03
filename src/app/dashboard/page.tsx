@@ -155,7 +155,7 @@ function DashboardContent() {
           )}
 
           {motivation && (
-            <p className="flex items-start gap-1.5 text-sm italic text-emerald-200/70">
+            <p className="flex items-start gap-1.5 text-sm italic text-emerald-800/80 dark:text-emerald-200/70">
               <Heart className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {motivation}
             </p>
           )}
