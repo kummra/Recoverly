@@ -6,7 +6,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: "standalone",
+  // No `output: "standalone"`. It broke Vercel's build on Next 16.3 (missing
+  // next-server.js.nft.json) and nothing needs it: Vercel builds its own
+  // output, and the Dockerfile copies .next + node_modules and runs `npm start`
+  // rather than the standalone server.
   // The Oracle driver is a Node-native package; keep it external so the server
   // bundler doesn't try to trace/bundle its binary bits (it's only used in
   // nodejs route handlers, never in the browser).
