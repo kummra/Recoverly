@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { deviceRegisterSchema } from "@/lib/schemas";
+import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -36,6 +37,9 @@ export async function POST(request: NextRequest) {
     if (!uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const limited = rateLimit(`devreg:${uid}`, LIMITS.deviceRegister.limit, LIMITS.deviceRegister.windowMs);
+    if (!limited.allowed) return tooManyRequests(limited.retryAfter);
 
     const parsed = deviceRegisterSchema.safeParse(await request.json().catch(() => ({})));
     if (!parsed.success) {

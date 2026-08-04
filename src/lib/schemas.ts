@@ -35,7 +35,16 @@ export const aiMessageSchema = z.object({
 export const AI_CONTEXT_WINDOW = 50;
 
 export const aiRequestSchema = z.object({
-  chatId: z.string().trim().min(4).max(128).optional(),
+  // Used directly as a Firestore document id. Restrict the charset so a value
+  // like "a/b/c" can't be interpreted as a nested path (it stays inside the
+  // caller's own subtree either way, but odd path depths throw at runtime).
+  chatId: z
+    .string()
+    .trim()
+    .min(4)
+    .max(128)
+    .regex(/^[A-Za-z0-9_-]+$/, "chatId may only contain letters, numbers, hyphens and underscores")
+    .optional(),
   messages: z.array(aiMessageSchema).min(1).max(AI_CONTEXT_WINDOW)
 });
 

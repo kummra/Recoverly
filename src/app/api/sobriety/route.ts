@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { sobrietySignalSchema } from "@/lib/schemas";
 import { syncSobrietySignal } from "@/lib/oracle-storage";
+import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -37,6 +38,9 @@ export async function POST(request: NextRequest) {
     if (!uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const limited = rateLimit(`sobriety:${uid}`, LIMITS.sobriety.limit, LIMITS.sobriety.windowMs);
+    if (!limited.allowed) return tooManyRequests(limited.retryAfter);
 
     const parsed = sobrietySignalSchema.safeParse(await request.json().catch(() => ({})));
     if (!parsed.success) {

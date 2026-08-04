@@ -74,9 +74,15 @@ async function initPool(): Promise<oracledb.Pool> {
     user: oracleUser,
     password: oraclePassword,
     connectString: oracleConnectString,
+    // Serverless: every warm instance keeps its own pool, so a high poolMax
+    // multiplies across instances and can exhaust the Always Free session
+    // limit (ORA-00018). Keep it small and let idle connections drop quickly —
+    // the mirror is best-effort, so a brief reconnect costs nothing.
     poolMin: 0,
-    poolMax: 4,
+    poolMax: 2,
     poolIncrement: 1,
+    poolTimeout: 30,
+    queueTimeout: 10_000,
   });
 }
 
@@ -100,6 +106,52 @@ async function ensureTables(conn: oracledb.Connection): Promise<void> {
   } catch { /* ignore */ }
 
   tablesCreated = true;
+}
+
+// ─── Availability guard ─────────────────────────────────────────────────────
+// Oracle is a best-effort mirror, but a *hanging* mirror is worse than a
+// missing one: when the Always Free DB auto-stops, a connection attempt takes
+// ~65s to fail, which would stall the user-facing request (and on the AI route
+// that means the coach appears broken). So we bound every attempt and trip a
+// breaker after repeated failures instead of paying the cost on each request.
+const FAILURE_THRESHOLD = 3;
+const COOLDOWN_MS = 60_000;
+/** Generous enough for a healthy DB (~0.5s observed), far below any request budget. */
+export const ORACLE_OP_TIMEOUT_MS = 3_000;
+
+let consecutiveFailures = 0;
+let circuitOpenUntil = 0;
+
+export function isOracleCircuitOpen(): boolean {
+  return Date.now() < circuitOpenUntil;
+}
+
+export function recordOracleSuccess(): void {
+  consecutiveFailures = 0;
+  circuitOpenUntil = 0;
+}
+
+export function recordOracleFailure(): void {
+  consecutiveFailures += 1;
+  if (consecutiveFailures >= FAILURE_THRESHOLD) {
+    circuitOpenUntil = Date.now() + COOLDOWN_MS;
+    consecutiveFailures = 0;
+  }
+  // A rejected pool promise would be reused forever, leaving the mirror broken
+  // even after Oracle recovers. Drop it so the next attempt rebuilds the pool.
+  poolPromise = null;
+  tablesCreated = false;
+}
+
+/** Reject after `ms` so a stalled Oracle can never hold up a response. */
+export function withOracleTimeout<T>(work: Promise<T>, ms = ORACLE_OP_TIMEOUT_MS): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`Oracle operation timed out after ${ms}ms`)), ms);
+    work.then(
+      (v) => { clearTimeout(timer); resolve(v); },
+      (e) => { clearTimeout(timer); reject(e); }
+    );
+  });
 }
 
 export async function getOracleConnection(): Promise<oracledb.Connection> {

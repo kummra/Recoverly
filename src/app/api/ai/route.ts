@@ -7,6 +7,7 @@ import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { aiRequestSchema } from "@/lib/schemas";
 import { CRISIS_HELP_MESSAGE, detectCrisis } from "@/lib/safety";
 import { syncChatSession, syncChatMessage } from "@/lib/oracle-storage";
+import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -75,6 +76,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Each call costs money; an unbounded loop could exhaust the quota and take
+    // the coach offline for everyone, including someone in crisis.
+    const limited = rateLimit(`ai:${uid}`, LIMITS.ai.limit, LIMITS.ai.windowMs);
+    if (!limited.allowed) return tooManyRequests(limited.retryAfter);
+
     const json = await request.json();
     const parsed = aiRequestSchema.safeParse(json);
     if (!parsed.success) {
@@ -138,15 +144,21 @@ export async function POST(request: NextRequest) {
       createdAt: now
     });
 
-    // Mirror the conversation to Oracle Cloud so it lives equally in both
-    // stores. Best-effort: oracle-storage swallows its own errors, and we await
-    // here only so the writes complete before the serverless function ends.
+    // Mirror the conversation to Oracle. Firestore above is the source of
+    // truth, so this is strictly best-effort: oracle-storage bounds each write
+    // and swallows its own errors, and we await only so the writes land before
+    // the serverless instance is frozen. It must never be able to delay — let
+    // alone fail — the reply the user is waiting on.
     const nowIso = new Date().toISOString();
-    await Promise.all([
-      syncChatSession(chatId, uid, { title: sessionTitle, updatedAt: nowIso }),
-      syncChatMessage(userMsgRef.id, uid, chatId, { role: "user", content: userContent, createdAt: nowIso }),
-      syncChatMessage(assistantMsgRef.id, uid, chatId, { role: "assistant", content: reply, createdAt: nowIso }),
-    ]);
+    try {
+      await Promise.all([
+        syncChatSession(chatId, uid, { title: sessionTitle, updatedAt: nowIso }),
+        syncChatMessage(userMsgRef.id, uid, chatId, { role: "user", content: userContent, createdAt: nowIso }),
+        syncChatMessage(assistantMsgRef.id, uid, chatId, { role: "assistant", content: reply, createdAt: nowIso }),
+      ]);
+    } catch {
+      // Already logged inside oracle-storage; the reply still goes out.
+    }
 
     return NextResponse.json({ chatId, reply });
   } catch (error) {

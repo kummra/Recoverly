@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { deleteAllUserData } from "@/lib/oracle-storage";
+import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -38,6 +39,9 @@ export async function DELETE(request: NextRequest) {
     if (!uid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const limited = rateLimit(`acctdel:${uid}`, LIMITS.accountDelete.limit, LIMITS.accountDelete.windowMs);
+    if (!limited.allowed) return tooManyRequests(limited.retryAfter);
 
     // Delete all Firestore data under this user, plus the Oracle Cloud mirror,
     // then the auth account itself — so "delete everything" holds in BOTH stores.

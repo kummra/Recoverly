@@ -5,6 +5,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { sobrietySignalSchema } from "@/lib/schemas";
 import { syncSobrietySignal } from "@/lib/oracle-storage";
+import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -41,6 +42,11 @@ export async function POST(request: NextRequest) {
     if (!deviceId || !token) {
       return NextResponse.json({ error: "Missing device credentials." }, { status: 401 });
     }
+
+    // Keyed on deviceId and applied before the lookup, so a leaked or guessed
+    // token can't be used to hammer Firestore/Oracle with writes.
+    const limited = rateLimit(`ingest:${deviceId}`, LIMITS.deviceIngest.limit, LIMITS.deviceIngest.windowMs);
+    if (!limited.allowed) return tooManyRequests(limited.retryAfter);
 
     const deviceSnap = await adminDb.collection("devices").doc(deviceId).get();
     if (!deviceSnap.exists) {

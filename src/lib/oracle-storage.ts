@@ -1,5 +1,12 @@
 import type { BindParameters } from "oracledb";
-import { getOracleConnection, isOracleConfigured } from "@/lib/oracle-db";
+import {
+  getOracleConnection,
+  isOracleCircuitOpen,
+  isOracleConfigured,
+  recordOracleFailure,
+  recordOracleSuccess,
+  withOracleTimeout
+} from "@/lib/oracle-db";
 
 type SimpleBinds = Record<string, string | number | null>;
 
@@ -17,18 +24,26 @@ async function runSql(
   binds: SimpleBinds,
   options: { autoCommit: boolean } = { autoCommit: true }
 ): Promise<void> {
-  if (!isOracleConfigured) return;
+  if (!isOracleConfigured || isOracleCircuitOpen()) return;
 
-  let conn;
   try {
-    conn = await getOracleConnection();
-    await conn.execute(sql, asBinds(binds), options);
+    await withOracleTimeout(
+      (async () => {
+        let conn;
+        try {
+          conn = await getOracleConnection();
+          await conn.execute(sql, asBinds(binds), options);
+        } finally {
+          if (conn) {
+            try { await conn.close(); } catch { /* ignore */ }
+          }
+        }
+      })()
+    );
+    recordOracleSuccess();
   } catch (err) {
+    recordOracleFailure();
     safeLog("Write failed", err);
-  } finally {
-    if (conn) {
-      try { await conn.close(); } catch { /* ignore */ }
-    }
   }
 }
 
@@ -125,11 +140,11 @@ export async function syncChatMessage(
 }
 
 export async function deleteSyncedChatSessions(userId: string): Promise<void> {
-  if (!isOracleConfigured) return;
+  if (!isOracleConfigured || isOracleCircuitOpen()) return;
 
   let conn;
   try {
-    conn = await getOracleConnection();
+    conn = await withOracleTimeout(getOracleConnection());
     await conn.execute(
       `DELETE FROM chat_messages WHERE user_id = :user_id`,
       asBinds({ user_id: userId }),
@@ -140,7 +155,9 @@ export async function deleteSyncedChatSessions(userId: string): Promise<void> {
       asBinds({ user_id: userId }),
       { autoCommit: true }
     );
+    recordOracleSuccess();
   } catch (err) {
+    recordOracleFailure();
     safeLog("Delete chat sessions failed", err);
   } finally {
     if (conn) {
@@ -221,11 +238,11 @@ export async function syncSobrietySignal(
  * privacy guarantee holds in Oracle Cloud too, not just Firestore (privacy rule #4).
  */
 export async function deleteAllUserData(userId: string): Promise<void> {
-  if (!isOracleConfigured) return;
+  if (!isOracleConfigured || isOracleCircuitOpen()) return;
 
   let conn;
   try {
-    conn = await getOracleConnection();
+    conn = await withOracleTimeout(getOracleConnection());
     const tables = [
       "chat_messages",
       "chat_sessions",
@@ -242,7 +259,9 @@ export async function deleteAllUserData(userId: string): Promise<void> {
       );
     }
     await conn.execute("COMMIT");
+    recordOracleSuccess();
   } catch (err) {
+    recordOracleFailure();
     safeLog("Delete all user data failed", err);
   } finally {
     if (conn) {

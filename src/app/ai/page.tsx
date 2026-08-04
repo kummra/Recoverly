@@ -154,7 +154,7 @@ function AIContent() {
           // Only send the most recent messages as context for the AI.
           // The full history stays in state for UI display, but the API
           // payload is bounded by AI_CONTEXT_WINDOW to avoid schema
-          // rejection and control OpenAI token usage.
+          // rejection and control token usage on the AI provider.
           messages: nextMessages
             .slice(-AI_CONTEXT_WINDOW)
             .map((item) => ({ role: item.role, content: item.content }))

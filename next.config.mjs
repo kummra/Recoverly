@@ -15,6 +15,41 @@ const nextConfig = {
   // exist elsewhere on the machine (silences the multiple-lockfile build warning).
   turbopack: {
     root: __dirname
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          // The app needs none of these. Denying them means a compromised
+          // dependency still can't reach a user's camera, mic or location.
+          {
+            key: "Permissions-Policy",
+            value: [
+              "camera=()",
+              "microphone=()",
+              "geolocation=()",
+              "payment=()",
+              "usb=()",
+              "magnetometer=()",
+              "accelerometer=()",
+              "gyroscope=()"
+            ].join(", ")
+          },
+          // Vercel already sets HSTS, X-Frame-Options, X-Content-Type-Options
+          // and Referrer-Policy; these are the gaps.
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+          { key: "X-Permitted-Cross-Domain-Policies", value: "none" }
+        ]
+      },
+      {
+        // Personal recovery data must never sit in a shared or proxy cache.
+        // Scoped to the API only — page assets are hashed and immutable, so a
+        // blanket no-store here would throw away caching for no benefit.
+        source: "/api/:path*",
+        headers: [{ key: "Cache-Control", value: "no-store, max-age=0" }]
+      }
+    ];
   }
 };
 

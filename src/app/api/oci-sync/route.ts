@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { adminAuth, isAdminConfigured } from "@/lib/firebase-admin";
 import { isOracleConfigured } from "@/lib/oracle-db";
@@ -12,18 +13,29 @@ import {
   deleteSyncedDrinkRecords,
   deleteSyncedChatSessions,
 } from "@/lib/oracle-storage";
+import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-type SyncPayload =
-  | { type: "user_profile"; data: Record<string, unknown> }
-  | { type: "drink_record"; recordId: string; data: Record<string, unknown> }
-  | { type: "chat_session"; chatId: string; data: Record<string, unknown> }
-  | { type: "chat_message"; messageId: string; chatId: string; data: Record<string, unknown> }
-  | { type: "device_link"; deviceId: string; linkedAt: number }
-  | { type: "device_unlink"; deviceId: string }
-  | { type: "delete_drink_records" }
-  | { type: "delete_chat_sessions" };
+// Runtime-validated, not just a cast: these values are persisted to Oracle, so
+// unbounded strings/objects would bloat storage or blow the column widths.
+// Bind parameters already prevent SQL injection; this bounds the payload.
+const ID = z.string().trim().min(1).max(128);
+const DATA = z.record(z.string(), z.unknown()).refine(
+  (o) => JSON.stringify(o).length <= 20_000,
+  { message: "payload too large" }
+);
+
+const syncPayloadSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("user_profile"), data: DATA }),
+  z.object({ type: z.literal("drink_record"), recordId: ID, data: DATA }),
+  z.object({ type: z.literal("chat_session"), chatId: ID, data: DATA }),
+  z.object({ type: z.literal("chat_message"), messageId: ID, chatId: ID, data: DATA }),
+  z.object({ type: z.literal("device_link"), deviceId: ID, linkedAt: z.number().int().nonnegative() }),
+  z.object({ type: z.literal("device_unlink"), deviceId: ID }),
+  z.object({ type: z.literal("delete_drink_records") }),
+  z.object({ type: z.literal("delete_chat_sessions") })
+]);
 
 async function getUserId(request: NextRequest): Promise<string | null> {
   if (!adminAuth) return null;
@@ -54,7 +66,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const payload = (await request.json()) as SyncPayload;
+    const limited = rateLimit(`ocisync:${uid}`, LIMITS.ociSync.limit, LIMITS.ociSync.windowMs);
+    if (!limited.allowed) return tooManyRequests(limited.retryAfter);
+
+    const parsed = syncPayloadSchema.safeParse(await request.json().catch(() => ({})));
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid sync payload." }, { status: 400 });
+    }
+    const payload = parsed.data;
 
     switch (payload.type) {
       case "user_profile":
