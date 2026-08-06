@@ -6,6 +6,7 @@ import { Bell, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { dayKey, shouldShowReminder } from "@/lib/analytics";
+import { getNotificationSupport, scheduleDailyReminder } from "@/lib/notifications";
 
 const STORAGE_KEY = "recoverly:reminderDismissedOn";
 
@@ -33,6 +34,12 @@ export function DailyNudge({ reminderTime }: { reminderTime?: string }) {
       dismissedOn = null;
     }
     setVisible(shouldShowReminder({ reminderTime, lastDismissedDayKey: dismissedOn }));
+
+    // If they've allowed notifications, also queue the OS-level one so the
+    // reminder reaches them when the app isn't open.
+    if (getNotificationSupport() === "granted") {
+      void scheduleDailyReminder(reminderTime);
+    }
   }, [reminderTime]);
 
   const dismiss = () => {

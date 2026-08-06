@@ -5,6 +5,7 @@ import { Check, AlertCircle, User, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 import { DataManagement } from "@/components/data-management";
+import { NotificationOptIn } from "@/components/notification-optin";
 import { DeleteAccount } from "@/components/delete-account";
 import { PasswordChange } from "@/components/password-change";
 import { ProtectedRoute } from "@/components/protected-route";
@@ -142,9 +143,9 @@ function SettingsContent() {
                   onChange={(e) => setReminderTime(e.target.value)}
                 />
                 <p className="text-xs text-subtle">
-                  After this time, a gentle check-in prompt appears on your dashboard (once a day).
-                  It shows while the app is open — it is not a phone notification.
+                  After this time, a gentle check-in prompt appears on your dashboard, once a day.
                 </p>
+                <NotificationOptIn reminderTime={reminderTime || undefined} />
               </div>
 
               {message && (
