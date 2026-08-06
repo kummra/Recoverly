@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import { AuthProvider } from "@/components/auth-provider";
+import { I18nProvider } from "@/components/i18n-provider";
 import { ServiceWorkerRegistrar } from "@/components/service-worker";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TopNav } from "@/components/top-nav";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider>
+        <I18nProvider>
         <ServiceWorkerRegistrar />
         <AuthProvider>
           <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6">
@@ -76,6 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </footer>
           </div>
         </AuthProvider>
+        </I18nProvider>
         </ThemeProvider>
       </body>
     </html>

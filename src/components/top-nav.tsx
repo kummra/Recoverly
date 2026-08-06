@@ -8,18 +8,21 @@ import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useT } from "@/components/i18n-provider";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/records", label: "Records", icon: BarChart3 },
-  { href: "/assessment", label: "Self-check", icon: ClipboardCheck },
-  { href: "/ai", label: "Our AI", icon: Bot },
-  { href: "/settings", label: "Settings", icon: Settings }
+  { href: "/", labelKey: "nav.home", icon: Home },
+  { href: "/dashboard", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { href: "/records", labelKey: "nav.records", icon: BarChart3 },
+  { href: "/assessment", labelKey: "nav.assessment", icon: ClipboardCheck },
+  { href: "/ai", labelKey: "nav.ai", icon: Bot },
+  { href: "/settings", labelKey: "nav.settings", icon: Settings }
 ];
 
 export function TopNav() {
+  const t = useT();
   const pathname = usePathname();
   const { user, signOutUser } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -49,27 +52,28 @@ export function TopNav() {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <ThemeToggle />
           {user ? (
             <>
               <span className="hidden max-w-[140px] truncate text-xs text-muted-foreground lg:block">{user.email}</span>
               <Button type="button" variant="ghost" size="icon" className="h-10 w-10" onClick={() => signOutUser()}>
                 <LogOut className="h-4 w-4" />
-                <span className="sr-only">Log out</span>
+                <span className="sr-only">{t("nav.logout")}</span>
               </Button>
             </>
           ) : (
             <Button asChild size="sm" className="gap-1.5">
               <Link href="/login">
                 <LogIn className="h-4 w-4" />
-                Log in
+                {t("nav.login")}
               </Link>
             </Button>
           )}
@@ -81,7 +85,7 @@ export function TopNav() {
             size="icon"
             className="h-10 w-10 md:hidden"
             onClick={() => setMobileOpen((prev) => !prev)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.openMenu")}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -104,7 +108,7 @@ export function TopNav() {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}
@@ -120,7 +124,7 @@ export function TopNav() {
             )}
           >
             <LifeBuoy className="h-4 w-4" />
-            Support &amp; helplines
+            {t("nav.support")}
           </Link>
         </nav>
       )}

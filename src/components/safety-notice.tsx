@@ -1,5 +1,8 @@
+"use client";
+
 import { AlertTriangle, LifeBuoy } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { HELPLINES } from "@/lib/safety";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +11,7 @@ import { cn } from "@/lib/utils";
  * their drinking (dashboard) so the medical caveat is visible, not buried.
  */
 export function MedicalDisclaimer({ className }: { className?: string }) {
+  const t = useT();
   return (
     <div
       className={cn(
@@ -17,13 +21,9 @@ export function MedicalDisclaimer({ className }: { className?: string }) {
     >
       <p className="flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-300">
         <AlertTriangle className="h-3.5 w-3.5" />
-        Support, not medical advice
+        {t("safety.notMedicalTitle")}
       </p>
-      <p className="mt-1">
-        Recoverly helps you reflect on your habits — it is not medical care. If you drink
-        heavily, stopping suddenly can be dangerous (withdrawal can cause seizures). Please
-        talk to a doctor before making big changes to how much you drink.
-      </p>
+      <p className="mt-1">{t("safety.notMedicalBody")}</p>
     </div>
   );
 }
@@ -34,6 +34,7 @@ export function MedicalDisclaimer({ className }: { className?: string }) {
  * they stay in sync with what the AI route injects.
  */
 export function CrisisHelpline({ className }: { className?: string }) {
+  const t = useT();
   return (
     <div
       className={cn(
@@ -43,11 +44,11 @@ export function CrisisHelpline({ className }: { className?: string }) {
     >
       <p className="flex items-center gap-1.5 font-medium text-sky-700 dark:text-sky-300">
         <LifeBuoy className="h-3.5 w-3.5" />
-        In crisis or thinking about self-harm? Help is available now
+        {t("safety.crisisTitle")}
       </p>
       <p className="mt-1">
-        India: Tele-MANAS {HELPLINES.india.teleManas} · KIRAN {HELPLINES.india.kiran} ·
-        Emergency {HELPLINES.india.emergency}. Outside India:{" "}
+        {t("safety.crisisIndia")}: Tele-MANAS {HELPLINES.india.teleManas} · KIRAN {HELPLINES.india.kiran} ·
+        {t("safety.emergency")} {HELPLINES.india.emergency}. {t("safety.outsideIndia")}:{" "}
         <a
           href={HELPLINES.internationalDirectoryUrl}
           target="_blank"
