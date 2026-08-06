@@ -146,3 +146,43 @@ body {
   from { stroke-dashoffset: 0; }
   to { stroke-dashoffset: 113; }
 }
+
+/* Print: emit only the report sheet — no app chrome, no dark theme, no
+   decorative colour. Anything a clinician prints should look like a document. */
+@media print {
+  header,
+  footer,
+  nav,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  :root,
+  .dark {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --border: 0 0% 80%;
+    --body: 0 0% 12%;
+    --subtle: 0 0% 35%;
+    --muted-foreground: 0 0% 30%;
+  }
+
+  body {
+    background: #fff !important;
+    background-image: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  article {
+    break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}

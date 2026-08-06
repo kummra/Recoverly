@@ -143,6 +143,9 @@ function AssessmentContent() {
                 <LifeBuoy className="h-4 w-4" /> Find support
               </Link>
             </Button>
+            <Button asChild variant="outline" className="gap-1.5">
+              <Link href="/report">Summary for my doctor</Link>
+            </Button>
             <Button type="button" variant="outline" className="gap-1.5" onClick={restart}>
               <RotateCcw className="h-4 w-4" /> Take it again
             </Button>

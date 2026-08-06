@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { AlertCircle, Check, Database, Download, Trash2 } from "lucide-react";
+import { AlertCircle, Check, Database, Download, FileText, Trash2 } from "lucide-react";
+
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -95,6 +97,13 @@ export function DataManagement() {
         >
           <Download className="h-4 w-4" />
           {busy === "export" ? "Preparing…" : "Export my records (CSV)"}
+        </Button>
+
+        <Button asChild variant="outline" className="w-full justify-start gap-2">
+          <Link href="/report">
+            <FileText className="h-4 w-4" />
+            Summary for my doctor
+          </Link>
         </Button>
 
         {confirmChats ? (
