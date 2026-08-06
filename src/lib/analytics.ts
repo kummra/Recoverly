@@ -143,6 +143,161 @@ export function buildProgress(records: DrinkRecord[], now: Date = new Date()): P
   };
 }
 
+// ─── Money & health saved ───────────────────────────────────────────────────
+// Rough but honest: per-ml cost and calories by drink type, Indian retail
+// ballpark in INR. These are estimates for motivation, not accounting — the UI
+// says so. Calories use standard ABV-to-kcal figures (7 kcal per gram ethanol).
+const DRINK_FACTS: Record<string, { rupeesPerMl: number; kcalPerMl: number }> = {
+  beer: { rupeesPerMl: 0.45, kcalPerMl: 0.43 },
+  wine: { rupeesPerMl: 1.2, kcalPerMl: 0.83 },
+  whiskey: { rupeesPerMl: 3.0, kcalPerMl: 2.5 },
+  vodka: { rupeesPerMl: 2.6, kcalPerMl: 2.3 },
+  other: { rupeesPerMl: 1.0, kcalPerMl: 1.0 }
+};
+
+export type SavingsSummary = {
+  /** Rupees not spent this month versus the busiest earlier month. */
+  rupeesSaved: number;
+  kcalAvoided: number;
+  /** The month we're comparing against, e.g. "Jun". */
+  baselineMonth: string | null;
+  /** False when there's no earlier month to compare with yet. */
+  hasBaseline: boolean;
+};
+
+function costOf(records: DrinkRecord[]) {
+  return records.reduce(
+    (acc, r) => {
+      const f = DRINK_FACTS[r.type] ?? DRINK_FACTS.other;
+      acc.rupees += r.quantity * f.rupeesPerMl;
+      acc.kcal += r.quantity * f.kcalPerMl;
+      return acc;
+    },
+    { rupees: 0, kcal: 0 }
+  );
+}
+
+/**
+ * Compare this month against the user's heaviest previous month. Framing it
+ * against their own worst month (not an arbitrary target) keeps it truthful and
+ * personal — and it can only ever show a gain, never a scolding deficit.
+ */
+export function buildSavings(records: DrinkRecord[], now: Date = new Date()): SavingsSummary {
+  const currentStart = startOfMonth(now);
+  const current = costOf(records.filter((r) => r.createdAt >= currentStart));
+
+  let best: { month: string; rupees: number; kcal: number } | null = null;
+  for (let i = 1; i <= 6; i++) {
+    const d = subMonths(now, i);
+    const start = startOfMonth(d);
+    const end = endOfMonth(d);
+    const c = costOf(records.filter((r) => r.createdAt >= start && r.createdAt <= end));
+    if (c.rupees > 0 && (!best || c.rupees > best.rupees)) {
+      best = { month: format(d, "MMM"), rupees: c.rupees, kcal: c.kcal };
+    }
+  }
+
+  if (!best) {
+    return { rupeesSaved: 0, kcalAvoided: 0, baselineMonth: null, hasBaseline: false };
+  }
+
+  return {
+    rupeesSaved: Math.max(0, Math.round(best.rupees - current.rupees)),
+    kcalAvoided: Math.max(0, Math.round(best.kcal - current.kcal)),
+    baselineMonth: best.month,
+    hasBaseline: true
+  };
+}
+
+// ─── Milestones ─────────────────────────────────────────────────────────────
+export const MILESTONE_DAYS = [1, 3, 7, 14, 30, 60, 90, 180, 365] as const;
+
+export type Milestone = {
+  days: number;
+  label: string;
+  reached: boolean;
+};
+
+/** Identity-framed, never a scoreboard: each one names who they're becoming. */
+const MILESTONE_LABELS: Record<number, string> = {
+  1: "First day",
+  3: "Three days",
+  7: "One week",
+  14: "Two weeks",
+  30: "One month",
+  60: "Two months",
+  90: "Three months",
+  180: "Six months",
+  365: "One year"
+};
+
+export function buildMilestones(currentStreakDays: number, longestStreakDays: number): {
+  milestones: Milestone[];
+  /** The next one within reach, or null once they're all reached. */
+  next: Milestone | null;
+  daysToNext: number | null;
+} {
+  const best = Math.max(currentStreakDays, longestStreakDays);
+  const milestones = MILESTONE_DAYS.map((days) => ({
+    days,
+    label: MILESTONE_LABELS[days] ?? `${days} days`,
+    reached: best >= days
+  }));
+  const next = milestones.find((m) => !m.reached) ?? null;
+  return { milestones, next, daysToNext: next ? next.days - currentStreakDays : null };
+}
+
+// ─── Trigger patterns ───────────────────────────────────────────────────────
+export type TriggerInsight = {
+  /** Human-readable pattern, e.g. "Fridays" or "evenings (6pm–midnight)". */
+  label: string;
+  count: number;
+  /** Share of all logged drinks, 0–1. */
+  share: number;
+};
+
+const DAY_NAMES = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"];
+
+function partOfDay(h: number): string {
+  if (h < 6) return "late nights (midnight–6am)";
+  if (h < 12) return "mornings (6am–noon)";
+  if (h < 18) return "afternoons (noon–6pm)";
+  return "evenings (6pm–midnight)";
+}
+
+/**
+ * Surface the strongest day-of-week, time-of-day and mood patterns. Only
+ * returns a pattern if it's meaningfully above chance and backed by enough
+ * records — a "pattern" from three drinks would be noise dressed as insight.
+ */
+export function buildTriggerInsights(records: DrinkRecord[], minRecords = 8): TriggerInsight[] {
+  if (records.length < minRecords) return [];
+
+  const tally = (keys: string[]) => {
+    const m = new Map<string, number>();
+    for (const k of keys) m.set(k, (m.get(k) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1])[0] ?? null;
+  };
+
+  const out: TriggerInsight[] = [];
+  const total = records.length;
+
+  const day = tally(records.map((r) => DAY_NAMES[r.createdAt.getDay()]));
+  // 1/7 is chance for a weekday; require a clear lean past it.
+  if (day && day[1] / total >= 0.25) out.push({ label: day[0], count: day[1], share: day[1] / total });
+
+  const time = tally(records.map((r) => partOfDay(r.createdAt.getHours())));
+  if (time && time[1] / total >= 0.4) out.push({ label: time[0], count: time[1], share: time[1] / total });
+
+  const moods = records.map((r) => r.mood?.trim().toLowerCase()).filter((m): m is string => Boolean(m));
+  if (moods.length >= Math.max(4, minRecords / 2)) {
+    const mood = tally(moods);
+    if (mood && mood[1] >= 3) out.push({ label: `feeling "${mood[0]}"`, count: mood[1], share: mood[1] / total });
+  }
+
+  return out;
+}
+
 // ─── Urge-surfing breath pacer ──────────────────────────────────────────────
 // 4-4-6 (in-hold-out). The longer exhale is the point: it's what actually
 // engages the parasympathetic response that settles the body down.

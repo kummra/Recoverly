@@ -5,10 +5,11 @@ import { TrendingDown, TrendingUp, Calendar, Activity, BarChart3, Target } from 
 
 import { ConsumptionLineChart } from "@/components/charts/consumption-line";
 import { MonthlyBarChart } from "@/components/charts/monthly-bar";
+import { ProgressInsights } from "@/components/progress-insights";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { buildAnalytics, suggestInsight } from "@/lib/analytics";
+import { buildAnalytics, buildProgress, suggestInsight } from "@/lib/analytics";
 import { type DrinkRecord, getDrinkRecords } from "@/lib/firestore";
 
 export default function RecordsPage() {
@@ -50,6 +51,7 @@ function RecordsContent() {
 
   const summary = useMemo(() => buildAnalytics(records), [records]);
   const insight = useMemo(() => suggestInsight(summary), [summary]);
+  const progress = useMemo(() => buildProgress(records), [records]);
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading records...</p>;
 
@@ -87,6 +89,12 @@ function RecordsContent() {
         <h2 className="text-xl font-bold">Records & Insights</h2>
         <p className="text-sm text-muted-foreground">Your data tells the story of progress.</p>
       </div>
+
+      <ProgressInsights
+        records={records}
+        currentStreakDays={progress.currentStreakDays}
+        longestStreakDays={progress.longestStreakDays}
+      />
 
       {/* Stats row - color coded */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">

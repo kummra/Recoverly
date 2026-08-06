@@ -1,7 +1,17 @@
 import { addDays, startOfMonth, subMonths } from "date-fns";
 import { describe, expect, it } from "vitest";
 
-import { breathPhaseAt, buildAnalytics, buildProgress, dayKey, shouldShowReminder, suggestInsight } from "@/lib/analytics";
+import {
+  breathPhaseAt,
+  buildAnalytics,
+  buildMilestones,
+  buildProgress,
+  buildSavings,
+  buildTriggerInsights,
+  dayKey,
+  shouldShowReminder,
+  suggestInsight
+} from "@/lib/analytics";
 import type { DrinkRecord } from "@/lib/firestore";
 
 function rec(quantity: number, createdAt: Date): DrinkRecord {
@@ -191,5 +201,91 @@ describe("breathPhaseAt", () => {
 
   it("is defined for negative input rather than throwing", () => {
     expect(breathPhaseAt(-1).label).toBeDefined();
+  });
+});
+
+describe("buildSavings", () => {
+  const now = new Date(2026, 7, 15); // 15 Aug 2026
+  const at = (monthOffset: number, day = 5) => new Date(2026, 7 - monthOffset, day, 20, 0, 0);
+  const rec = (quantity: number, createdAt: Date, type = "whiskey"): DrinkRecord => ({
+    id: Math.random().toString(36).slice(2), quantity, type, createdAt
+  });
+
+  it("reports no baseline for a brand-new user", () => {
+    const s = buildSavings([], now);
+    expect(s.hasBaseline).toBe(false);
+    expect(s.rupeesSaved).toBe(0);
+    expect(s.baselineMonth).toBeNull();
+  });
+
+  it("compares against the heaviest previous month", () => {
+    const s = buildSavings([rec(1000, at(1)), rec(200, at(2)), rec(100, at(0))], now);
+    expect(s.hasBaseline).toBe(true);
+    expect(s.baselineMonth).toBe("Jul");
+    expect(s.rupeesSaved).toBeGreaterThan(0);
+    expect(s.kcalAvoided).toBeGreaterThan(0);
+  });
+
+  it("never reports a negative saving when this month is heavier", () => {
+    const s = buildSavings([rec(100, at(1)), rec(5000, at(0))], now);
+    expect(s.rupeesSaved).toBe(0);
+    expect(s.kcalAvoided).toBe(0);
+  });
+});
+
+describe("buildMilestones", () => {
+  it("marks reached milestones and finds the next", () => {
+    const { milestones, next, daysToNext } = buildMilestones(9, 9);
+    expect(milestones.find((m) => m.days === 7)?.reached).toBe(true);
+    expect(milestones.find((m) => m.days === 14)?.reached).toBe(false);
+    expect(next?.days).toBe(14);
+    expect(daysToNext).toBe(5);
+  });
+
+  it("credits the personal best even after a reset", () => {
+    const { milestones } = buildMilestones(0, 30);
+    expect(milestones.find((m) => m.days === 30)?.reached).toBe(true);
+  });
+
+  it("returns no next milestone once all are reached", () => {
+    expect(buildMilestones(400, 400).next).toBeNull();
+  });
+});
+
+describe("buildTriggerInsights", () => {
+  const mk = (createdAt: Date, mood?: string): DrinkRecord => ({
+    id: Math.random().toString(36).slice(2), quantity: 100, type: "beer", createdAt, mood
+  });
+
+  it("stays silent without enough data — a pattern from 3 drinks is noise", () => {
+    const few = [mk(new Date(2026, 7, 7, 20)), mk(new Date(2026, 7, 14, 20)), mk(new Date(2026, 7, 21, 20))];
+    expect(buildTriggerInsights(few)).toEqual([]);
+  });
+
+  it("surfaces a strong day-of-week pattern", () => {
+    // 8 Fridays (Aug 2026: 7th, 14th, 21st, 28th are Fridays)
+    const fridays = [7, 14, 21, 28, 7, 14, 21, 28].map((d) => mk(new Date(2026, 7, d, 20)));
+    const out = buildTriggerInsights(fridays);
+    expect(out.some((i) => i.label === "Fridays")).toBe(true);
+  });
+
+  it("surfaces a time-of-day pattern", () => {
+    const evenings = Array.from({ length: 10 }, (_, i) => mk(new Date(2026, 7, i + 1, 21)));
+    const out = buildTriggerInsights(evenings);
+    expect(out.some((i) => i.label.startsWith("evenings"))).toBe(true);
+  });
+
+  it("surfaces a repeated mood trigger", () => {
+    const stressed = Array.from({ length: 10 }, (_, i) => mk(new Date(2026, 7, i + 1, 13), "stressed"));
+    const out = buildTriggerInsights(stressed);
+    expect(out.some((i) => i.label.includes("stressed"))).toBe(true);
+  });
+
+  it("reports shares between 0 and 1", () => {
+    const evenings = Array.from({ length: 10 }, (_, i) => mk(new Date(2026, 7, i + 1, 21)));
+    for (const i of buildTriggerInsights(evenings)) {
+      expect(i.share).toBeGreaterThan(0);
+      expect(i.share).toBeLessThanOrEqual(1);
+    }
   });
 });
