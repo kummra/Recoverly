@@ -31,6 +31,14 @@ service cloud.firestore {
         && (!('mood' in request.resource.data) || request.resource.data.mood == null || (request.resource.data.mood is string && request.resource.data.mood.size() <= 120));
     }
 
+    function validAuditResult() {
+      return request.resource.data.keys().hasOnly(['score', 'zone', 'answers', 'createdAt'])
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 40
+        && request.resource.data.zone in ['low', 'hazardous', 'harmful', 'possible-dependence'];
+    }
+
     function validCravingEvent() {
       return request.resource.data.keys().hasOnly(['intensity', 'outcome', 'trigger', 'secondsElapsed', 'createdAt'])
         && request.resource.data.intensity is int
@@ -65,6 +73,13 @@ service cloud.firestore {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId) && validDrinkRecord();
         allow update: if isOwner(userId) && validDrinkRecord();
+        allow delete: if isOwner(userId);
+      }
+
+      match /auditResults/{resultId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && validAuditResult();
+        allow update: if false;
         allow delete: if isOwner(userId);
       }
 

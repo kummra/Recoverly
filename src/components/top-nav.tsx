@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn, LifeBuoy } from "lucide-react";
+import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn, LifeBuoy, ClipboardCheck } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/records", label: "Records", icon: BarChart3 },
+  { href: "/assessment", label: "Self-check", icon: ClipboardCheck },
   { href: "/ai", label: "Our AI", icon: Bot },
   { href: "/settings", label: "Settings", icon: Settings }
 ];

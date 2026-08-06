@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 
 import { auth, firestore } from "@/lib/firebase";
-import { type CravingEventInput, type DrinkRecordInput, type GoalInput } from "@/lib/schemas";
+import { type AuditResultInput, type CravingEventInput, type DrinkRecordInput, type GoalInput } from "@/lib/schemas";
 
 /**
  * Mirror a write to Oracle Cloud (best-effort, fire-and-forget).
@@ -47,6 +47,13 @@ export type DrinkRecord = {
   /** Free-text name when type is "other". */
   otherType?: string;
   mood?: string;
+  createdAt: Date;
+};
+
+export type AuditRecord = {
+  id: string;
+  score: number;
+  zone: string;
   createdAt: Date;
 };
 
@@ -195,6 +202,39 @@ export function subscribeDrinkRecords(userId: string, callback: (records: DrinkR
       } satisfies DrinkRecord;
     });
     callback(records);
+  });
+}
+
+// ─── AUDIT results ──────────────────────────────────────────────────────────
+
+export async function addAuditResult(userId: string, result: AuditResultInput) {
+  const db = getClientDb();
+  const created = await addDoc(collection(db, "users", userId, "auditResults"), {
+    score: result.score,
+    zone: result.zone,
+    answers: result.answers,
+    createdAt: serverTimestamp()
+  });
+
+  void syncToOracle({
+    type: "audit_result",
+    resultId: created.id,
+    data: { score: result.score, zone: result.zone, createdAt: new Date().toISOString() }
+  });
+}
+
+export async function getAuditResults(userId: string): Promise<AuditRecord[]> {
+  const db = getClientDb();
+  const q = query(collection(db, "users", userId, "auditResults"), orderBy("createdAt", "asc"));
+  const snap = await getDocs(q);
+  return snap.docs.map((item) => {
+    const data = item.data();
+    return {
+      id: item.id,
+      score: Number(data.score ?? 0),
+      zone: String(data.zone ?? "low"),
+      createdAt: toDate(data.createdAt)
+    };
   });
 }
 

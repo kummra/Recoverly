@@ -256,6 +256,26 @@ export async function syncCravingEvent(
   );
 }
 
+export async function syncAuditResult(
+  resultId: string,
+  userId: string,
+  score: number,
+  zone: string,
+  data: Record<string, unknown>
+): Promise<void> {
+  await runSql(
+    `MERGE INTO audit_results t
+       USING (SELECT :result_id AS result_id FROM dual) s
+       ON (t.result_id = s.result_id)
+     WHEN MATCHED THEN
+       UPDATE SET data_json = :data_json
+     WHEN NOT MATCHED THEN
+       INSERT (result_id, user_id, score, zone, data_json, created_at)
+       VALUES (:result_id, :user_id, :score, :zone, :data_json, SYSTIMESTAMP)`,
+    { result_id: resultId, user_id: userId, score, zone, data_json: JSON.stringify(data) }
+  );
+}
+
 // ─── Account deletion ───────────────────────────────────────────────────────
 
 /**
@@ -276,6 +296,7 @@ export async function deleteAllUserData(userId: string): Promise<void> {
       "device_data",
       "sobriety_signals",
       "craving_events",
+      "audit_results",
       "user_profiles",
     ];
     for (const table of tables) {

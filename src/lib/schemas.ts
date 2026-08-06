@@ -26,6 +26,17 @@ export const drinkRecordSchema = z.object({
   createdAt: z.date().optional()
 });
 
+// ─── AUDIT assessment results ───────────────────────────────────────────────
+export const AUDIT_ZONES = ["low", "hazardous", "harmful", "possible-dependence"] as const;
+
+export const auditResultSchema = z.object({
+  score: z.number().int().min(0).max(40),
+  zone: z.enum(AUDIT_ZONES),
+  /** Raw answers keyed by question id, so a result can be revisited later. */
+  answers: z.record(z.string(), z.number().int().min(0).max(4)),
+  createdAt: z.date().optional()
+});
+
 // ─── Craving events ─────────────────────────────────────────────────────────
 // Logged when someone opens the SOS flow. The outcome is recorded without
 // judgement: reaching for help is the win, whatever happened next.
@@ -115,6 +126,7 @@ export const deviceRegisterSchema = z.object({
   kind: z.enum(["sobriety_guardian", "campus_detector", "breathalyser"]).default("sobriety_guardian")
 });
 
+export type AuditResultInput = z.infer<typeof auditResultSchema>;
 export type CravingEventInput = z.infer<typeof cravingEventSchema>;
 export type GoalInput = z.infer<typeof goalSchema>;
 export type DrinkRecordInput = z.infer<typeof drinkRecordSchema>;

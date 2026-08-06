@@ -8,6 +8,7 @@ import {
   syncDrinkRecord,
   syncChatSession,
   syncChatMessage,
+  syncAuditResult,
   syncCravingEvent,
   syncDeviceLink,
   deleteSyncedDeviceLink,
@@ -35,6 +36,7 @@ const syncPayloadSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("device_link"), deviceId: ID, linkedAt: z.number().int().nonnegative() }),
   z.object({ type: z.literal("device_unlink"), deviceId: ID }),
   z.object({ type: z.literal("craving_event"), eventId: ID, data: DATA }),
+  z.object({ type: z.literal("audit_result"), resultId: ID, data: DATA }),
   z.object({ type: z.literal("delete_drink_records") }),
   z.object({ type: z.literal("delete_chat_sessions") })
 ]);
@@ -93,6 +95,17 @@ export async function POST(request: NextRequest) {
       case "device_link":
         await syncDeviceLink(payload.deviceId, uid, payload.linkedAt);
         break;
+      case "audit_result": {
+        const d = payload.data as { score?: unknown; zone?: unknown };
+        await syncAuditResult(
+          payload.resultId,
+          uid,
+          typeof d.score === "number" ? d.score : 0,
+          typeof d.zone === "string" ? d.zone : "low",
+          payload.data
+        );
+        break;
+      }
       case "craving_event": {
         const d = payload.data as { intensity?: unknown; outcome?: unknown };
         await syncCravingEvent(
