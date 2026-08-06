@@ -230,6 +230,32 @@ export async function syncSobrietySignal(
   );
 }
 
+export async function syncCravingEvent(
+  eventId: string,
+  userId: string,
+  intensity: number,
+  outcome: string,
+  data: Record<string, unknown>
+): Promise<void> {
+  await runSql(
+    `MERGE INTO craving_events t
+       USING (SELECT :event_id AS event_id FROM dual) s
+       ON (t.event_id = s.event_id)
+     WHEN MATCHED THEN
+       UPDATE SET data_json = :data_json
+     WHEN NOT MATCHED THEN
+       INSERT (event_id, user_id, intensity, outcome, data_json, created_at)
+       VALUES (:event_id, :user_id, :intensity, :outcome, :data_json, SYSTIMESTAMP)`,
+    {
+      event_id: eventId,
+      user_id: userId,
+      intensity,
+      outcome,
+      data_json: JSON.stringify(data)
+    }
+  );
+}
+
 // ─── Account deletion ───────────────────────────────────────────────────────
 
 /**
@@ -249,6 +275,7 @@ export async function deleteAllUserData(userId: string): Promise<void> {
       "drink_records",
       "device_data",
       "sobriety_signals",
+      "craving_events",
       "user_profiles",
     ];
     for (const table of tables) {

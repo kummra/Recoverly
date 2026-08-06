@@ -31,6 +31,16 @@ service cloud.firestore {
         && (!('mood' in request.resource.data) || request.resource.data.mood == null || (request.resource.data.mood is string && request.resource.data.mood.size() <= 120));
     }
 
+    function validCravingEvent() {
+      return request.resource.data.keys().hasOnly(['intensity', 'outcome', 'trigger', 'secondsElapsed', 'createdAt'])
+        && request.resource.data.intensity is int
+        && request.resource.data.intensity >= 1
+        && request.resource.data.intensity <= 5
+        && request.resource.data.outcome in ['passed', 'drank', 'unresolved']
+        && (!('trigger' in request.resource.data) || request.resource.data.trigger == null || (request.resource.data.trigger is string && request.resource.data.trigger.size() <= 120))
+        && (!('secondsElapsed' in request.resource.data) || request.resource.data.secondsElapsed == null || (request.resource.data.secondsElapsed is int && request.resource.data.secondsElapsed >= 0 && request.resource.data.secondsElapsed <= 7200));
+    }
+
     function validAiChat() {
       return request.resource.data.keys().hasOnly(['title', 'createdAt', 'updatedAt'])
         && request.resource.data.title is string
@@ -55,6 +65,12 @@ service cloud.firestore {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId) && validDrinkRecord();
         allow update: if isOwner(userId) && validDrinkRecord();
+        allow delete: if isOwner(userId);
+      }
+
+      match /cravingEvents/{eventId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validCravingEvent();
         allow delete: if isOwner(userId);
       }
 

@@ -56,6 +56,14 @@ const TABLE_DDL = [
      data_json  CLOB,
      created_at TIMESTAMP DEFAULT SYSTIMESTAMP
    )`,
+  `CREATE TABLE craving_events (
+     event_id   VARCHAR2(128) PRIMARY KEY,
+     user_id    VARCHAR2(128) NOT NULL,
+     intensity  NUMBER(2),
+     outcome    VARCHAR2(32),
+     data_json  CLOB,
+     created_at TIMESTAMP DEFAULT SYSTIMESTAMP
+   )`,
   `CREATE TABLE sobriety_signals (
      signal_id  VARCHAR2(128) PRIMARY KEY,
      user_id    VARCHAR2(128) NOT NULL,

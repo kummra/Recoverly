@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 
 import { auth, firestore } from "@/lib/firebase";
-import { type DrinkRecordInput, type GoalInput } from "@/lib/schemas";
+import { type CravingEventInput, type DrinkRecordInput, type GoalInput } from "@/lib/schemas";
 
 /**
  * Mirror a write to Oracle Cloud (best-effort, fire-and-forget).
@@ -47,6 +47,15 @@ export type DrinkRecord = {
   /** Free-text name when type is "other". */
   otherType?: string;
   mood?: string;
+  createdAt: Date;
+};
+
+export type CravingEvent = {
+  id: string;
+  intensity: number;
+  outcome: string;
+  trigger?: string;
+  secondsElapsed?: number;
   createdAt: Date;
 };
 
@@ -186,6 +195,48 @@ export function subscribeDrinkRecords(userId: string, callback: (records: DrinkR
       } satisfies DrinkRecord;
     });
     callback(records);
+  });
+}
+
+// ─── Craving events ─────────────────────────────────────────────────────────
+
+export async function addCravingEvent(userId: string, event: CravingEventInput) {
+  const db = getClientDb();
+  const created = await addDoc(collection(db, "users", userId, "cravingEvents"), {
+    intensity: event.intensity,
+    outcome: event.outcome,
+    trigger: event.trigger ?? null,
+    secondsElapsed: event.secondsElapsed ?? null,
+    createdAt: serverTimestamp()
+  });
+
+  void syncToOracle({
+    type: "craving_event",
+    eventId: created.id,
+    data: {
+      intensity: event.intensity,
+      outcome: event.outcome,
+      trigger: event.trigger ?? null,
+      secondsElapsed: event.secondsElapsed ?? null,
+      createdAt: new Date().toISOString()
+    }
+  });
+}
+
+export async function getCravingEvents(userId: string): Promise<CravingEvent[]> {
+  const db = getClientDb();
+  const q = query(collection(db, "users", userId, "cravingEvents"), orderBy("createdAt", "asc"));
+  const snap = await getDocs(q);
+  return snap.docs.map((item) => {
+    const data = item.data();
+    return {
+      id: item.id,
+      intensity: Number(data.intensity ?? 0),
+      outcome: String(data.outcome ?? "unresolved"),
+      trigger: typeof data.trigger === "string" ? data.trigger : undefined,
+      secondsElapsed: typeof data.secondsElapsed === "number" ? data.secondsElapsed : undefined,
+      createdAt: toDate(data.createdAt)
+    };
   });
 }
 

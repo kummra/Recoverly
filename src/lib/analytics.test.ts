@@ -1,7 +1,7 @@
 import { addDays, startOfMonth, subMonths } from "date-fns";
 import { describe, expect, it } from "vitest";
 
-import { buildAnalytics, buildProgress, dayKey, shouldShowReminder, suggestInsight } from "@/lib/analytics";
+import { breathPhaseAt, buildAnalytics, buildProgress, dayKey, shouldShowReminder, suggestInsight } from "@/lib/analytics";
 import type { DrinkRecord } from "@/lib/firestore";
 
 function rec(quantity: number, createdAt: Date): DrinkRecord {
@@ -151,5 +151,45 @@ describe("shouldShowReminder", () => {
   it("ignores a malformed reminder time", () => {
     expect(shouldShowReminder({ reminderTime: "25:00", now: at(23, 0) })).toBe(false);
     expect(shouldShowReminder({ reminderTime: "8pm", now: at(23, 0) })).toBe(false);
+  });
+});
+
+describe("breathPhaseAt", () => {
+  it("starts on the in-breath", () => {
+    const p = breathPhaseAt(0);
+    expect(p.label).toBe("Breathe in");
+    expect(p.remaining).toBe(4);
+  });
+
+  it("moves through in -> hold -> out", () => {
+    expect(breathPhaseAt(2).label).toBe("Breathe in");
+    expect(breathPhaseAt(5).label).toBe("Hold");
+    expect(breathPhaseAt(9).label).toBe("Breathe out");
+  });
+
+  it("repeats every cycle", () => {
+    expect(breathPhaseAt(14).label).toBe(breathPhaseAt(0).label);
+    expect(breathPhaseAt(15).remaining).toBe(breathPhaseAt(1).remaining);
+  });
+
+  it("counts down within a step and never hits zero", () => {
+    for (let t = 0; t < 42; t++) {
+      const p = breathPhaseAt(t);
+      expect(p.remaining).toBeGreaterThan(0);
+      expect(p.remaining).toBeLessThanOrEqual(6);
+    }
+  });
+
+  it("keeps scale within the animation bounds, peaking on hold", () => {
+    for (let t = 0; t < 42; t++) {
+      const p = breathPhaseAt(t);
+      expect(p.scale).toBeGreaterThanOrEqual(0.75);
+      expect(p.scale).toBeLessThanOrEqual(1);
+    }
+    expect(breathPhaseAt(5).scale).toBe(1);
+  });
+
+  it("is defined for negative input rather than throwing", () => {
+    expect(breathPhaseAt(-1).label).toBeDefined();
   });
 });

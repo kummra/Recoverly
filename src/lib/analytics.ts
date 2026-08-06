@@ -143,6 +143,49 @@ export function buildProgress(records: DrinkRecord[], now: Date = new Date()): P
   };
 }
 
+// ─── Urge-surfing breath pacer ──────────────────────────────────────────────
+// 4-4-6 (in-hold-out). The longer exhale is the point: it's what actually
+// engages the parasympathetic response that settles the body down.
+export const BREATH_STEPS = [
+  { label: "Breathe in", seconds: 4 },
+  { label: "Hold", seconds: 4 },
+  { label: "Breathe out", seconds: 6 }
+] as const;
+
+export const BREATH_CYCLE_SECONDS = BREATH_STEPS.reduce((t, s) => t + s.seconds, 0);
+
+export type BreathPhase = {
+  label: (typeof BREATH_STEPS)[number]["label"];
+  /** Whole seconds left in this step, counting down to 1. */
+  remaining: number;
+  /** 0.75–1 — drives the circle's scale so it visibly follows the breath. */
+  scale: number;
+};
+
+/**
+ * Derive the current breath step purely from elapsed seconds, so the pacer has
+ * no timer state of its own to drift or get out of sync.
+ */
+export function breathPhaseAt(elapsedSeconds: number): BreathPhase {
+  const pos = ((elapsedSeconds % BREATH_CYCLE_SECONDS) + BREATH_CYCLE_SECONDS) % BREATH_CYCLE_SECONDS;
+  let start = 0;
+  for (const step of BREATH_STEPS) {
+    if (pos < start + step.seconds) {
+      const into = pos - start;
+      const scale =
+        step.label === "Breathe in"
+          ? 0.75 + 0.25 * ((into + 1) / step.seconds)
+          : step.label === "Hold"
+            ? 1
+            : 1 - 0.25 * ((into + 1) / step.seconds);
+      return { label: step.label, remaining: step.seconds - into, scale };
+    }
+    start += step.seconds;
+  }
+  // Unreachable: pos is always < cycle length.
+  return { label: BREATH_STEPS[0].label, remaining: BREATH_STEPS[0].seconds, scale: 0.75 };
+}
+
 // ─── Daily check-in reminder ────────────────────────────────────────────────
 
 /** Local-day key (YYYY-MM-DD) used to show the nudge at most once per day. */

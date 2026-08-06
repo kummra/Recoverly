@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Activity, Clock, Droplets, Flame, Heart, Sparkles, Target } from "lucide-react";
 import { format } from "date-fns";
 
+import { CravingSos } from "@/components/craving-sos";
 import { DailyNudge } from "@/components/daily-nudge";
 import { LogDrinkModal } from "@/components/log-drink-modal";
 import { Onboarding } from "@/components/onboarding";
@@ -215,7 +216,12 @@ function DashboardContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {user ? <LogDrinkModal userId={user.uid} onSaved={refresh} /> : null}
+          {user ? (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <LogDrinkModal userId={user.uid} onSaved={refresh} />
+              <CravingSos userId={user.uid} motivation={motivation || undefined} />
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 

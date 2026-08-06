@@ -26,6 +26,22 @@ export const drinkRecordSchema = z.object({
   createdAt: z.date().optional()
 });
 
+// ─── Craving events ─────────────────────────────────────────────────────────
+// Logged when someone opens the SOS flow. The outcome is recorded without
+// judgement: reaching for help is the win, whatever happened next.
+export const CRAVING_OUTCOMES = ["passed", "drank", "unresolved"] as const;
+export const CRAVING_INTENSITIES = [1, 2, 3, 4, 5] as const;
+
+export const cravingEventSchema = z.object({
+  intensity: z.number().int().min(1).max(5),
+  outcome: z.enum(CRAVING_OUTCOMES),
+  /** What set it off, in their own words. */
+  trigger: z.string().trim().max(120).optional(),
+  /** Seconds spent in the urge-surfing timer before they closed it. */
+  secondsElapsed: z.number().int().min(0).max(7200).optional(),
+  createdAt: z.date().optional()
+});
+
 export const aiMessageSchema = z.object({
   role: z.enum(MESSAGE_ROLES),
   content: z.string().trim().min(1).max(2000)
@@ -99,6 +115,7 @@ export const deviceRegisterSchema = z.object({
   kind: z.enum(["sobriety_guardian", "campus_detector", "breathalyser"]).default("sobriety_guardian")
 });
 
+export type CravingEventInput = z.infer<typeof cravingEventSchema>;
 export type GoalInput = z.infer<typeof goalSchema>;
 export type DrinkRecordInput = z.infer<typeof drinkRecordSchema>;
 export type AIRequestInput = z.infer<typeof aiRequestSchema>;
