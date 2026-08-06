@@ -3,10 +3,17 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { en } from "@/lib/i18n/en";
+import { gu } from "@/lib/i18n/gu";
 import { hi } from "@/lib/i18n/hi";
+import { kn } from "@/lib/i18n/kn";
+import { ml } from "@/lib/i18n/ml";
+import { mr } from "@/lib/i18n/mr";
+import { pa } from "@/lib/i18n/pa";
+import { ta } from "@/lib/i18n/ta";
+import { te } from "@/lib/i18n/te";
 import { DEFAULT_LOCALE, type Dictionary, type Locale, isLocale } from "@/lib/i18n/types";
 
-const DICTIONARIES: Record<Locale, Dictionary> = { en, hi };
+const DICTIONARIES: Record<Locale, Dictionary> = { en, hi, mr, pa, ta, te, kn, ml, gu };
 const STORAGE_KEY = "recoverly:locale";
 
 type I18nValue = {

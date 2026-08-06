@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import {
+  Inter,
+  Noto_Sans_Devanagari,
+  Noto_Sans_Gujarati,
+  Noto_Sans_Gurmukhi,
+  Noto_Sans_Kannada,
+  Noto_Sans_Malayalam,
+  Noto_Sans_Tamil,
+  Noto_Sans_Telugu
+} from "next/font/google";
 
 import { AuthProvider } from "@/components/auth-provider";
 import { I18nProvider } from "@/components/i18n-provider";
@@ -9,6 +18,29 @@ import { TopNav } from "@/components/top-nav";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+// Inter has no Indic glyphs. Without these the app would fall back to whatever
+// the device happens to have — inconsistent at best, tofu boxes at worst.
+// next/font requires literal options (it statically analyses these calls), so
+// each is spelled out rather than shared via a spread.
+const devanagari = Noto_Sans_Devanagari({ subsets: ["devanagari"], weight: ["400", "500", "700"], display: "swap", variable: "--font-devanagari" });
+const gurmukhi = Noto_Sans_Gurmukhi({ subsets: ["gurmukhi"], weight: ["400", "500", "700"], display: "swap", variable: "--font-gurmukhi" });
+const gujarati = Noto_Sans_Gujarati({ subsets: ["gujarati"], weight: ["400", "500", "700"], display: "swap", variable: "--font-gujarati" });
+const tamil = Noto_Sans_Tamil({ subsets: ["tamil"], weight: ["400", "500", "700"], display: "swap", variable: "--font-tamil" });
+const telugu = Noto_Sans_Telugu({ subsets: ["telugu"], weight: ["400", "500", "700"], display: "swap", variable: "--font-telugu" });
+const kannada = Noto_Sans_Kannada({ subsets: ["kannada"], weight: ["400", "500", "700"], display: "swap", variable: "--font-kannada" });
+const malayalam = Noto_Sans_Malayalam({ subsets: ["malayalam"], weight: ["400", "500", "700"], display: "swap", variable: "--font-malayalam" });
+
+const fontVars = [
+  inter.variable,
+  devanagari.variable,
+  gurmukhi.variable,
+  gujarati.variable,
+  tamil.variable,
+  telugu.variable,
+  kannada.variable,
+  malayalam.variable
+].join(" ");
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://recoverly-app.vercel.app"),
@@ -52,8 +84,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" className={fontVars} suppressHydrationWarning>
+      <body>
         <ThemeProvider>
         <I18nProvider>
         <ServiceWorkerRegistrar />

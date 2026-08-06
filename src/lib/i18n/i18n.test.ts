@@ -1,10 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import { en } from "@/lib/i18n/en";
+import { gu } from "@/lib/i18n/gu";
 import { hi } from "@/lib/i18n/hi";
+import { kn } from "@/lib/i18n/kn";
+import { ml } from "@/lib/i18n/ml";
+import { mr } from "@/lib/i18n/mr";
+import { pa } from "@/lib/i18n/pa";
+import { ta } from "@/lib/i18n/ta";
+import { te } from "@/lib/i18n/te";
 import { LOCALES, LOCALE_NAMES, isLocale } from "@/lib/i18n/types";
 
-const dictionaries: Record<string, Record<string, string>> = { en, hi };
+const dictionaries: Record<string, Record<string, string>> = { en, hi, mr, pa, ta, te, kn, ml, gu };
 
 describe("i18n dictionaries", () => {
   it("every locale has a display name", () => {
@@ -35,18 +42,26 @@ describe("i18n dictionaries", () => {
     }
   });
 
-  it("Hindi is actually translated, not copied English", () => {
-    // A handful of brand/technical strings legitimately stay similar; the bulk
-    // must differ, otherwise the translation was never really done.
-    const identical = Object.keys(en).filter((k) => en[k] === hi[k]);
-    expect(identical.length / Object.keys(en).length).toBeLessThan(0.1);
+  it.each(Object.keys(dictionaries).filter((l) => l !== "en"))(
+    "%s is actually translated, not copied English",
+    (locale) => {
+      // A few brand/technical strings legitimately stay similar; the bulk must
+      // differ, otherwise the translation was never really done.
+      const identical = Object.keys(en).filter((k) => en[k] === dictionaries[locale][k]);
+      expect(identical.length / Object.keys(en).length).toBeLessThan(0.1);
+    }
+  );
+
+  it("every declared locale has a dictionary", () => {
+    for (const l of LOCALES) expect(dictionaries[l], `no dictionary for ${l}`).toBeTruthy();
   });
 
   it("helpline-adjacent copy keeps Latin digits so numbers stay dialable", () => {
-    const devanagariDigits = /[०-९]/;
+    // Digits from every script we ship — a number you must dial has to stay Latin.
+      const nonLatinDigits = /[०-९૦-૯੦-੯௦-௯౦-౯೦-೯൦-൯]/;
     for (const [locale, dict] of Object.entries(dictionaries)) {
       for (const [key, value] of Object.entries(dict)) {
-        expect(devanagariDigits.test(value), `${locale}.${key} uses Devanagari digits`).toBe(false);
+        expect(nonLatinDigits.test(value), `${locale}.${key} uses non-Latin digits`).toBe(false);
       }
     }
   });

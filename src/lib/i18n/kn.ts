@@ -1,0 +1,101 @@
+import type { Dictionary } from "@/lib/i18n/types";
+
+/** Kannada (ಕನ್ನಡ). Respectful "ನೀವು" register. Helpline digits stay Latin. */
+export const kn: Dictionary = {
+  "nav.home": "ಮುಖಪುಟ",
+  "nav.dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+  "nav.records": "ದಾಖಲೆಗಳು",
+  "nav.assessment": "ಸ್ವಯಂ-ಪರಿಶೀಲನೆ",
+  "nav.ai": "ನಮ್ಮ AI",
+  "nav.settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+  "nav.support": "ಸಹಾಯ ಮತ್ತು ಸಹಾಯವಾಣಿ",
+  "nav.login": "ಲಾಗಿನ್",
+  "nav.logout": "ಲಾಗ್ ಔಟ್",
+  "nav.openMenu": "ಮೆನು ತೆರೆಯಿರಿ",
+  "nav.closeMenu": "ಮೆನು ಮುಚ್ಚಿ",
+  "nav.themeToLight": "ಲೈಟ್ ಥೀಮ್‌ಗೆ ಬದಲಿಸಿ",
+  "nav.themeToDark": "ಡಾರ್ಕ್ ಥೀಮ್‌ಗೆ ಬದಲಿಸಿ",
+
+  "footer.tagline": "Recoverly — ನಿಮ್ಮ ಸಹಾನುಭೂತಿಯ ಚೇತರಿಕೆ ಸಂಗಾತಿ.",
+  "footer.howItWorks": "ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ",
+  "footer.faq": "ಪದೇ ಪದೇ ಕೇಳುವ ಪ್ರಶ್ನೆಗಳು",
+  "footer.privacy": "ಗೌಪ್ಯತೆ",
+  "footer.terms": "ನಿಯಮಗಳು",
+  "footer.disclaimer": "ಇದು ವೃತ್ತಿಪರ ವೈದ್ಯಕೀಯ ಸಲಹೆಗೆ ಪರ್ಯಾಯವಲ್ಲ.",
+
+  "dashboard.title": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+  "dashboard.subtitle": "ನಿಲ್ಲಿ, ಉಸಿರಾಡಿ, ಯೋಚಿಸಿ ದಾಖಲಿಸಿ.",
+  "dashboard.quickCheckIn": "ತ್ವರಿತ ಚೆಕ್-ಇನ್",
+  "dashboard.quickCheckInBody":
+    "ಅರಿವು ನೀವು ಬಲಪಡಿಸುತ್ತಿರುವ ಕೌಶಲ್ಯ. ಪ್ರತಿ ದಾಖಲೆಯೂ ನಿಮ್ಮ ನಾಳೆಯನ್ನು ಸಬಲಗೊಳಿಸುವ ಮಾಹಿತಿ.",
+  "dashboard.logDrink": "ಮದ್ಯ ಸೇವಿಸಿದೆ.",
+  "dashboard.journeyStarts": "ನಿಮ್ಮ ಪ್ರಯಾಣ ಇಲ್ಲಿಂದ ಆರಂಭ",
+  "dashboard.journeyStartsBody":
+    "ಅರಿವಿನತ್ತ ಇಡುವ ಪ್ರತಿ ಹೆಜ್ಜೆಯೂ ಮುಖ್ಯ. ನಿಮ್ಮ ಮೊದಲ ಚೆಕ್-ಇನ್ ಇಂದೇ ನಿಮ್ಮ ಪ್ರಗತಿಯ ಆರಂಭ.",
+  "dashboard.choosingAwareness": "ಅರಿವನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದು",
+  "dashboard.daysAlcoholFree": "ದಿನಗಳು ಮದ್ಯರಹಿತ",
+  "dashboard.dayAlcoholFree": "ದಿನ ಮದ್ಯರಹಿತ",
+  "dashboard.identityLine": "ನೀವು ಅರಿವನ್ನು ಆಯ್ಕೆ ಮಾಡುತ್ತಿರುವ ವ್ಯಕ್ತಿ — ಒಂದೊಂದೇ ದಿನ.",
+  "dashboard.freshPage": "ಇಂದು ಹೊಸ ಪುಟ",
+  "dashboard.freshPageBody":
+    "ಅರಿವೇ ಗೆಲುವು, ಅದು ಮುಂದೆಯೂ ಜೊತೆಗಿರುತ್ತದೆ. ಇದುವರೆಗಿನ ನಿಮ್ಮ ಅತ್ಯುತ್ತಮ ಸರಣಿ",
+  "dashboard.longestStreak": "ಅತಿ ದೀರ್ಘ ಸರಣಿ",
+  "dashboard.alcoholFreeDays": "ಮದ್ಯರಹಿತ ದಿನಗಳು",
+  "dashboard.mindfulCheckIns": "ಜಾಗರೂಕ ಚೆಕ್-ಇನ್‌ಗಳು",
+  "dashboard.monthTotal": "{month} ಒಟ್ಟು",
+  "dashboard.weeklyVsGoal": "ವಾರದ ಪ್ರಮಾಣ vs ಗುರಿ",
+  "dashboard.noGoal": "ಗುರಿ ಇಲ್ಲ",
+  "dashboard.thisMonth": "ಈ ತಿಂಗಳು",
+  "dashboard.checkIns": "ಚೆಕ್-ಇನ್‌ಗಳು",
+  "dashboard.recentActivity": "ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ",
+  "dashboard.recentActivityBody": "ನಿಮ್ಮ ಕೊನೆಯ ಚೆಕ್-ಇನ್‌ಗಳು ಒಂದೇ ನೋಟದಲ್ಲಿ.",
+  "dashboard.noRecords": "ಇನ್ನೂ ದಾಖಲೆಗಳಿಲ್ಲ. ನಿಮ್ಮ ಮೊದಲ ದಾಖಲೆ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.",
+  "dashboard.loadFailed":
+    "ಸದ್ಯಕ್ಕೆ ನಿಮ್ಮ ಡೇಟಾ ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ — ನಿಮ್ಮ ದಾಖಲೆಗಳು ಸುರಕ್ಷಿತವಾಗಿವೆ. ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ.",
+
+  "sos.trigger": "ನನಗೆ ಈಗ ಕಷ್ಟವಾಗುತ್ತಿದೆ",
+  "sos.title": "ಇದನ್ನು ಒಟ್ಟಿಗೆ ದಾಟೋಣ",
+  "sos.intro":
+    "ಬಯಕೆ ಏರುತ್ತದೆ, ಉತ್ತುಂಗ ತಲುಪಿ ಇಳಿಯುತ್ತದೆ — ಸಾಮಾನ್ಯವಾಗಿ ಕೆಲವೇ ನಿಮಿಷಗಳಲ್ಲಿ. ನೀವು ಹೋರಾಡಬೇಕಿಲ್ಲ, ಅದು ಕಳೆಯುವವರೆಗೆ ನಿಂತರೆ ಸಾಕು.",
+  "sos.howStrong": "ಈಗ ಅದು ಎಷ್ಟು ತೀವ್ರವಾಗಿದೆ?",
+  "sos.scaleHint": "1 = ಸೌಮ್ಯ · 5 = ಅತಿ ತೀವ್ರ",
+  "sos.start": "ಪ್ರಾರಂಭಿಸಿ",
+  "sos.riding": "ಅಲೆಯೊಂದಿಗೆ",
+  "sos.breatheIn": "ಉಸಿರು ಒಳಗೆಳೆಯಿರಿ",
+  "sos.hold": "ಹಿಡಿದಿಡಿ",
+  "sos.breatheOut": "ಉಸಿರು ಬಿಡಿ",
+  "sos.easeHint": "ಹೆಚ್ಚಿನ ಬಯಕೆಗಳು ಸುಮಾರು ಐದು ನಿಮಿಷಗಳಲ್ಲಿ ಕಡಿಮೆಯಾಗುತ್ತವೆ",
+  "sos.talkItThrough": "ಮಾತನಾಡಿ",
+  "sos.getHelpNow": "ಈಗಲೇ ಸಹಾಯ ಪಡೆಯಿರಿ",
+  "sos.done": "ಮುಗಿಯಿತು",
+  "sos.outcomeTitle": "ಹೇಗಾಯಿತು?",
+  "sos.outcomeBody": "ಇಲ್ಲಿ ತಪ್ಪು ಉತ್ತರವೆಂಬುದಿಲ್ಲ. ಸಹಾಯಕ್ಕಾಗಿ ಕೈಚಾಚಿದ್ದೇ ಮುಖ್ಯ.",
+  "sos.outcomePassed": "ಅದು ಕಳೆದುಹೋಯಿತು — ನಾನು ಕುಡಿಯಲಿಲ್ಲ",
+  "sos.outcomeDrank": "ನಾನು ಕುಡಿದೆ",
+  "sos.outcomeUnresolved": "ಇನ್ನೂ ಇದೆ",
+  "sos.doneTitle": "ಇದಕ್ಕೆ ಧೈರ್ಯ ಬೇಕು",
+  "sos.doneBody":
+    "ಒಬ್ಬಂಟಿಯಾಗಿ ಹೋರಾಡುವ ಬದಲು ನೀವು ಆಸರೆ ಪಡೆದಿರಿ — ಅದೇ ಮುಂದೆ ಸಹಾಯಕ್ಕೆ ಬರುವ ಕೌಶಲ್ಯ. ಪ್ರತಿ ಬಾರಿ ದಾಟಿದಾಗಲೂ, ಮುಂದಿನ ಬಾರಿ ಸ್ವಲ್ಪ ಸುಲಭವಾಗುತ್ತದೆ.",
+  "sos.close": "ಮುಚ್ಚಿ",
+
+  "safety.notMedicalTitle": "ಆಸರೆ, ವೈದ್ಯಕೀಯ ಸಲಹೆಯಲ್ಲ",
+  "safety.notMedicalBody":
+    "Recoverly ನಿಮ್ಮ ಅಭ್ಯಾಸಗಳ ಬಗ್ಗೆ ಯೋಚಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ — ಇದು ವೈದ್ಯಕೀಯ ಚಿಕಿತ್ಸೆಯಲ್ಲ. ನೀವು ಹೆಚ್ಚು ಮದ್ಯ ಸೇವಿಸಿದರೆ, ಹಠಾತ್ತನೆ ನಿಲ್ಲಿಸುವುದು ಅಪಾಯಕಾರಿಯಾಗಬಹುದು (ವಿತ್‌ಡ್ರಾಯಲ್‌ನಿಂದ ಸೆಳವು ಬರಬಹುದು). ಮದ್ಯದ ಪ್ರಮಾಣದಲ್ಲಿ ದೊಡ್ಡ ಬದಲಾವಣೆ ಮಾಡುವ ಮೊದಲು ದಯವಿಟ್ಟು ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+  "safety.crisisTitle": "ಸಂಕಷ್ಟದಲ್ಲಿದ್ದೀರಾ ಅಥವಾ ಸ್ವತಃ ಹಾನಿ ಮಾಡಿಕೊಳ್ಳುವ ಯೋಚನೆಯೇ? ಸಹಾಯ ಈಗಲೇ ಲಭ್ಯ",
+  "safety.crisisIndia": "ಭಾರತ",
+  "safety.outsideIndia": "ಭಾರತದ ಹೊರಗೆ",
+  "safety.findHelpline": "ನಿಮ್ಮ ಪ್ರದೇಶದ ಸಹಾಯವಾಣಿ ಹುಡುಕಿ",
+  "safety.emergency": "ತುರ್ತು ಸೇವೆಗಳು",
+  "safety.withdrawalTitle": "ಮದ್ಯ ಬಿಡುವ ಮೊದಲು — ದಯವಿಟ್ಟು ಓದಿ",
+  "safety.withdrawalBody":
+    "ನೀವು ಹೆಚ್ಚು ಅಥವಾ ಪ್ರತಿದಿನ ಮದ್ಯ ಸೇವಿಸಿದರೆ, ಹಠಾತ್ತನೆ ನಿಲ್ಲಿಸುವುದು ವೈದ್ಯಕೀಯವಾಗಿ ಅಪಾಯಕಾರಿಯಾಗಬಹುದು — ಹಠಾತ್ ವಿತ್‌ಡ್ರಾಯಲ್‌ನಿಂದ ಸೆಳವು ಅಥವಾ ಡೆಲಿರಿಯಂ ಟ್ರೆಮೆನ್ಸ್ ಉಂಟಾಗಬಹುದು, ಇವು ಜೀವಕ್ಕೆ ಅಪಾಯಕಾರಿ. ನಿಲ್ಲಿಸುವ ಮೊದಲು ದಯವಿಟ್ಟು ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ, ವೈದ್ಯಕೀಯ ಮೇಲ್ವಿಚಾರಣೆಯಲ್ಲಿ ಮಾತ್ರ ಪ್ರಮಾಣ ಕಡಿಮೆ ಮಾಡಿ ಅಥವಾ ನಿಲ್ಲಿಸಿ.",
+
+  "common.save": "ಉಳಿಸಿ",
+  "common.saving": "ಉಳಿಸಲಾಗುತ್ತಿದೆ…",
+  "common.cancel": "ರದ್ದುಮಾಡಿ",
+  "common.close": "ಮುಚ್ಚಿ",
+  "common.loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
+  "common.tryAgain": "ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  "common.optional": "(ಐಚ್ಛಿಕ)",
+  "common.language": "ಭಾಷೆ"
+};

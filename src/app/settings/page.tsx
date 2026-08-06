@@ -5,6 +5,7 @@ import { Check, AlertCircle, User, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 import { DataManagement } from "@/components/data-management";
+import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { DeleteAccount } from "@/components/delete-account";
 import { PasswordChange } from "@/components/password-change";
@@ -167,6 +168,8 @@ function SettingsContent() {
         </Card>
 
         <div className="space-y-6">
+          <LanguageSettings />
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">

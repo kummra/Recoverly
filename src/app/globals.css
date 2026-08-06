@@ -73,6 +73,19 @@ html {
 
 body {
   @apply min-h-screen bg-background text-foreground antialiased;
+  /* Per-glyph fallback: Latin resolves to Inter, Indic glyphs fall through to
+     the matching Noto face. Ordering matters more than it looks. */
+  font-family:
+    var(--font-inter),
+    var(--font-devanagari),
+    var(--font-gurmukhi),
+    var(--font-gujarati),
+    var(--font-tamil),
+    var(--font-telugu),
+    var(--font-kannada),
+    var(--font-malayalam),
+    system-ui,
+    sans-serif;
 }
 
 /* Ambient glows read as depth on dark, but muddy the light theme — dark only. */

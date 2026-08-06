@@ -8,7 +8,6 @@ import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { useT } from "@/components/i18n-provider";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +58,6 @@ export function TopNav() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
           <ThemeToggle />
           {user ? (
             <>

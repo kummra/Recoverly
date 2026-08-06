@@ -1,0 +1,101 @@
+import type { Dictionary } from "@/lib/i18n/types";
+
+/** Gujarati (ગુજરાતી). Respectful "તમે" register. Helpline digits stay Latin. */
+export const gu: Dictionary = {
+  "nav.home": "હોમ",
+  "nav.dashboard": "ડેશબોર્ડ",
+  "nav.records": "રેકોર્ડ",
+  "nav.assessment": "સ્વ-તપાસ",
+  "nav.ai": "અમારું AI",
+  "nav.settings": "સેટિંગ્સ",
+  "nav.support": "સહાય અને હેલ્પલાઇન",
+  "nav.login": "લોગ ઇન",
+  "nav.logout": "લોગ આઉટ",
+  "nav.openMenu": "મેનૂ ખોલો",
+  "nav.closeMenu": "મેનૂ બંધ કરો",
+  "nav.themeToLight": "લાઇટ થીમ પર જાઓ",
+  "nav.themeToDark": "ડાર્ક થીમ પર જાઓ",
+
+  "footer.tagline": "Recoverly — તમારો સહાનુભૂતિપૂર્ણ રિકવરી સાથી.",
+  "footer.howItWorks": "આ કેવી રીતે કામ કરે છે",
+  "footer.faq": "સામાન્ય પ્રશ્નો",
+  "footer.privacy": "ગોપનીયતા",
+  "footer.terms": "શરતો",
+  "footer.disclaimer": "આ વ્યાવસાયિક તબીબી સલાહનો વિકલ્પ નથી.",
+
+  "dashboard.title": "ડેશબોર્ડ",
+  "dashboard.subtitle": "થોભો, શ્વાસ લો અને સભાનતાથી નોંધો.",
+  "dashboard.quickCheckIn": "ઝડપી ચેક-ઇન",
+  "dashboard.quickCheckInBody":
+    "જાગૃતિ એ કૌશલ્ય છે જેને તમે મજબૂત કરી રહ્યા છો. દરેક નોંધ એ માહિતી છે જે તમારી આવતીકાલને સશક્ત બનાવે છે.",
+  "dashboard.logDrink": "દારૂનું સેવન કર્યું.",
+  "dashboard.journeyStarts": "તમારી સફર અહીંથી શરૂ થાય છે",
+  "dashboard.journeyStartsBody":
+    "જાગૃતિ તરફનું દરેક પગલું મહત્વનું છે. તમારું પહેલું ચેક-ઇન જ તમારી પ્રગતિની શરૂઆત છે.",
+  "dashboard.choosingAwareness": "જાગૃતિની પસંદગી",
+  "dashboard.daysAlcoholFree": "દિવસ દારૂ-મુક્ત",
+  "dashboard.dayAlcoholFree": "દિવસ દારૂ-મુક્ત",
+  "dashboard.identityLine": "તમે એવા વ્યક્તિ છો જે જાગૃતિ પસંદ કરી રહ્યા છે — એક સમયે એક દિવસ.",
+  "dashboard.freshPage": "આજે એક નવું પાનું",
+  "dashboard.freshPageBody":
+    "જાગૃતિ એ જ જીત છે, અને તે આગળ સાથે ચાલે છે. અત્યાર સુધીની તમારી શ્રેષ્ઠ શ્રેણી છે",
+  "dashboard.longestStreak": "સૌથી લાંબી શ્રેણી",
+  "dashboard.alcoholFreeDays": "દારૂ-મુક્ત દિવસ",
+  "dashboard.mindfulCheckIns": "સભાન ચેક-ઇન",
+  "dashboard.monthTotal": "{month} કુલ",
+  "dashboard.weeklyVsGoal": "સાપ્તાહિક વિરુદ્ધ લક્ષ્ય",
+  "dashboard.noGoal": "કોઈ લક્ષ્ય નથી",
+  "dashboard.thisMonth": "આ મહિને",
+  "dashboard.checkIns": "ચેક-ઇન",
+  "dashboard.recentActivity": "તાજેતરની પ્રવૃત્તિ",
+  "dashboard.recentActivityBody": "તમારા છેલ્લા ચેક-ઇન એક નજરમાં.",
+  "dashboard.noRecords": "હજી કોઈ રેકોર્ડ નથી. તમારી પહેલી નોંધ અહીં દેખાશે.",
+  "dashboard.loadFailed":
+    "અમે અત્યારે તમારો ડેટા લોડ કરી શક્યા નથી — તમારા રેકોર્ડ સુરક્ષિત છે. કૃપા કરીને કનેક્શન તપાસો અને પેજ રિફ્રેશ કરો.",
+
+  "sos.trigger": "મને અત્યારે મુશ્કેલી થઈ રહી છે",
+  "sos.title": "ચાલો, આને સાથે મળીને પાર કરીએ",
+  "sos.intro":
+    "તલપ વધે છે, ટોચ પર પહોંચે છે અને પસાર થઈ જાય છે — સામાન્ય રીતે થોડી જ મિનિટોમાં. તમારે લડવાનું નથી, બસ તે પસાર થાય ત્યાં સુધી ટકી રહેવાનું છે.",
+  "sos.howStrong": "અત્યારે તે કેટલી તીવ્ર છે?",
+  "sos.scaleHint": "1 = હળવી · 5 = ખૂબ તીવ્ર",
+  "sos.start": "શરૂ કરો",
+  "sos.riding": "લહેર સાથે",
+  "sos.breatheIn": "શ્વાસ લો",
+  "sos.hold": "રોકો",
+  "sos.breatheOut": "શ્વાસ છોડો",
+  "sos.easeHint": "મોટાભાગની તલપ લગભગ પાંચ મિનિટમાં ઓછી થઈ જાય છે",
+  "sos.talkItThrough": "વાત કરો",
+  "sos.getHelpNow": "અત્યારે મદદ મેળવો",
+  "sos.done": "થઈ ગયું",
+  "sos.outcomeTitle": "કેવું રહ્યું?",
+  "sos.outcomeBody": "અહીં કોઈ જવાબ ખોટો નથી. મદદ માટે હાથ લંબાવવો એ જ સૌથી મોટી વાત છે.",
+  "sos.outcomePassed": "તે પસાર થઈ ગઈ — મેં પીધું નથી",
+  "sos.outcomeDrank": "મેં પીધું",
+  "sos.outcomeUnresolved": "હજી પણ અનુભવાય છે",
+  "sos.doneTitle": "આમાં હિંમત જોઈએ",
+  "sos.doneBody":
+    "એકલા ઝઝૂમવાને બદલે તમે સહારો લીધો — એ જ કૌશલ્ય આગળ કામ આવે છે. દર વખતે તમે તેને પાર કરો છો, પછીની વખત થોડી સરળ બને છે.",
+  "sos.close": "બંધ કરો",
+
+  "safety.notMedicalTitle": "સહારો, તબીબી સલાહ નહીં",
+  "safety.notMedicalBody":
+    "Recoverly તમને તમારી આદતો પર વિચાર કરવામાં મદદ કરે છે — આ તબીબી સારવાર નથી. જો તમે વધુ પડતો દારૂ પીતા હો, તો અચાનક બંધ કરવું જોખમી બની શકે છે (વિથડ્રોઅલથી આંચકી આવી શકે છે). તમે કેટલું પીઓ છો તેમાં મોટો ફેરફાર કરતાં પહેલાં કૃપા કરીને ડૉક્ટરની સલાહ લો.",
+  "safety.crisisTitle": "સંકટમાં છો કે સ્વયંને નુકસાન પહોંચાડવાનો વિચાર આવે છે? મદદ અત્યારે ઉપલબ્ધ છે",
+  "safety.crisisIndia": "ભારત",
+  "safety.outsideIndia": "ભારત બહાર",
+  "safety.findHelpline": "તમારા વિસ્તારની હેલ્પલાઇન શોધો",
+  "safety.emergency": "કટોકટી સેવાઓ",
+  "safety.withdrawalTitle": "દારૂ છોડતાં પહેલાં — કૃપા કરીને વાંચો",
+  "safety.withdrawalBody":
+    "જો તમે વધુ પડતો કે રોજ દારૂ પીતા હો, તો અચાનક બંધ કરવું તબીબી રીતે જોખમી બની શકે છે — અચાનક વિથડ્રોઅલથી આંચકી કે ડેલિરિયમ ટ્રેમેન્સ થઈ શકે છે, જે જીવલેણ બની શકે છે. છોડતાં પહેલાં કૃપા કરીને ડૉક્ટરની સલાહ લો, અને માત્ર તબીબી દેખરેખ હેઠળ જ પ્રમાણ ઘટાડો કે બંધ કરો.",
+
+  "common.save": "સાચવો",
+  "common.saving": "સાચવાઈ રહ્યું છે…",
+  "common.cancel": "રદ કરો",
+  "common.close": "બંધ કરો",
+  "common.loading": "લોડ થઈ રહ્યું છે…",
+  "common.tryAgain": "કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "common.optional": "(વૈકલ્પિક)",
+  "common.language": "ભાષા"
+};

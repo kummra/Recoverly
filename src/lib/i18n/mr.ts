@@ -1,0 +1,101 @@
+import type { Dictionary } from "@/lib/i18n/types";
+
+/** Marathi (मराठी). Respectful "तुम्ही" register. Helpline digits stay Latin. */
+export const mr: Dictionary = {
+  "nav.home": "होम",
+  "nav.dashboard": "डॅशबोर्ड",
+  "nav.records": "नोंदी",
+  "nav.assessment": "स्व-तपासणी",
+  "nav.ai": "आमचा AI",
+  "nav.settings": "सेटिंग्ज",
+  "nav.support": "मदत आणि हेल्पलाइन",
+  "nav.login": "लॉग इन",
+  "nav.logout": "लॉग आउट",
+  "nav.openMenu": "मेनू उघडा",
+  "nav.closeMenu": "मेनू बंद करा",
+  "nav.themeToLight": "लाइट थीमवर जा",
+  "nav.themeToDark": "डार्क थीमवर जा",
+
+  "footer.tagline": "Recoverly — तुमचा सहानुभूतीपूर्ण रिकव्हरी सोबती.",
+  "footer.howItWorks": "हे कसे काम करते",
+  "footer.faq": "नेहमीचे प्रश्न",
+  "footer.privacy": "गोपनीयता",
+  "footer.terms": "अटी",
+  "footer.disclaimer": "हा व्यावसायिक वैद्यकीय सल्ल्याचा पर्याय नाही.",
+
+  "dashboard.title": "डॅशबोर्ड",
+  "dashboard.subtitle": "थांबा, श्वास घ्या आणि जाणीवपूर्वक नोंद करा.",
+  "dashboard.quickCheckIn": "झटपट चेक-इन",
+  "dashboard.quickCheckInBody":
+    "जाणीव हे असे कौशल्य आहे जे तुम्ही बळकट करत आहात. प्रत्येक नोंद ही माहिती आहे जी तुमच्या उद्याला सक्षम करते.",
+  "dashboard.logDrink": "मद्यपान केले.",
+  "dashboard.journeyStarts": "तुमचा प्रवास इथून सुरू होतो",
+  "dashboard.journeyStartsBody":
+    "जाणिवेकडे टाकलेले प्रत्येक पाऊल महत्त्वाचे आहे. तुमचे पहिले चेक-इन हीच तुमच्या प्रगतीची सुरुवात.",
+  "dashboard.choosingAwareness": "जाणिवेची निवड",
+  "dashboard.daysAlcoholFree": "दिवस मद्यमुक्त",
+  "dashboard.dayAlcoholFree": "दिवस मद्यमुक्त",
+  "dashboard.identityLine": "तुम्ही असे व्यक्ती आहात जे जाणीव निवडत आहात — एका वेळी एक दिवस.",
+  "dashboard.freshPage": "आज एक नवे पान",
+  "dashboard.freshPageBody":
+    "जाणीव हाच विजय आहे, आणि तो पुढे सोबत राहतो. आतापर्यंतची तुमची सर्वोत्तम मालिका आहे",
+  "dashboard.longestStreak": "सर्वात मोठी मालिका",
+  "dashboard.alcoholFreeDays": "मद्यमुक्त दिवस",
+  "dashboard.mindfulCheckIns": "सजग चेक-इन",
+  "dashboard.monthTotal": "{month} एकूण",
+  "dashboard.weeklyVsGoal": "साप्ताहिक विरुद्ध ध्येय",
+  "dashboard.noGoal": "ध्येय नाही",
+  "dashboard.thisMonth": "या महिन्यात",
+  "dashboard.checkIns": "चेक-इन",
+  "dashboard.recentActivity": "अलीकडील घडामोडी",
+  "dashboard.recentActivityBody": "तुमची शेवटची चेक-इन एका दृष्टिक्षेपात.",
+  "dashboard.noRecords": "अजून नोंदी नाहीत. तुमची पहिली नोंद इथे दिसेल.",
+  "dashboard.loadFailed":
+    "आम्ही आत्ता तुमचा डेटा लोड करू शकलो नाही — तुमच्या नोंदी सुरक्षित आहेत. कृपया कनेक्शन तपासा आणि पेज रिफ्रेश करा.",
+
+  "sos.trigger": "मला आत्ता त्रास होत आहे",
+  "sos.title": "चला, हे एकत्र पार करूया",
+  "sos.intro":
+    "तल्लफ वाढते, शिखरावर जाते आणि निघून जाते — सहसा काही मिनिटांतच. तुम्हाला लढायचे नाही, फक्त ती सरेपर्यंत थांबायचे आहे.",
+  "sos.howStrong": "आत्ता ती किती तीव्र आहे?",
+  "sos.scaleHint": "1 = सौम्य · 5 = अत्यंत तीव्र",
+  "sos.start": "सुरू करा",
+  "sos.riding": "लाटेसोबत",
+  "sos.breatheIn": "श्वास घ्या",
+  "sos.hold": "थांबा",
+  "sos.breatheOut": "श्वास सोडा",
+  "sos.easeHint": "बहुतेक तल्लफ सुमारे पाच मिनिटांत कमी होते",
+  "sos.talkItThrough": "बोलून पहा",
+  "sos.getHelpNow": "आत्ता मदत घ्या",
+  "sos.done": "झाले",
+  "sos.outcomeTitle": "कसे वाटले?",
+  "sos.outcomeBody": "इथे कोणतेही उत्तर चुकीचे नाही. मदतीसाठी हात पुढे करणे हेच महत्त्वाचे.",
+  "sos.outcomePassed": "ती निघून गेली — मी प्यायलो नाही",
+  "sos.outcomeDrank": "मी प्यायलो",
+  "sos.outcomeUnresolved": "अजूनही जाणवते आहे",
+  "sos.doneTitle": "यासाठी धैर्य लागते",
+  "sos.doneBody":
+    "एकट्याने झगडण्याऐवजी तुम्ही आधार घेतला — हेच ते कौशल्य आहे जे पुढे उपयोगी पडते. प्रत्येक वेळी तुम्ही ती पार करता, पुढची वेळ थोडी सोपी होते.",
+  "sos.close": "बंद करा",
+
+  "safety.notMedicalTitle": "आधार, वैद्यकीय सल्ला नाही",
+  "safety.notMedicalBody":
+    "Recoverly तुम्हाला तुमच्या सवयींवर विचार करण्यास मदत करते — हे वैद्यकीय उपचार नाहीत. तुम्ही जास्त मद्यपान करत असाल, तर अचानक थांबणे धोकादायक ठरू शकते (विथड्रॉलमुळे फेफरे येऊ शकतात). मद्यपानात मोठा बदल करण्यापूर्वी कृपया डॉक्टरांशी बोला.",
+  "safety.crisisTitle": "संकटात आहात किंवा स्वतःला इजा करण्याचा विचार येत आहे? मदत आत्ता उपलब्ध आहे",
+  "safety.crisisIndia": "भारत",
+  "safety.outsideIndia": "भारताबाहेर",
+  "safety.findHelpline": "तुमच्या भागातील हेल्पलाइन शोधा",
+  "safety.emergency": "आपत्कालीन सेवा",
+  "safety.withdrawalTitle": "मद्यपान थांबवण्यापूर्वी — कृपया वाचा",
+  "safety.withdrawalBody":
+    "तुम्ही जास्त किंवा दररोज मद्यपान करत असाल, तर अचानक थांबणे वैद्यकीयदृष्ट्या धोकादायक ठरू शकते — अचानक विथड्रॉलमुळे फेफरे किंवा डेलिरियम ट्रेमेन्स होऊ शकतात, जे जीवघेणे ठरू शकतात. थांबण्यापूर्वी कृपया डॉक्टरांशी बोला, आणि केवळ वैद्यकीय देखरेखीखालीच प्रमाण कमी करा किंवा थांबवा.",
+
+  "common.save": "जतन करा",
+  "common.saving": "जतन होत आहे…",
+  "common.cancel": "रद्द करा",
+  "common.close": "बंद करा",
+  "common.loading": "लोड होत आहे…",
+  "common.tryAgain": "कृपया पुन्हा प्रयत्न करा.",
+  "common.optional": "(पर्यायी)",
+  "common.language": "भाषा"
+};
