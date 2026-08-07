@@ -141,6 +141,47 @@ export const en: Dictionary = {
   "home.quote6": "What you track, you transform.",
   "home.quote7": "Your commitment is visible in every log you make.",
 
+  // Settings
+  "settings.title": "Settings",
+  "settings.subtitle": "Customize your recovery experience.",
+  "settings.profileTitle": "Profile & Preferences",
+  "settings.profileDesc": "Keep your goals realistic and consistent.",
+  "settings.account": "Account",
+  "settings.unknown": "Unknown",
+  "settings.timezone": "Timezone",
+  "settings.yourWhy": "Your why",
+  "settings.yourWhyPlaceholder": "My family, my health, the person I want to be…",
+  "settings.yourWhyHint": "Your anchor on hard days — shown on your dashboard.",
+  "settings.displayName": "Display name",
+  "settings.displayNamePlaceholder": "What should we call you?",
+  "settings.weeklyGoal": "Weekly goal (ml)",
+  "settings.weeklyGoalHint": "Set a weekly consumption limit to track against. 0 means no limit.",
+  "settings.reminderTime": "Preferred reminder time",
+  "settings.reminderHint":
+    "After this time, a gentle check-in prompt appears on your dashboard, once a day.",
+  "settings.loadFailed":
+    "Could not load your current preferences. Refresh before saving, so you don't overwrite them.",
+  "settings.saved": "Preferences saved successfully.",
+  "settings.saveFailed": "Could not save preferences. Try again.",
+  "settings.appSafety": "App & Safety",
+  "settings.appSafetyDesc": "Use this app as support, not as medical replacement.",
+  "settings.importantNotice": "Important notice",
+  "settings.importantNoticeBody":
+    "This app is not a substitute for professional medical advice. If you feel in danger or at risk of self-harm, please seek immediate help from a trusted professional or emergency service.",
+  "settings.privacyPolicy": "Privacy Policy",
+  "settings.termsOfUse": "Terms of Use",
+  "settings.languageDesc": "Choose the language for the app. Your choice is remembered on this device.",
+
+  // Reminder notifications
+  "notify.on": "Reminders are on.",
+  "notify.onWithTime": "You'll get a notification at your chosen time.",
+  "notify.onNoTime": "Set a time above to start getting them.",
+  "notify.blocked":
+    "Notifications are blocked for this site. You can re-enable them in your browser's site settings — the in-app reminder still works either way.",
+  "notify.enable": "Enable reminder notifications",
+  "notify.enableHint":
+    "Sends one gentle notification a day at your chosen time. Works best with Recoverly installed to your home screen; a fully closed browser may not deliver it.",
+
   // Login
   // {awareness} is rendered as a gradient span.
   "login.heroTitle": "Every step toward {awareness} is a step worth taking.",

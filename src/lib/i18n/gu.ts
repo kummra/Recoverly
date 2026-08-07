@@ -127,6 +127,45 @@ export const gu: Dictionary = {
   "home.quote6": "જેની તમે નોંધ રાખો છો, તેને તમે બદલો છો.",
   "home.quote7": "તમારી પ્રતિબદ્ધતા તમે કરેલી દરેક નોંધમાં દેખાય છે.",
 
+  "settings.title": "સેટિંગ્સ",
+  "settings.subtitle": "તમારો રિકવરી અનુભવ તમારી રીતે ગોઠવો.",
+  "settings.profileTitle": "પ્રોફાઇલ અને પસંદગીઓ",
+  "settings.profileDesc": "તમારા લક્ષ્યો વાસ્તવિક અને સાતત્યપૂર્ણ રાખો.",
+  "settings.account": "ખાતું",
+  "settings.unknown": "અજ્ઞાત",
+  "settings.timezone": "સમય ઝોન",
+  "settings.yourWhy": "તમારું કારણ",
+  "settings.yourWhyPlaceholder": "મારો પરિવાર, મારું આરોગ્ય, જે વ્યક્તિ હું બનવા માંગું છું…",
+  "settings.yourWhyHint": "કઠિન દિવસોમાં તમારો આધાર — તમારા ડેશબોર્ડ પર દેખાશે.",
+  "settings.displayName": "પ્રદર્શિત નામ",
+  "settings.displayNamePlaceholder": "અમે તમને શું કહીને બોલાવીએ?",
+  "settings.weeklyGoal": "સાપ્તાહિક લક્ષ્ય (ml)",
+  "settings.weeklyGoalHint": "ટ્રેક કરવા સાપ્તાહિક મર્યાદા નક્કી કરો. 0 એટલે કોઈ મર્યાદા નહીં.",
+  "settings.reminderTime": "પસંદગીનો રિમાઇન્ડર સમય",
+  "settings.reminderHint":
+    "આ સમય પછી, દિવસમાં એક વાર તમારા ડેશબોર્ડ પર એક હળવી ચેક-ઇન સૂચના દેખાશે.",
+  "settings.loadFailed":
+    "તમારી હાલની પસંદગીઓ લોડ થઈ શકી નહીં. સાચવતાં પહેલાં પેજ રિફ્રેશ કરો, જેથી તે ભૂંસાઈ ન જાય.",
+  "settings.saved": "પસંદગીઓ સફળતાપૂર્વક સાચવાઈ.",
+  "settings.saveFailed": "પસંદગીઓ સાચવી શકાઈ નહીં. ફરી પ્રયાસ કરો.",
+  "settings.appSafety": "એપ અને સલામતી",
+  "settings.appSafetyDesc": "આ એપનો ઉપયોગ ટેકા તરીકે કરો, તબીબી વિકલ્પ તરીકે નહીં.",
+  "settings.importantNotice": "મહત્વની સૂચના",
+  "settings.importantNoticeBody":
+    "આ એપ વ્યાવસાયિક તબીબી સલાહનો વિકલ્પ નથી. જો તમને જોખમ લાગે અથવા સ્વ-નુકસાનનું જોખમ લાગે, તો કૃપા કરીને વિશ્વાસુ વ્યાવસાયિક અથવા કટોકટી સેવા પાસેથી તાત્કાલિક મદદ લો.",
+  "settings.privacyPolicy": "ગોપનીયતા નીતિ",
+  "settings.termsOfUse": "ઉપયોગની શરતો",
+  "settings.languageDesc": "એપની ભાષા પસંદ કરો. તમારી પસંદગી આ ડિવાઇસ પર યાદ રખાય છે.",
+
+  "notify.on": "રિમાઇન્ડર ચાલુ છે.",
+  "notify.onWithTime": "તમે પસંદ કરેલા સમયે તમને સૂચના મળશે.",
+  "notify.onNoTime": "આ મેળવવા ઉપર એક સમય નક્કી કરો.",
+  "notify.blocked":
+    "આ સાઇટ માટે સૂચનાઓ બ્લોક છે. તમે તેને બ્રાઉઝરની સાઇટ સેટિંગ્સમાં ફરી ચાલુ કરી શકો છો — એપની અંદરનું રિમાઇન્ડર તો પણ કામ કરતું રહેશે.",
+  "notify.enable": "રિમાઇન્ડર સૂચનાઓ ચાલુ કરો",
+  "notify.enableHint":
+    "તમે પસંદ કરેલા સમયે દિવસમાં એક હળવી સૂચના મોકલે છે. Recoverly ને હોમ સ્ક્રીન પર ઇન્સ્ટોલ કરવાથી શ્રેષ્ઠ કામ કરે છે; સંપૂર્ણ બંધ બ્રાઉઝરમાં તે ન આવે.",
+
   "login.heroTitle": "{awareness} તરફ ભરેલું દરેક પગલું મૂલ્યવાન છે.",
   "login.heroAwareness": "જાગૃતિ",
   "login.heroBody":
