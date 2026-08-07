@@ -5,6 +5,7 @@ import { AlertCircle, Check, Database, Download, FileText, Trash2 } from "lucide
 
 import Link from "next/link";
 
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,6 +24,7 @@ function csvCell(value: string): string {
  * of data, without destroying their whole history.
  */
 export function DataManagement() {
+  const t = useT();
   const { user } = useAuth();
   const [busy, setBusy] = useState<null | "export" | "chats">(null);
   const [confirmChats, setConfirmChats] = useState(false);
@@ -57,7 +59,7 @@ export function DataManagement() {
       URL.revokeObjectURL(url);
       setStatus({ type: "success", text: `Exported ${records.length} record${records.length === 1 ? "" : "s"}.` });
     } catch {
-      setStatus({ type: "error", text: "Export failed. Please try again." });
+      setStatus({ type: "error", text: `Export failed. ${t("common.tryAgain")}` });
     } finally {
       setBusy(null);
     }
@@ -72,7 +74,7 @@ export function DataManagement() {
       setConfirmChats(false);
       setStatus({ type: "success", text: `Deleted ${n} conversation${n === 1 ? "" : "s"}.` });
     } catch {
-      setStatus({ type: "error", text: "Could not delete. Please try again." });
+      setStatus({ type: "error", text: `Could not delete. ${t("common.tryAgain")}` });
     } finally {
       setBusy(null);
     }
@@ -123,7 +125,7 @@ export function DataManagement() {
                 {busy === "chats" ? "Deleting…" : "Yes, delete"}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmChats(false)} disabled={busy !== null}>
-                Cancel
+                {t("common.cancel")}
               </Button>
             </div>
           </div>

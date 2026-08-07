@@ -1,3 +1,6 @@
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { en } from "@/lib/i18n/en";
@@ -72,6 +75,45 @@ describe("i18n dictionaries", () => {
         expect(dict[key]?.length ?? 0, `${locale}.${key}`).toBeGreaterThan(20);
       }
     }
+  });
+});
+
+/** Concatenated source of every app file, excluding tests and the dictionaries. */
+function appSource(): string {
+  const parts: string[] = [];
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(dir)) {
+      const path = join(dir, entry);
+      if (statSync(path).isDirectory()) {
+        walk(path);
+        continue;
+      }
+      if (!/\.tsx?$/.test(entry) || entry.includes(".test.")) continue;
+      if (path.includes(join("lib", "i18n"))) continue;
+      parts.push(readFileSync(path, "utf8"));
+    }
+  };
+  walk(join(process.cwd(), "src"));
+  return parts.join("\n");
+}
+
+describe("i18n wiring", () => {
+  // A translated string nothing renders is invisible work: the dictionary looks
+  // complete, the parity tests pass, and the screen still shows English.
+  //
+  // Matching the bare key literal rather than `t("key")` is deliberate — keys are
+  // also referenced indirectly (e.g. `labelKey: "nav.home"` fed to `t(item.labelKey)`),
+  // and a stricter check would flag those as orphans.
+  it("every English key is referenced somewhere in the app", () => {
+    const source = appSource();
+    const orphaned = Object.keys(en).filter((k) => !source.includes(`"${k}"`));
+    expect(orphaned, `keys defined but never rendered: ${orphaned.join(", ")}`).toEqual([]);
+  });
+
+  it("every literal t() call refers to a key that exists", () => {
+    const calls = [...appSource().matchAll(/(?<![A-Za-z0-9_])t\(\s*"([^"]+)"/g)].map((m) => m[1]);
+    const missing = [...new Set(calls)].filter((k) => !(k in en));
+    expect(missing, `t() called with unknown keys: ${missing.join(", ")}`).toEqual([]);
   });
 });
 

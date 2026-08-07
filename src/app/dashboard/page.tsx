@@ -6,6 +6,7 @@ import { format } from "date-fns";
 
 import { CravingSos } from "@/components/craving-sos";
 import { DailyNudge } from "@/components/daily-nudge";
+import { useT } from "@/components/i18n-provider";
 import { LogDrinkModal } from "@/components/log-drink-modal";
 import { Onboarding } from "@/components/onboarding";
 import { ProtectedRoute } from "@/components/protected-route";
@@ -24,6 +25,7 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
+  const t = useT();
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
   const [weeklyGoal, setWeeklyGoal] = useState(0);
@@ -100,8 +102,8 @@ function DashboardContent() {
     return (
       <div className="stagger-children space-y-6">
         <div>
-          <h2 className="text-xl font-bold">Welcome</h2>
-          <p className="text-sm text-muted-foreground">Let&apos;s set up your space — it takes a moment.</p>
+          <h2 className="text-xl font-bold">{t("dashboard.welcome")}</h2>
+          <p className="text-sm text-muted-foreground">{t("dashboard.welcomeBody")}</p>
         </div>
         <Onboarding userId={user.uid} onComplete={refresh} onSkip={() => setDismissedOnboarding(true)} />
       </div>
@@ -112,17 +114,14 @@ function DashboardContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">Dashboard</h2>
-        <p className="text-sm text-muted-foreground">Pause, breathe, and log intentionally.</p>
+        <h2 className="text-xl font-bold">{t("dashboard.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
 
       {loadFailed && (
         <Card className="border-amber-500/30">
           <CardContent className="pt-6">
-            <p className="text-sm text-body">
-              We couldn&apos;t load your data just now — your records are safe. Check your connection and
-              refresh to try again.
-            </p>
+            <p className="text-sm text-body">{t("dashboard.loadFailed")}</p>
           </CardContent>
         </Card>
       )}
@@ -137,10 +136,8 @@ function DashboardContent() {
             <div className="flex items-center gap-4">
               <Sparkles className="h-8 w-8 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
-                <p className="text-lg font-semibold">Your journey starts here</p>
-                <p className="text-sm text-muted-foreground">
-                  Every step toward awareness counts. Your first check-in begins your progress.
-                </p>
+                <p className="text-lg font-semibold">{t("dashboard.journeyStarts")}</p>
+                <p className="text-sm text-muted-foreground">{t("dashboard.journeyStartsBody")}</p>
               </div>
             </div>
           ) : progress.currentStreakDays >= 1 ? (
@@ -148,28 +145,41 @@ function DashboardContent() {
               <div className="flex items-center gap-3">
                 <Flame className="h-9 w-9 shrink-0 text-emerald-600 dark:text-emerald-400" />
                 <div>
-                  <p className="text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-300/80">choosing awareness</p>
+                  <p className="text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-300/80">{t("dashboard.choosingAwareness")}</p>
                   <p className="text-4xl font-bold leading-none">
                     {progress.currentStreakDays}
                     <span className="ml-2 text-base font-normal text-muted-foreground">
-                      day{progress.currentStreakDays === 1 ? "" : "s"} alcohol-free
+                      {progress.currentStreakDays === 1
+                        ? t("dashboard.dayAlcoholFree")
+                        : t("dashboard.daysAlcoholFree")}
                     </span>
                   </p>
                 </div>
               </div>
-              <p className="max-w-xs text-sm text-muted-foreground">
-                You are someone who is choosing awareness — one day at a time.
-              </p>
+              <p className="max-w-xs text-sm text-muted-foreground">{t("dashboard.identityLine")}</p>
             </div>
           ) : (
             <div className="flex items-center gap-4">
               <Sparkles className="h-8 w-8 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
-                <p className="text-lg font-semibold">A fresh page today</p>
+                <p className="text-lg font-semibold">{t("dashboard.freshPage")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Awareness is the win, and it carries forward. Your best run so far is{" "}
-                  <span className="font-semibold text-emerald-700 dark:text-emerald-300">{progress.longestStreakDays}</span> day
-                  {progress.longestStreakDays === 1 ? "" : "s"}.
+                  {(() => {
+                    const unit =
+                      progress.longestStreakDays === 1
+                        ? t("dashboard.dayUnit")
+                        : t("dashboard.daysUnit");
+                    const [before, after = ""] = t("dashboard.freshPageBody").split("{days}");
+                    return (
+                      <>
+                        {before}
+                        <span className="font-semibold text-emerald-700 dark:text-emerald-300">
+                          {progress.longestStreakDays} {unit}
+                        </span>
+                        {after}
+                      </>
+                    );
+                  })()}
                 </p>
               </div>
             </div>
@@ -185,18 +195,18 @@ function DashboardContent() {
             <div className="grid grid-cols-3 gap-3 border-t border-border pt-4 text-center">
               <div>
                 <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{progress.longestStreakDays}</p>
-                <p className="text-[11px] text-muted-foreground">longest streak</p>
+                <p className="text-[11px] text-muted-foreground">{t("dashboard.longestStreak")}</p>
               </div>
               <div>
                 <p className="text-xl font-bold text-sky-600 dark:text-sky-400">
                   {progress.alcoholFreeDaysThisMonth}
                   <span className="text-xs font-normal text-subtle">/{progress.daysElapsedThisMonth}</span>
                 </p>
-                <p className="text-[11px] text-muted-foreground">alcohol-free days</p>
+                <p className="text-[11px] text-muted-foreground">{t("dashboard.alcoholFreeDays")}</p>
               </div>
               <div>
                 <p className="text-xl font-bold">{progress.totalCheckIns}</p>
-                <p className="text-[11px] text-muted-foreground">mindful check-ins</p>
+                <p className="text-[11px] text-muted-foreground">{t("dashboard.mindfulCheckIns")}</p>
               </div>
             </div>
           )}
@@ -209,11 +219,9 @@ function DashboardContent() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            Quick Check-in
+            {t("dashboard.quickCheckIn")}
           </CardTitle>
-          <CardDescription>
-            Awareness is a skill you are strengthening. Every log is data that empowers your future self.
-          </CardDescription>
+          <CardDescription>{t("dashboard.quickCheckInBody")}</CardDescription>
         </CardHeader>
         <CardContent>
           {user ? (
@@ -233,7 +241,7 @@ function DashboardContent() {
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400">
               <Droplets className="h-3.5 w-3.5" />
-              {monthName} total
+              {t("dashboard.monthTotal", { month: monthName })}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -245,12 +253,12 @@ function DashboardContent() {
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1.5">
               <Target className="h-3.5 w-3.5" />
-              Weekly vs goal
+              {t("dashboard.weeklyVsGoal")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {weeklyTotal} <span className="text-sm font-normal text-muted-foreground">/ {weeklyGoal || "no goal"} ml</span>
+              {weeklyTotal} <span className="text-sm font-normal text-muted-foreground">/ {weeklyGoal || t("dashboard.noGoal")} ml</span>
             </p>
             {weeklyGoal > 0 && (
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
@@ -267,11 +275,11 @@ function DashboardContent() {
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5" />
-              This month
+              {t("dashboard.thisMonth")}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{monthRecords.length} <span className="text-sm font-normal text-muted-foreground">check-ins</span></p>
+            <p className="text-2xl font-bold">{monthRecords.length} <span className="text-sm font-normal text-muted-foreground">{t("dashboard.checkIns")}</span></p>
           </CardContent>
         </Card>
       </div>
@@ -279,12 +287,12 @@ function DashboardContent() {
       {/* Recent activity */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Recent activity</CardTitle>
-          <CardDescription>Your last check-ins at a glance.</CardDescription>
+          <CardTitle className="text-base">{t("dashboard.recentActivity")}</CardTitle>
+          <CardDescription>{t("dashboard.recentActivityBody")}</CardDescription>
         </CardHeader>
         <CardContent>
           {recentRecords.length === 0 ? (
-            <p className="text-sm text-subtle">No records yet. Your first log will appear here.</p>
+            <p className="text-sm text-subtle">{t("dashboard.noRecords")}</p>
           ) : (
             <div className="space-y-2">
               {recentRecords.map((record) => (

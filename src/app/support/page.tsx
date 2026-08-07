@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { LifeBuoy, Phone, Globe, HeartPulse, ShieldAlert, Users } from "lucide-react";
+import { LifeBuoy, Phone, Globe, HeartPulse, Users } from "lucide-react";
 
+import { WithdrawalWarning } from "@/components/safety-notice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HELPLINES } from "@/lib/safety";
 
@@ -94,25 +95,7 @@ export default function SupportPage() {
       </Card>
 
       {/* Withdrawal safety — firm project rule #3 */}
-      <Card className="border-amber-500/40 bg-amber-500/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-base text-amber-700 dark:text-amber-300">
-            <ShieldAlert className="h-4 w-4" />
-            Before you stop drinking — please read
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <p className="text-sm leading-relaxed text-body">
-            If you drink heavily or every day, stopping suddenly can be{" "}
-            <span className="font-semibold text-amber-800 dark:text-amber-200">medically dangerous</span> — abrupt withdrawal
-            can cause seizures or delirium tremens, which can be life-threatening.
-          </p>
-          <p className="text-sm leading-relaxed text-body">
-            Please talk to a doctor before you quit, and only reduce or stop under medical supervision.
-            Recoverly can support you alongside professional care, but it is never a substitute for it.
-          </p>
-        </CardContent>
-      </Card>
+      <WithdrawalWarning />
 
       <Card>
         <CardHeader className="pb-2">

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pause, Wine } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { addDrinkRecord } from "@/lib/firestore";
 import { DRINK_TYPES, drinkRecordSchema } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ const drinkEmoji: Record<string, string> = {
 };
 
 export function LogDrinkModal({ userId, onSaved }: Props) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [drinkType, setDrinkType] = useState<(typeof DRINK_TYPES)[number]>("beer");
@@ -122,7 +124,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
       <DialogTrigger asChild>
         <Button className="h-14 w-full gap-2 text-base font-semibold sm:w-auto sm:px-8">
           <Wine className="h-5 w-5" />
-          Alcohol consumed.
+          {t("dashboard.logDrink")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -171,7 +173,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
           {drinkType === "other" ? (
             <div className="space-y-2">
               <Label htmlFor="otherType">
-                What did you have? <span className="text-xs text-subtle">(optional)</span>
+                What did you have? <span className="text-xs text-subtle">{t("common.optional")}</span>
               </Label>
               <Input
                 id="otherType"
@@ -183,7 +185,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
             </div>
           ) : null}
           <div className="space-y-2">
-            <Label htmlFor="mood">How are you feeling? <span className="text-xs text-subtle">(optional)</span></Label>
+            <Label htmlFor="mood">How are you feeling? <span className="text-xs text-subtle">{t("common.optional")}</span></Label>
             <Textarea
               id="mood"
               value={mood}
@@ -207,7 +209,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
             </span>
           </div>
           <Button onClick={submit} disabled={!canSubmit} aria-describedby="submit-status">
-            {saving ? "Saving..." : "Submit"}
+            {saving ? t("common.saving") : "Submit"}
           </Button>
         </DialogFooter>
       </DialogContent>

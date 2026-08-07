@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { TrendingDown, TrendingUp, Calendar, Activity, BarChart3, Target } from "lucide-react";
 
 import { ConsumptionLineChart } from "@/components/charts/consumption-line";
+import { useT } from "@/components/i18n-provider";
 import { MonthlyBarChart } from "@/components/charts/monthly-bar";
 import { ProgressInsights } from "@/components/progress-insights";
 import { ProtectedRoute } from "@/components/protected-route";
@@ -21,6 +22,7 @@ export default function RecordsPage() {
 }
 
 function RecordsContent() {
+  const t = useT();
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,7 @@ function RecordsContent() {
   const insight = useMemo(() => suggestInsight(summary), [summary]);
   const progress = useMemo(() => buildProgress(records), [records]);
 
-  if (loading) return <p className="text-sm text-muted-foreground">Loading records...</p>;
+  if (loading) return <p className="text-sm text-muted-foreground">{t("common.loading")}</p>;
 
   if (loadFailed) {
     return (

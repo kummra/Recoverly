@@ -45,7 +45,14 @@ export const en: Dictionary = {
   "dashboard.dayAlcoholFree": "day alcohol-free",
   "dashboard.identityLine": "You are someone who is choosing awareness — one day at a time.",
   "dashboard.freshPage": "A fresh page today",
-  "dashboard.freshPageBody": "Awareness is the win, and it carries forward. Your best run so far is",
+  // {days} is substituted as a styled span, so the number can sit wherever the
+  // target language puts it rather than being glued to the end of the sentence.
+  "dashboard.freshPageBody":
+    "Awareness is the win, and it carries forward. Your best run so far is {days}.",
+  "dashboard.dayUnit": "day",
+  "dashboard.daysUnit": "days",
+  "dashboard.welcome": "Welcome",
+  "dashboard.welcomeBody": "Let's set up your space — it takes a moment.",
   "dashboard.longestStreak": "longest streak",
   "dashboard.alcoholFreeDays": "alcohol-free days",
   "dashboard.mindfulCheckIns": "mindful check-ins",
@@ -67,6 +74,9 @@ export const en: Dictionary = {
     "Cravings rise, peak and pass — usually within a few minutes. You don't have to fight it, just outlast it.",
   "sos.howStrong": "How strong is it right now?",
   "sos.scaleHint": "1 = mild · 5 = overwhelming",
+  "sos.intensityAria": "Intensity {n} of 5",
+  "sos.crisisPrefix": "In crisis?",
+  "sos.emergency": "Emergency",
   "sos.start": "Start",
   "sos.riding": "Riding the wave",
   "sos.breatheIn": "Breathe in",

@@ -5,6 +5,7 @@ import { Check, AlertCircle, User, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 import { DataManagement } from "@/components/data-management";
+import { useT } from "@/components/i18n-provider";
 import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { DeleteAccount } from "@/components/delete-account";
@@ -27,6 +28,7 @@ export default function SettingsPage() {
 }
 
 function SettingsContent() {
+  const t = useT();
   const { user } = useAuth();
   const [goalWeeklyMl, setGoalWeeklyMl] = useState(0);
   const [reminderTime, setReminderTime] = useState("");
@@ -161,7 +163,7 @@ function SettingsContent() {
               )}
 
               <Button type="submit" disabled={saving} className="w-full sm:w-auto">
-                {saving ? "Saving..." : "Save preferences"}
+                {saving ? t("common.saving") : t("common.save")}
               </Button>
             </form>
           </CardContent>
