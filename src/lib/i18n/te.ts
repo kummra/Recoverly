@@ -1,0 +1,101 @@
+import type { Dictionary } from "@/lib/i18n/types";
+
+/** Telugu (తెలుగు). Respectful "మీరు" register. Helpline digits stay Latin. */
+export const te: Dictionary = {
+  "nav.home": "హోమ్",
+  "nav.dashboard": "డాష్‌బోర్డ్",
+  "nav.records": "రికార్డులు",
+  "nav.assessment": "స్వీయ-పరీక్ష",
+  "nav.ai": "మా AI",
+  "nav.settings": "సెట్టింగ్‌లు",
+  "nav.support": "సహాయం మరియు హెల్ప్‌లైన్",
+  "nav.login": "లాగిన్",
+  "nav.logout": "లాగ్ అవుట్",
+  "nav.openMenu": "మెనూ తెరవండి",
+  "nav.closeMenu": "మెనూ మూసివేయండి",
+  "nav.themeToLight": "లైట్ థీమ్‌కు మారండి",
+  "nav.themeToDark": "డార్క్ థీమ్‌కు మారండి",
+
+  "footer.tagline": "Recoverly — మీ సానుభూతిగల రికవరీ తోడు.",
+  "footer.howItWorks": "ఇది ఎలా పనిచేస్తుంది",
+  "footer.faq": "తరచుగా అడిగే ప్రశ్నలు",
+  "footer.privacy": "గోప్యత",
+  "footer.terms": "నిబంధనలు",
+  "footer.disclaimer": "ఇది వృత్తిపరమైన వైద్య సలహాకు ప్రత్యామ్నాయం కాదు.",
+
+  "dashboard.title": "డాష్‌బోర్డ్",
+  "dashboard.subtitle": "ఆగండి, ఊపిరి తీసుకోండి, ఆలోచించి నమోదు చేయండి.",
+  "dashboard.quickCheckIn": "త్వరిత చెక్-ఇన్",
+  "dashboard.quickCheckInBody":
+    "అవగాహన అనేది మీరు బలపరుస్తున్న నైపుణ్యం. ప్రతి నమోదు మీ రేపటిని బలపరిచే సమాచారం.",
+  "dashboard.logDrink": "మద్యం సేవించాను.",
+  "dashboard.journeyStarts": "మీ ప్రయాణం ఇక్కడ మొదలవుతుంది",
+  "dashboard.journeyStartsBody":
+    "అవగాహన వైపు వేసే ప్రతి అడుగు ముఖ్యం. మీ మొదటి చెక్-ఇనే మీ పురోగతికి ఆరంభం.",
+  "dashboard.choosingAwareness": "అవగాహనను ఎంచుకోవడం",
+  "dashboard.daysAlcoholFree": "రోజులు మద్యం లేకుండా",
+  "dashboard.dayAlcoholFree": "రోజు మద్యం లేకుండా",
+  "dashboard.identityLine": "మీరు అవగాహనను ఎంచుకుంటున్న వ్యక్తి — ఒక్కో రోజు ఒక్కో అడుగు.",
+  "dashboard.freshPage": "ఈరోజు కొత్త పుట",
+  "dashboard.freshPageBody":
+    "అవగాహనే విజయం, అది మీతోనే ముందుకు సాగుతుంది. ఇప్పటివరకు మీ అత్యుత్తమ వరుస",
+  "dashboard.longestStreak": "అత్యధిక వరుస",
+  "dashboard.alcoholFreeDays": "మద్యం లేని రోజులు",
+  "dashboard.mindfulCheckIns": "అప్రమత్త చెక్-ఇన్‌లు",
+  "dashboard.monthTotal": "{month} మొత్తం",
+  "dashboard.weeklyVsGoal": "వారానికి vs లక్ష్యం",
+  "dashboard.noGoal": "లక్ష్యం లేదు",
+  "dashboard.thisMonth": "ఈ నెల",
+  "dashboard.checkIns": "చెక్-ఇన్‌లు",
+  "dashboard.recentActivity": "ఇటీవలి కార్యకలాపం",
+  "dashboard.recentActivityBody": "మీ చివరి చెక్-ఇన్‌లు ఒక్క చూపులో.",
+  "dashboard.noRecords": "ఇంకా రికార్డులు లేవు. మీ మొదటి నమోదు ఇక్కడ కనిపిస్తుంది.",
+  "dashboard.loadFailed":
+    "ప్రస్తుతం మీ డేటాను లోడ్ చేయలేకపోయాము — మీ రికార్డులు సురక్షితంగా ఉన్నాయి. కనెక్షన్ తనిఖీ చేసి పేజీని రిఫ్రెష్ చేయండి.",
+
+  "sos.trigger": "నాకు ఇప్పుడు కష్టంగా ఉంది",
+  "sos.title": "దీన్ని కలిసి దాటుదాం",
+  "sos.intro":
+    "కోరిక పెరుగుతుంది, గరిష్ఠానికి చేరి తగ్గిపోతుంది — సాధారణంగా కొన్ని నిమిషాల్లోనే. మీరు పోరాడాల్సిన అవసరం లేదు, అది గడిచేవరకు నిలబడితే చాలు.",
+  "sos.howStrong": "ఇప్పుడు అది ఎంత తీవ్రంగా ఉంది?",
+  "sos.scaleHint": "1 = తక్కువ · 5 = చాలా ఎక్కువ",
+  "sos.start": "ప్రారంభించు",
+  "sos.riding": "అలతో పాటు",
+  "sos.breatheIn": "ఊపిరి పీల్చండి",
+  "sos.hold": "ఆపండి",
+  "sos.breatheOut": "ఊపిరి వదలండి",
+  "sos.easeHint": "చాలా కోరికలు సుమారు ఐదు నిమిషాల్లో తగ్గిపోతాయి",
+  "sos.talkItThrough": "మాట్లాడండి",
+  "sos.getHelpNow": "ఇప్పుడే సహాయం పొందండి",
+  "sos.done": "అయిపోయింది",
+  "sos.outcomeTitle": "ఎలా జరిగింది?",
+  "sos.outcomeBody": "ఇక్కడ తప్పు సమాధానం అంటూ ఏదీ లేదు. సహాయం కోసం చేయి చాచడమే ముఖ్యం.",
+  "sos.outcomePassed": "అది గడిచిపోయింది — నేను తాగలేదు",
+  "sos.outcomeDrank": "నేను తాగాను",
+  "sos.outcomeUnresolved": "ఇంకా ఉంది",
+  "sos.doneTitle": "దీనికి ధైర్యం కావాలి",
+  "sos.doneBody":
+    "ఒంటరిగా పోరాడే బదులు మీరు సహాయం తీసుకున్నారు — అదే ముందుకు ఉపయోగపడే నైపుణ్యం. ప్రతిసారి దాటినప్పుడు, తర్వాతిసారి కొంచెం సులభమవుతుంది.",
+  "sos.close": "మూసివేయి",
+
+  "safety.notMedicalTitle": "మద్దతు, వైద్య సలహా కాదు",
+  "safety.notMedicalBody":
+    "Recoverly మీ అలవాట్లపై ఆలోచించడానికి సహాయపడుతుంది — ఇది వైద్య చికిత్స కాదు. మీరు ఎక్కువగా మద్యం సేవిస్తే, అకస్మాత్తుగా ఆపడం ప్రమాదకరం కావచ్చు (విత్‌డ్రాయల్ వల్ల మూర్ఛలు రావచ్చు). మద్యం మోతాదులో పెద్ద మార్పు చేసే ముందు దయచేసి డాక్టర్‌ను సంప్రదించండి.",
+  "safety.crisisTitle": "సంక్షోభంలో ఉన్నారా లేదా తనను తాను హాని చేసుకునే ఆలోచనా? సహాయం ఇప్పుడే అందుబాటులో ఉంది",
+  "safety.crisisIndia": "భారతదేశం",
+  "safety.outsideIndia": "భారతదేశం వెలుపల",
+  "safety.findHelpline": "మీ ప్రాంత హెల్ప్‌లైన్‌ను కనుగొనండి",
+  "safety.emergency": "అత్యవసర సేవలు",
+  "safety.withdrawalTitle": "మద్యం మానే ముందు — దయచేసి చదవండి",
+  "safety.withdrawalBody":
+    "మీరు ఎక్కువగా లేదా ప్రతిరోజూ మద్యం సేవిస్తే, అకస్మాత్తుగా ఆపడం వైద్యపరంగా ప్రమాదకరం కావచ్చు — ఆకస్మిక విత్‌డ్రాయల్ వల్ల మూర్ఛలు లేదా డెలిరియం ట్రెమెన్స్ రావచ్చు, ఇవి ప్రాణాంతకం కావచ్చు. మానే ముందు దయచేసి డాక్టర్‌ను సంప్రదించండి, వైద్య పర్యవేక్షణలో మాత్రమే మోతాదు తగ్గించండి లేదా ఆపండి.",
+
+  "common.save": "సేవ్ చేయి",
+  "common.saving": "సేవ్ అవుతోంది…",
+  "common.cancel": "రద్దు చేయి",
+  "common.close": "మూసివేయి",
+  "common.loading": "లోడ్ అవుతోంది…",
+  "common.tryAgain": "దయచేసి మళ్లీ ప్రయత్నించండి.",
+  "common.optional": "(ఐచ్ఛికం)",
+  "common.language": "భాష"
+};

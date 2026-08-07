@@ -1,0 +1,101 @@
+import type { Dictionary } from "@/lib/i18n/types";
+
+/** Punjabi (ਪੰਜਾਬੀ), Gurmukhi script. Respectful "ਤੁਸੀਂ" register. */
+export const pa: Dictionary = {
+  "nav.home": "ਹੋਮ",
+  "nav.dashboard": "ਡੈਸ਼ਬੋਰਡ",
+  "nav.records": "ਰਿਕਾਰਡ",
+  "nav.assessment": "ਸਵੈ-ਜਾਂਚ",
+  "nav.ai": "ਸਾਡਾ AI",
+  "nav.settings": "ਸੈਟਿੰਗਾਂ",
+  "nav.support": "ਸਹਾਇਤਾ ਅਤੇ ਹੈਲਪਲਾਈਨ",
+  "nav.login": "ਲੌਗ ਇਨ",
+  "nav.logout": "ਲੌਗ ਆਊਟ",
+  "nav.openMenu": "ਮੀਨੂ ਖੋਲ੍ਹੋ",
+  "nav.closeMenu": "ਮੀਨੂ ਬੰਦ ਕਰੋ",
+  "nav.themeToLight": "ਲਾਈਟ ਥੀਮ ਉੱਤੇ ਜਾਓ",
+  "nav.themeToDark": "ਡਾਰਕ ਥੀਮ ਉੱਤੇ ਜਾਓ",
+
+  "footer.tagline": "Recoverly — ਤੁਹਾਡਾ ਹਮਦਰਦ ਰਿਕਵਰੀ ਸਾਥੀ।",
+  "footer.howItWorks": "ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ",
+  "footer.faq": "ਆਮ ਸਵਾਲ",
+  "footer.privacy": "ਗੋਪਨੀਯਤਾ",
+  "footer.terms": "ਸ਼ਰਤਾਂ",
+  "footer.disclaimer": "ਇਹ ਪੇਸ਼ੇਵਰ ਡਾਕਟਰੀ ਸਲਾਹ ਦਾ ਬਦਲ ਨਹੀਂ ਹੈ।",
+
+  "dashboard.title": "ਡੈਸ਼ਬੋਰਡ",
+  "dashboard.subtitle": "ਰੁਕੋ, ਸਾਹ ਲਓ, ਅਤੇ ਸੋਚ-ਸਮਝ ਕੇ ਦਰਜ ਕਰੋ।",
+  "dashboard.quickCheckIn": "ਤੁਰੰਤ ਚੈੱਕ-ਇਨ",
+  "dashboard.quickCheckInBody":
+    "ਜਾਗਰੂਕਤਾ ਇੱਕ ਹੁਨਰ ਹੈ ਜਿਸਨੂੰ ਤੁਸੀਂ ਮਜ਼ਬੂਤ ਕਰ ਰਹੇ ਹੋ। ਹਰ ਐਂਟਰੀ ਉਹ ਜਾਣਕਾਰੀ ਹੈ ਜੋ ਤੁਹਾਡੇ ਭਲਕੇ ਨੂੰ ਤਾਕਤ ਦਿੰਦੀ ਹੈ।",
+  "dashboard.logDrink": "ਸ਼ਰਾਬ ਪੀਤੀ।",
+  "dashboard.journeyStarts": "ਤੁਹਾਡਾ ਸਫ਼ਰ ਇੱਥੋਂ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ",
+  "dashboard.journeyStartsBody":
+    "ਜਾਗਰੂਕਤਾ ਵੱਲ ਚੁੱਕਿਆ ਹਰ ਕਦਮ ਮਾਇਨੇ ਰੱਖਦਾ ਹੈ। ਤੁਹਾਡਾ ਪਹਿਲਾ ਚੈੱਕ-ਇਨ ਹੀ ਤੁਹਾਡੀ ਤਰੱਕੀ ਦੀ ਸ਼ੁਰੂਆਤ ਹੈ।",
+  "dashboard.choosingAwareness": "ਜਾਗਰੂਕਤਾ ਦੀ ਚੋਣ",
+  "dashboard.daysAlcoholFree": "ਦਿਨ ਸ਼ਰਾਬ-ਮੁਕਤ",
+  "dashboard.dayAlcoholFree": "ਦਿਨ ਸ਼ਰਾਬ-ਮੁਕਤ",
+  "dashboard.identityLine": "ਤੁਸੀਂ ਉਹ ਵਿਅਕਤੀ ਹੋ ਜੋ ਜਾਗਰੂਕਤਾ ਚੁਣ ਰਹੇ ਹੋ — ਇੱਕ ਵਾਰ ਵਿੱਚ ਇੱਕ ਦਿਨ।",
+  "dashboard.freshPage": "ਅੱਜ ਇੱਕ ਨਵਾਂ ਪੰਨਾ",
+  "dashboard.freshPageBody":
+    "ਜਾਗਰੂਕਤਾ ਹੀ ਜਿੱਤ ਹੈ, ਅਤੇ ਉਹ ਅੱਗੇ ਨਾਲ ਚੱਲਦੀ ਹੈ। ਹੁਣ ਤੱਕ ਤੁਹਾਡੀ ਸਭ ਤੋਂ ਵਧੀਆ ਲੜੀ ਹੈ",
+  "dashboard.longestStreak": "ਸਭ ਤੋਂ ਲੰਮੀ ਲੜੀ",
+  "dashboard.alcoholFreeDays": "ਸ਼ਰਾਬ-ਮੁਕਤ ਦਿਨ",
+  "dashboard.mindfulCheckIns": "ਸੁਚੇਤ ਚੈੱਕ-ਇਨ",
+  "dashboard.monthTotal": "{month} ਕੁੱਲ",
+  "dashboard.weeklyVsGoal": "ਹਫ਼ਤਾਵਾਰੀ ਬਨਾਮ ਟੀਚਾ",
+  "dashboard.noGoal": "ਕੋਈ ਟੀਚਾ ਨਹੀਂ",
+  "dashboard.thisMonth": "ਇਸ ਮਹੀਨੇ",
+  "dashboard.checkIns": "ਚੈੱਕ-ਇਨ",
+  "dashboard.recentActivity": "ਹਾਲੀਆ ਗਤੀਵਿਧੀ",
+  "dashboard.recentActivityBody": "ਤੁਹਾਡੇ ਪਿਛਲੇ ਚੈੱਕ-ਇਨ ਇੱਕ ਨਜ਼ਰ ਵਿੱਚ।",
+  "dashboard.noRecords": "ਅਜੇ ਕੋਈ ਰਿਕਾਰਡ ਨਹੀਂ। ਤੁਹਾਡੀ ਪਹਿਲੀ ਐਂਟਰੀ ਇੱਥੇ ਦਿਖੇਗੀ।",
+  "dashboard.loadFailed":
+    "ਅਸੀਂ ਹੁਣੇ ਤੁਹਾਡਾ ਡਾਟਾ ਲੋਡ ਨਹੀਂ ਕਰ ਸਕੇ — ਤੁਹਾਡੇ ਰਿਕਾਰਡ ਸੁਰੱਖਿਅਤ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ ਅਤੇ ਪੰਨਾ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ।",
+
+  "sos.trigger": "ਮੈਨੂੰ ਹੁਣੇ ਔਖਾ ਲੱਗ ਰਿਹਾ ਹੈ",
+  "sos.title": "ਆਓ, ਇਸਨੂੰ ਇਕੱਠੇ ਪਾਰ ਕਰੀਏ",
+  "sos.intro":
+    "ਤਲਬ ਵਧਦੀ ਹੈ, ਸਿਖਰ ਉੱਤੇ ਪਹੁੰਚਦੀ ਹੈ ਅਤੇ ਲੰਘ ਜਾਂਦੀ ਹੈ — ਆਮ ਤੌਰ ਉੱਤੇ ਕੁਝ ਹੀ ਮਿੰਟਾਂ ਵਿੱਚ। ਤੁਹਾਨੂੰ ਲੜਨਾ ਨਹੀਂ, ਬੱਸ ਇਸਦੇ ਲੰਘਣ ਤੱਕ ਟਿਕੇ ਰਹਿਣਾ ਹੈ।",
+  "sos.howStrong": "ਹੁਣ ਇਹ ਕਿੰਨੀ ਤੇਜ਼ ਹੈ?",
+  "sos.scaleHint": "1 = ਹਲਕੀ · 5 = ਬਹੁਤ ਤੇਜ਼",
+  "sos.start": "ਸ਼ੁਰੂ ਕਰੋ",
+  "sos.riding": "ਲਹਿਰ ਦੇ ਨਾਲ",
+  "sos.breatheIn": "ਸਾਹ ਲਓ",
+  "sos.hold": "ਰੋਕੋ",
+  "sos.breatheOut": "ਸਾਹ ਛੱਡੋ",
+  "sos.easeHint": "ਜ਼ਿਆਦਾਤਰ ਤਲਬ ਲਗਭਗ ਪੰਜ ਮਿੰਟਾਂ ਵਿੱਚ ਘੱਟ ਜਾਂਦੀ ਹੈ",
+  "sos.talkItThrough": "ਗੱਲ ਕਰੋ",
+  "sos.getHelpNow": "ਹੁਣੇ ਮਦਦ ਲਓ",
+  "sos.done": "ਹੋ ਗਿਆ",
+  "sos.outcomeTitle": "ਕਿਵੇਂ ਰਿਹਾ?",
+  "sos.outcomeBody": "ਇੱਥੇ ਕੋਈ ਜਵਾਬ ਗਲਤ ਨਹੀਂ। ਮਦਦ ਲਈ ਹੱਥ ਵਧਾਉਣਾ ਹੀ ਸਭ ਤੋਂ ਵੱਡੀ ਗੱਲ ਹੈ।",
+  "sos.outcomePassed": "ਇਹ ਲੰਘ ਗਈ — ਮੈਂ ਨਹੀਂ ਪੀਤੀ",
+  "sos.outcomeDrank": "ਮੈਂ ਪੀ ਲਈ",
+  "sos.outcomeUnresolved": "ਹਾਲੇ ਵੀ ਮਹਿਸੂਸ ਹੋ ਰਹੀ ਹੈ",
+  "sos.doneTitle": "ਇਸ ਲਈ ਹਿੰਮਤ ਚਾਹੀਦੀ ਹੈ",
+  "sos.doneBody":
+    "ਇਕੱਲੇ ਜੂਝਣ ਦੀ ਥਾਂ ਤੁਸੀਂ ਸਹਾਰਾ ਲਿਆ — ਇਹੀ ਉਹ ਹੁਨਰ ਹੈ ਜੋ ਅੱਗੇ ਕੰਮ ਆਉਂਦਾ ਹੈ। ਹਰ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਇਸਨੂੰ ਪਾਰ ਕਰਦੇ ਹੋ, ਅਗਲੀ ਵਾਰ ਥੋੜ੍ਹੀ ਸੌਖੀ ਹੋ ਜਾਂਦੀ ਹੈ।",
+  "sos.close": "ਬੰਦ ਕਰੋ",
+
+  "safety.notMedicalTitle": "ਸਹਾਰਾ, ਡਾਕਟਰੀ ਸਲਾਹ ਨਹੀਂ",
+  "safety.notMedicalBody":
+    "Recoverly ਤੁਹਾਨੂੰ ਆਪਣੀਆਂ ਆਦਤਾਂ ਬਾਰੇ ਸੋਚਣ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ — ਇਹ ਡਾਕਟਰੀ ਇਲਾਜ ਨਹੀਂ ਹੈ। ਜੇ ਤੁਸੀਂ ਬਹੁਤ ਸ਼ਰਾਬ ਪੀਂਦੇ ਹੋ, ਤਾਂ ਅਚਾਨਕ ਛੱਡਣਾ ਖ਼ਤਰਨਾਕ ਹੋ ਸਕਦਾ ਹੈ (ਵਿਦਡ੍ਰਾਲ ਨਾਲ ਦੌਰੇ ਪੈ ਸਕਦੇ ਹਨ)। ਆਪਣੀ ਸ਼ਰਾਬ ਦੀ ਮਾਤਰਾ ਵਿੱਚ ਵੱਡਾ ਬਦਲਾਅ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕਿਰਪਾ ਕਰਕੇ ਡਾਕਟਰ ਨਾਲ ਗੱਲ ਕਰੋ।",
+  "safety.crisisTitle": "ਸੰਕਟ ਵਿੱਚ ਹੋ ਜਾਂ ਆਪਣੇ ਆਪ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚਾਉਣ ਦਾ ਖ਼ਿਆਲ ਆ ਰਿਹਾ ਹੈ? ਮਦਦ ਹੁਣੇ ਮੌਜੂਦ ਹੈ",
+  "safety.crisisIndia": "ਭਾਰਤ",
+  "safety.outsideIndia": "ਭਾਰਤ ਤੋਂ ਬਾਹਰ",
+  "safety.findHelpline": "ਆਪਣੇ ਇਲਾਕੇ ਦੀ ਹੈਲਪਲਾਈਨ ਲੱਭੋ",
+  "safety.emergency": "ਐਮਰਜੈਂਸੀ ਸੇਵਾਵਾਂ",
+  "safety.withdrawalTitle": "ਸ਼ਰਾਬ ਛੱਡਣ ਤੋਂ ਪਹਿਲਾਂ — ਕਿਰਪਾ ਕਰਕੇ ਪੜ੍ਹੋ",
+  "safety.withdrawalBody":
+    "ਜੇ ਤੁਸੀਂ ਬਹੁਤ ਜ਼ਿਆਦਾ ਜਾਂ ਰੋਜ਼ ਸ਼ਰਾਬ ਪੀਂਦੇ ਹੋ, ਤਾਂ ਅਚਾਨਕ ਛੱਡਣਾ ਡਾਕਟਰੀ ਤੌਰ ਉੱਤੇ ਖ਼ਤਰਨਾਕ ਹੋ ਸਕਦਾ ਹੈ — ਅਚਾਨਕ ਵਿਦਡ੍ਰਾਲ ਨਾਲ ਦੌਰੇ ਜਾਂ ਡੈਲੀਰੀਅਮ ਟ੍ਰੇਮੇਨਸ ਹੋ ਸਕਦੇ ਹਨ, ਜੋ ਜਾਨਲੇਵਾ ਹੋ ਸਕਦੇ ਹਨ। ਛੱਡਣ ਤੋਂ ਪਹਿਲਾਂ ਕਿਰਪਾ ਕਰਕੇ ਡਾਕਟਰ ਨਾਲ ਗੱਲ ਕਰੋ, ਅਤੇ ਸਿਰਫ਼ ਡਾਕਟਰੀ ਨਿਗਰਾਨੀ ਹੇਠ ਹੀ ਮਾਤਰਾ ਘਟਾਓ ਜਾਂ ਬੰਦ ਕਰੋ।",
+
+  "common.save": "ਸੰਭਾਲੋ",
+  "common.saving": "ਸੰਭਾਲਿਆ ਜਾ ਰਿਹਾ ਹੈ…",
+  "common.cancel": "ਰੱਦ ਕਰੋ",
+  "common.close": "ਬੰਦ ਕਰੋ",
+  "common.loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…",
+  "common.tryAgain": "ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+  "common.optional": "(ਵਿਕਲਪਿਕ)",
+  "common.language": "ਭਾਸ਼ਾ"
+};

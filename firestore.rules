@@ -1,0 +1,125 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validReminderTime(value) {
+      return value is string
+        && value.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$');
+    }
+
+    function validUserDoc() {
+      return request.resource.data.keys().hasOnly(['goalWeeklyMl', 'reminderTime', 'motivation', 'displayName', 'updatedAt'])
+        && request.resource.data.goalWeeklyMl is int
+        && request.resource.data.goalWeeklyMl >= 0
+        && request.resource.data.goalWeeklyMl <= 5000
+        && (!('reminderTime' in request.resource.data) || request.resource.data.reminderTime == null || validReminderTime(request.resource.data.reminderTime))
+        && (!('motivation' in request.resource.data) || request.resource.data.motivation == null || (request.resource.data.motivation is string && request.resource.data.motivation.size() <= 200))
+        && (!('displayName' in request.resource.data) || request.resource.data.displayName == null || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 60));
+    }
+
+    function validDrinkRecord() {
+      return request.resource.data.keys().hasOnly(['quantity', 'type', 'otherType', 'mood', 'createdAt'])
+        && request.resource.data.quantity is int
+        && request.resource.data.quantity > 0
+        && request.resource.data.quantity <= 5000
+        && request.resource.data.type is string
+        && request.resource.data.type in ['beer', 'wine', 'whiskey', 'vodka', 'other']
+        && (!('otherType' in request.resource.data) || request.resource.data.otherType == null || (request.resource.data.otherType is string && request.resource.data.otherType.size() <= 40))
+        && (!('mood' in request.resource.data) || request.resource.data.mood == null || (request.resource.data.mood is string && request.resource.data.mood.size() <= 120));
+    }
+
+    function validAuditResult() {
+      return request.resource.data.keys().hasOnly(['score', 'zone', 'answers', 'createdAt'])
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 40
+        && request.resource.data.zone in ['low', 'hazardous', 'harmful', 'possible-dependence'];
+    }
+
+    function validCravingEvent() {
+      return request.resource.data.keys().hasOnly(['intensity', 'outcome', 'trigger', 'secondsElapsed', 'createdAt'])
+        && request.resource.data.intensity is int
+        && request.resource.data.intensity >= 1
+        && request.resource.data.intensity <= 5
+        && request.resource.data.outcome in ['passed', 'drank', 'unresolved']
+        && (!('trigger' in request.resource.data) || request.resource.data.trigger == null || (request.resource.data.trigger is string && request.resource.data.trigger.size() <= 120))
+        && (!('secondsElapsed' in request.resource.data) || request.resource.data.secondsElapsed == null || (request.resource.data.secondsElapsed is int && request.resource.data.secondsElapsed >= 0 && request.resource.data.secondsElapsed <= 7200));
+    }
+
+    function validAiChat() {
+      return request.resource.data.keys().hasOnly(['title', 'createdAt', 'updatedAt'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120;
+    }
+
+    function validAiMessage() {
+      return request.resource.data.keys().hasOnly(['role', 'content', 'createdAt'])
+        && request.resource.data.role in ['user', 'assistant']
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 2000;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && validUserDoc();
+      allow delete: if false;
+
+      match /drinkRecords/{recordId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && validDrinkRecord();
+        allow update: if isOwner(userId) && validDrinkRecord();
+        allow delete: if isOwner(userId);
+      }
+
+      match /auditResults/{resultId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && validAuditResult();
+        allow update: if false;
+        allow delete: if isOwner(userId);
+      }
+
+      match /cravingEvents/{eventId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validCravingEvent();
+        allow delete: if isOwner(userId);
+      }
+
+      match /aiChats/{chatId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validAiChat();
+        allow delete: if isOwner(userId);
+
+        match /messages/{messageId} {
+          allow read: if isOwner(userId);
+          allow create, update: if isOwner(userId) && validAiMessage();
+          allow delete: if isOwner(userId);
+        }
+      }
+
+      // Sobriety signals (guardian device + manual breathalyser readings) are
+      // written ONLY server-side (Admin SDK in /api/device-ingest and /api/sobriety),
+      // so clients may read their own but never write — keeps the data trustworthy.
+      match /sobrietySignals/{signalId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+
+      // Live device-status tile — server-written only.
+      match /deviceStatus/{deviceId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+    }
+
+    // Device registry holds owner bindings + token HASHES. No client access at
+    // all; only the Admin SDK (server routes) may read or write it.
+    match /devices/{deviceId} {
+      allow read, write: if false;
+    }
+  }
+}
