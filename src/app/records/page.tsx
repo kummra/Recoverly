@@ -61,11 +61,8 @@ function RecordsContent() {
     return (
       <Card className="animate-fade-in-up border-amber-500/30">
         <CardHeader>
-          <CardTitle>Couldn&apos;t load your records</CardTitle>
-          <CardDescription>
-            Your data is safe — we just couldn&apos;t reach it right now. Check your connection and refresh
-            the page to try again.
-          </CardDescription>
+          <CardTitle>{t("records.loadFailedTitle")}</CardTitle>
+          <CardDescription>{t("records.loadFailedBody")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -75,8 +72,8 @@ function RecordsContent() {
     return (
       <Card className="animate-fade-in-up">
         <CardHeader>
-          <CardTitle>No records yet</CardTitle>
-          <CardDescription>Log your first check-in from Dashboard to start seeing insights.</CardDescription>
+          <CardTitle>{t("records.emptyTitle")}</CardTitle>
+          <CardDescription>{t("records.emptyBody")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -88,8 +85,8 @@ function RecordsContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">Records & Insights</h2>
-        <p className="text-sm text-muted-foreground">Your data tells the story of progress.</p>
+        <h2 className="text-xl font-bold">{t("records.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("records.subtitle")}</p>
       </div>
 
       <ProgressInsights
@@ -101,35 +98,35 @@ function RecordsContent() {
       {/* Stats row - color coded */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard
-          title="Current Month"
+          title={t("records.currentMonth")}
           value={summary.currentMonthTotal}
           unit="ml"
           icon={Calendar}
           color="sky"
         />
         <StatCard
-          title="Daily Average"
+          title={t("records.dailyAverage")}
           value={summary.dailyAverage}
           unit="ml"
           icon={Activity}
           color="indigo"
         />
         <StatCard
-          title="Previous Month"
+          title={t("records.previousMonth")}
           value={summary.previousMonthTotal}
           unit="ml"
           icon={BarChart3}
           color="slate"
         />
         <StatCard
-          title="Improvement"
+          title={t("records.improvement")}
           value={summary.improvementPercent}
           unit="%"
           icon={improvementPositive ? TrendingDown : TrendingUp}
           color={improvementPositive ? "emerald" : "amber"}
         />
         <StatCard
-          title="6-Mo Projection"
+          title={t("records.projection")}
           value={summary.projectionSixMonths}
           unit="ml"
           icon={Target}
@@ -140,10 +137,10 @@ function RecordsContent() {
       {/* Insight */}
       <Card className="border-indigo-500/15 bg-gradient-to-r from-card to-indigo-50 dark:to-indigo-950/15">
         <CardHeader>
-          <CardTitle className="text-base">Insight</CardTitle>
+          <CardTitle className="text-base">{t("records.insight")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm leading-relaxed text-body">{insight}</p>
+          <p className="text-sm leading-relaxed text-body">{t(insight.key, insight.params)}</p>
         </CardContent>
       </Card>
 
@@ -151,8 +148,8 @@ function RecordsContent() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Daily Consumption</CardTitle>
-            <CardDescription>Current month day by day</CardDescription>
+            <CardTitle className="text-base">{t("records.dailyConsumption")}</CardTitle>
+            <CardDescription>{t("records.dailyConsumptionDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <ConsumptionLineChart data={summary.dailyLineData} />
@@ -160,8 +157,8 @@ function RecordsContent() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Monthly Totals</CardTitle>
-            <CardDescription>Your trend over time</CardDescription>
+            <CardTitle className="text-base">{t("records.monthlyTotals")}</CardTitle>
+            <CardDescription>{t("records.monthlyTotalsDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <MonthlyBarChart data={summary.monthlyBarData} />

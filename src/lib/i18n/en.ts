@@ -141,6 +141,133 @@ export const en: Dictionary = {
   "home.quote6": "What you track, you transform.",
   "home.quote7": "Your commitment is visible in every log you make.",
 
+  // Records & insights
+  "records.title": "Records & Insights",
+  "records.subtitle": "Your data tells the story of progress.",
+  "records.loadFailedTitle": "Couldn't load your records",
+  "records.loadFailedBody":
+    "Your data is safe — we just couldn't reach it right now. Check your connection and refresh the page to try again.",
+  "records.emptyTitle": "No records yet",
+  "records.emptyBody": "Log your first check-in from Dashboard to start seeing insights.",
+  "records.currentMonth": "Current month",
+  "records.dailyAverage": "Daily average",
+  "records.previousMonth": "Previous month",
+  "records.improvement": "Improvement",
+  "records.projection": "6-mo projection",
+  "records.insight": "Insight",
+  "records.dailyConsumption": "Daily consumption",
+  "records.dailyConsumptionDesc": "Current month day by day",
+  "records.monthlyTotals": "Monthly totals",
+  "records.monthlyTotalsDesc": "Your trend over time",
+  "records.noneYet": "No records yet.",
+
+  // Generated insight copy (keys come from src/lib/analytics.ts)
+  "insight.none":
+    "You have no logged drinks this month. Keep reinforcing the routines helping you stay steady.",
+  "insight.down": "Your monthly intake is down by {percent}%. Consistent effort is clearly working.",
+  "insight.up":
+    "Your current trend is higher than last month. A small pause and support check-in can help reset momentum.",
+  "insight.stable":
+    "Your monthly pattern is stable. Small daily choices now can create a visible long-term drop.",
+
+  "milestone.day1": "First day",
+  "milestone.day3": "Three days",
+  "milestone.week1": "One week",
+  "milestone.week2": "Two weeks",
+  "milestone.month1": "One month",
+  "milestone.month2": "Two months",
+  "milestone.month3": "Three months",
+  "milestone.month6": "Six months",
+  "milestone.year1": "One year",
+  "milestone.generic": "{days} days",
+
+  "trigger.sundays": "Sundays",
+  "trigger.mondays": "Mondays",
+  "trigger.tuesdays": "Tuesdays",
+  "trigger.wednesdays": "Wednesdays",
+  "trigger.thursdays": "Thursdays",
+  "trigger.fridays": "Fridays",
+  "trigger.saturdays": "Saturdays",
+  "trigger.lateNights": "late nights (midnight–6am)",
+  "trigger.mornings": "mornings (6am–noon)",
+  "trigger.afternoons": "afternoons (noon–6pm)",
+  "trigger.evenings": "evenings (6pm–midnight)",
+  "trigger.mood": "feeling \u201c{mood}\u201d",
+
+  "progress.gotBack": "What you've got back",
+  "progress.gotBackDesc": "This month compared with {month}, your heaviest recent month.",
+  "progress.notSpent": "not spent",
+  "progress.caloriesAvoided": "calories avoided",
+  "progress.estimateNote":
+    "Estimates from typical prices and standard calorie values — a guide, not exact figures.",
+  "progress.milestones": "Milestones",
+  "progress.milestonesProgress": "{reached} reached — {remaining} to {next}",
+  "progress.milestonesNext": "{reached} reached — next is {next}",
+  "progress.allReached": "Every milestone reached. Remarkable.",
+  "progress.dayCount": "{n} day",
+  "progress.daysCount": "{n} days",
+  "progress.patterns": "Patterns worth knowing",
+  "progress.patternsDesc":
+    "Noticing when it tends to happen is what makes it easier to plan around — this isn't a judgement.",
+  "progress.clusterAround": "Most of your logs cluster around",
+
+  // AUDIT result bands (the questionnaire text itself lives in src/lib/audit.ts)
+  "audit.lowLabel": "Lower risk",
+  "audit.lowMeaning":
+    "Your answers suggest your drinking currently sits in a lower-risk range. That is worth acknowledging.",
+  "audit.lowGuidance":
+    "Keep doing what is working. If you are using Recoverly to cut down further, your goals and check-ins will help you track it.",
+  "audit.hazardousLabel": "Hazardous range",
+  "audit.hazardousMeaning":
+    "Your answers suggest a pattern that may be putting your health at risk over time. This is common, and noticing it now is a genuinely useful thing to have done.",
+  "audit.hazardousGuidance":
+    "Setting a weekly goal and logging honestly can make a real difference. Talking it through with a doctor or counsellor is a genuinely useful next step.",
+  "audit.harmfulLabel": "Harmful range",
+  "audit.harmfulMeaning":
+    "Your answers suggest drinking that is likely already affecting your health or daily life. Recognising that takes courage.",
+  "audit.harmfulGuidance":
+    "Please speak with a doctor or a de-addiction professional. They can assess your situation properly and build a plan with you. Recoverly can support you alongside that, not instead of it.",
+  "audit.dependenceLabel": "Possible dependence",
+  "audit.dependenceMeaning":
+    "Your answers are consistent with a level of drinking where professional support really matters. This is a screening result, not a diagnosis — but it is worth acting on.",
+  "audit.dependenceGuidance":
+    "Please contact a doctor or a de-addiction service soon. You do not have to sort this out on your own, and getting help early makes it easier.",
+
+  // Clinician report
+  "report.preparing": "Preparing your summary…",
+  "report.title": "Summary for your clinician",
+  "report.subtitle":
+    "A one-page overview to bring to an appointment. Use Print, then choose “Save as PDF” if you'd rather send it.",
+  "report.print": "Print / Save as PDF",
+  "report.docTitle": "Recoverly — self-reported summary",
+  "report.generated": "Generated {date}",
+  "report.consumption": "Consumption",
+  "report.recordsSince": "Records kept since",
+  "report.totalLogged": "Total check-ins logged",
+  "report.thisMonth": "This month",
+  "report.previousMonth": "Previous month",
+  "report.dailyAverage": "Daily average (this month)",
+  "report.currentStreak": "Current alcohol-free streak",
+  "report.longestStreak": "Longest alcohol-free streak",
+  "report.freeDaysThisMonth": "Alcohol-free days this month",
+  "report.weeklyGoal": "Weekly goal set",
+  "report.notSet": "not set",
+  "report.ofTotal": "{n} of {total}",
+  "report.auditHeading": "AUDIT screening",
+  "report.auditLine":
+    "Most recent score {score} / {max} ({label}) on {date}.{extra}",
+  "report.auditExtra": " {n} assessments recorded.",
+  "report.auditNote":
+    "Self-administered WHO AUDIT screening questionnaire. Screening only — not a diagnosis.",
+  "report.cravingsHeading": "Cravings",
+  "report.cravingsLine":
+    "{total} craving episodes logged. {passed} passed without drinking. Average self-rated intensity {avg} of 5.",
+  "report.patternsHeading": "Self-reported patterns",
+  "report.clusterLine": "Drinking clusters around {pattern} ({percent}% of logs)",
+  "report.motivationHeading": "Stated motivation",
+  "report.disclaimer":
+    "All figures are self-reported by the user through the Recoverly app and are not clinically verified. Recoverly is a self-management and support tool; it does not diagnose, treat or provide medical advice. This summary is intended to support — not replace — clinical assessment.",
+
   // Settings
   "settings.title": "Settings",
   "settings.subtitle": "Customize your recovery experience.",

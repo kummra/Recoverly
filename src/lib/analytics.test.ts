@@ -1,3 +1,4 @@
+import { en } from "@/lib/i18n/en";
 import { addDays, startOfMonth, subMonths } from "date-fns";
 import { describe, expect, it } from "vitest";
 
@@ -67,18 +68,23 @@ describe("suggestInsight", () => {
   };
 
   it("encourages when there are no drinks logged", () => {
-    expect(suggestInsight({ ...base, currentMonthTotal: 0 })).toMatch(/no logged drinks/i);
+    expect(suggestInsight({ ...base, currentMonthTotal: 0 }).key).toBe("insight.none");
   });
   it("celebrates a downward trend", () => {
-    expect(suggestInsight({ ...base, currentMonthTotal: 50, improvementPercent: 25 })).toMatch(/down by 25%/i);
+    expect(suggestInsight({ ...base, currentMonthTotal: 50, improvementPercent: 25 })).toEqual({
+      key: "insight.down",
+      params: { percent: 25 }
+    });
   });
   it("gently flags an upward trend without shaming", () => {
-    const msg = suggestInsight({ ...base, currentMonthTotal: 200, improvementPercent: -10 });
-    expect(msg).toMatch(/higher than last month/i);
-    expect(msg).not.toMatch(/fail|bad|shame/i);
+    const { key } = suggestInsight({ ...base, currentMonthTotal: 200, improvementPercent: -10 });
+    expect(key).toBe("insight.up");
+    // The copy now lives in the dictionary, so assert on what the user actually reads.
+    expect(en[key]).toMatch(/higher than last month/i);
+    expect(en[key]).not.toMatch(/fail|bad|shame/i);
   });
   it("notes a stable pattern", () => {
-    expect(suggestInsight({ ...base, currentMonthTotal: 100, improvementPercent: 0 })).toMatch(/stable/i);
+    expect(suggestInsight({ ...base, currentMonthTotal: 100, improvementPercent: 0 }).key).toBe("insight.stable");
   });
 });
 
@@ -266,19 +272,19 @@ describe("buildTriggerInsights", () => {
     // 8 Fridays (Aug 2026: 7th, 14th, 21st, 28th are Fridays)
     const fridays = [7, 14, 21, 28, 7, 14, 21, 28].map((d) => mk(new Date(2026, 7, d, 20)));
     const out = buildTriggerInsights(fridays);
-    expect(out.some((i) => i.label === "Fridays")).toBe(true);
+    expect(out.some((i) => i.labelKey === "trigger.fridays")).toBe(true);
   });
 
   it("surfaces a time-of-day pattern", () => {
     const evenings = Array.from({ length: 10 }, (_, i) => mk(new Date(2026, 7, i + 1, 21)));
     const out = buildTriggerInsights(evenings);
-    expect(out.some((i) => i.label.startsWith("evenings"))).toBe(true);
+    expect(out.some((i) => i.labelKey === "trigger.evenings")).toBe(true);
   });
 
   it("surfaces a repeated mood trigger", () => {
     const stressed = Array.from({ length: 10 }, (_, i) => mk(new Date(2026, 7, i + 1, 13), "stressed"));
     const out = buildTriggerInsights(stressed);
-    expect(out.some((i) => i.label.includes("stressed"))).toBe(true);
+    expect(out.some((i) => i.labelKey === "trigger.mood" && i.mood === "stressed")).toBe(true);
   });
 
   it("reports shares between 0 and 1", () => {

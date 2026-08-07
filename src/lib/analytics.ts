@@ -214,21 +214,22 @@ export const MILESTONE_DAYS = [1, 3, 7, 14, 30, 60, 90, 180, 365] as const;
 
 export type Milestone = {
   days: number;
-  label: string;
+  labelKey: string;
   reached: boolean;
 };
 
-/** Identity-framed, never a scoreboard: each one names who they're becoming. */
-const MILESTONE_LABELS: Record<number, string> = {
-  1: "First day",
-  3: "Three days",
-  7: "One week",
-  14: "Two weeks",
-  30: "One month",
-  60: "Two months",
-  90: "Three months",
-  180: "Six months",
-  365: "One year"
+/** Identity-framed, never a scoreboard: each one names who they're becoming.
+ *  Values are i18n keys — the UI translates them at render time. */
+const MILESTONE_LABEL_KEYS: Record<number, string> = {
+  1: "milestone.day1",
+  3: "milestone.day3",
+  7: "milestone.week1",
+  14: "milestone.week2",
+  30: "milestone.month1",
+  60: "milestone.month2",
+  90: "milestone.month3",
+  180: "milestone.month6",
+  365: "milestone.year1"
 };
 
 export function buildMilestones(currentStreakDays: number, longestStreakDays: number): {
@@ -240,7 +241,7 @@ export function buildMilestones(currentStreakDays: number, longestStreakDays: nu
   const best = Math.max(currentStreakDays, longestStreakDays);
   const milestones = MILESTONE_DAYS.map((days) => ({
     days,
-    label: MILESTONE_LABELS[days] ?? `${days} days`,
+    labelKey: MILESTONE_LABEL_KEYS[days] ?? "milestone.generic",
     reached: best >= days
   }));
   const next = milestones.find((m) => !m.reached) ?? null;
@@ -249,20 +250,30 @@ export function buildMilestones(currentStreakDays: number, longestStreakDays: nu
 
 // ─── Trigger patterns ───────────────────────────────────────────────────────
 export type TriggerInsight = {
-  /** Human-readable pattern, e.g. "Fridays" or "evenings (6pm–midnight)". */
-  label: string;
+  /** i18n key for the pattern, e.g. "trigger.fridays". */
+  labelKey: string;
+  /** Present only for mood patterns: the user's own wording, untranslated. */
+  mood?: string;
   count: number;
   /** Share of all logged drinks, 0–1. */
   share: number;
 };
 
-const DAY_NAMES = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"];
+const DAY_KEYS = [
+  "trigger.sundays",
+  "trigger.mondays",
+  "trigger.tuesdays",
+  "trigger.wednesdays",
+  "trigger.thursdays",
+  "trigger.fridays",
+  "trigger.saturdays"
+];
 
-function partOfDay(h: number): string {
-  if (h < 6) return "late nights (midnight–6am)";
-  if (h < 12) return "mornings (6am–noon)";
-  if (h < 18) return "afternoons (noon–6pm)";
-  return "evenings (6pm–midnight)";
+function partOfDayKey(h: number): string {
+  if (h < 6) return "trigger.lateNights";
+  if (h < 12) return "trigger.mornings";
+  if (h < 18) return "trigger.afternoons";
+  return "trigger.evenings";
 }
 
 /**
@@ -282,17 +293,20 @@ export function buildTriggerInsights(records: DrinkRecord[], minRecords = 8): Tr
   const out: TriggerInsight[] = [];
   const total = records.length;
 
-  const day = tally(records.map((r) => DAY_NAMES[r.createdAt.getDay()]));
+  const day = tally(records.map((r) => DAY_KEYS[r.createdAt.getDay()]));
   // 1/7 is chance for a weekday; require a clear lean past it.
-  if (day && day[1] / total >= 0.25) out.push({ label: day[0], count: day[1], share: day[1] / total });
+  if (day && day[1] / total >= 0.25) out.push({ labelKey: day[0], count: day[1], share: day[1] / total });
 
-  const time = tally(records.map((r) => partOfDay(r.createdAt.getHours())));
-  if (time && time[1] / total >= 0.4) out.push({ label: time[0], count: time[1], share: time[1] / total });
+  const time = tally(records.map((r) => partOfDayKey(r.createdAt.getHours())));
+  if (time && time[1] / total >= 0.4) out.push({ labelKey: time[0], count: time[1], share: time[1] / total });
 
   const moods = records.map((r) => r.mood?.trim().toLowerCase()).filter((m): m is string => Boolean(m));
   if (moods.length >= Math.max(4, minRecords / 2)) {
     const mood = tally(moods);
-    if (mood && mood[1] >= 3) out.push({ label: `feeling "${mood[0]}"`, count: mood[1], share: mood[1] / total });
+    // The mood itself is the user's own words — pass it through as a parameter
+    // rather than trying to translate it.
+    if (mood && mood[1] >= 3)
+      out.push({ labelKey: "trigger.mood", mood: mood[0], count: mood[1], share: mood[1] / total });
   }
 
   return out;
@@ -377,18 +391,15 @@ export function shouldShowReminder(opts: {
   return minutesNow >= minutesTarget;
 }
 
-export function suggestInsight(summary: AnalyticsSummary) {
-  if (summary.currentMonthTotal === 0) {
-    return "You have no logged drinks this month. Keep reinforcing the routines helping you stay steady.";
-  }
-
-  if (summary.improvementPercent > 0) {
-    return `Your monthly intake is down by ${summary.improvementPercent}%. Consistent effort is clearly working.`;
-  }
-
-  if (summary.improvementPercent < 0) {
-    return "Your current trend is higher than last month. A small pause and support check-in can help reset momentum.";
-  }
-
-  return "Your monthly pattern is stable. Small daily choices now can create a visible long-term drop.";
+/** Returns an i18n key plus any interpolation values, so the wording follows
+ *  the reader's language rather than being baked in here. */
+export function suggestInsight(summary: AnalyticsSummary): {
+  key: string;
+  params?: Record<string, string | number>;
+} {
+  if (summary.currentMonthTotal === 0) return { key: "insight.none" };
+  if (summary.improvementPercent > 0)
+    return { key: "insight.down", params: { percent: summary.improvementPercent } };
+  if (summary.improvementPercent < 0) return { key: "insight.up" };
+  return { key: "insight.stable" };
 }

@@ -6,6 +6,7 @@ import { AlertCircle, ClipboardCheck, LifeBuoy, RotateCcw, ShieldAlert } from "l
 import { format } from "date-fns";
 
 import { ProtectedRoute } from "@/components/protected-route";
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -27,6 +28,7 @@ export default function AssessmentPage() {
 }
 
 function AssessmentContent() {
+  const t = useT();
   const { user } = useAuth();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -110,11 +112,11 @@ function AssessmentContent() {
                 {result.score}
                 <span className="ml-1 text-base font-normal text-muted-foreground">/ {AUDIT_MAX_SCORE}</span>
               </CardTitle>
-              <p className="text-sm font-medium text-body">{result.label}</p>
+              <p className="text-sm font-medium text-body">{t(result.labelKey)}</p>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm leading-relaxed text-body">{result.meaning}</p>
-              <p className="text-sm leading-relaxed text-body">{result.guidance}</p>
+              <p className="text-sm leading-relaxed text-body">{t(result.meaningKey)}</p>
+              <p className="text-sm leading-relaxed text-body">{t(result.guidanceKey)}</p>
             </CardContent>
           </Card>
 

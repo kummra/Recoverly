@@ -98,12 +98,10 @@ export type AuditZone = "low" | "hazardous" | "harmful" | "possible-dependence";
 export type AuditResult = {
   score: number;
   zone: AuditZone;
-  /** Short, non-alarming band name for the UI. */
-  label: string;
-  /** Plain-language meaning — never a diagnosis. */
-  meaning: string;
-  /** What we suggest they do next. */
-  guidance: string;
+  /** i18n keys — the UI translates these, so the result speaks the reader's language. */
+  labelKey: string;
+  meaningKey: string;
+  guidanceKey: string;
   /** True when the sudden-cessation warning must be shown (project rule #3). */
   showWithdrawalWarning: boolean;
 };
@@ -138,11 +136,9 @@ export function interpretAudit(score: number): AuditResult {
     return {
       score,
       zone: "low",
-      label: "Lower risk",
-      meaning:
-        "Your answers suggest your drinking currently sits in a lower-risk range. That is worth acknowledging.",
-      guidance:
-        "Keep doing what is working. If you are using Recoverly to cut down further, your goals and check-ins will help you track it.",
+      labelKey: "audit.lowLabel",
+      meaningKey: "audit.lowMeaning",
+      guidanceKey: "audit.lowGuidance",
       showWithdrawalWarning: false
     };
   }
@@ -150,11 +146,9 @@ export function interpretAudit(score: number): AuditResult {
     return {
       score,
       zone: "hazardous",
-      label: "Hazardous range",
-      meaning:
-        "Your answers suggest a pattern that may be putting your health at risk over time. This is common, and noticing it now is a genuinely useful thing to have done.",
-      guidance:
-        "Setting a weekly goal and logging honestly can make a real difference. Talking it through with a doctor or counsellor is a genuinely useful next step.",
+      labelKey: "audit.hazardousLabel",
+      meaningKey: "audit.hazardousMeaning",
+      guidanceKey: "audit.hazardousGuidance",
       showWithdrawalWarning: true
     };
   }
@@ -162,22 +156,18 @@ export function interpretAudit(score: number): AuditResult {
     return {
       score,
       zone: "harmful",
-      label: "Harmful range",
-      meaning:
-        "Your answers suggest drinking that is likely already affecting your health or daily life. Recognising that takes courage.",
-      guidance:
-        "Please speak with a doctor or a de-addiction professional. They can assess your situation properly and build a plan with you. Recoverly can support you alongside that, not instead of it.",
+      labelKey: "audit.harmfulLabel",
+      meaningKey: "audit.harmfulMeaning",
+      guidanceKey: "audit.harmfulGuidance",
       showWithdrawalWarning: true
     };
   }
   return {
     score,
     zone: "possible-dependence",
-    label: "Possible dependence",
-    meaning:
-      "Your answers are consistent with a level of drinking where professional support really matters. This is a screening result, not a diagnosis — but it is worth acting on.",
-    guidance:
-      "Please contact a doctor or a de-addiction service soon. You do not have to sort this out on your own, and getting help early makes it easier.",
+    labelKey: "audit.dependenceLabel",
+    meaningKey: "audit.dependenceMeaning",
+    guidanceKey: "audit.dependenceGuidance",
     showWithdrawalWarning: true
   };
 }

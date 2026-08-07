@@ -1,3 +1,4 @@
+import { en } from "@/lib/i18n/en";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -89,14 +90,15 @@ describe("interpretAudit — WHO risk zones", () => {
 
   it("points every at-risk band toward a professional", () => {
     for (const s of [8, 16, 20, 40]) {
-      expect(interpretAudit(s).guidance).toMatch(/doctor|professional|de-addiction/i);
+      expect(en[interpretAudit(s).guidanceKey]).toMatch(/doctor|professional|de-addiction/i);
     }
   });
 
   it("never uses shaming language", () => {
     for (let s = 0; s <= 40; s++) {
       const r = interpretAudit(s);
-      const text = `${r.label} ${r.meaning} ${r.guidance}`;
+      // The wording lives in the dictionary now; assert on what a reader sees.
+      const text = `${en[r.labelKey]} ${en[r.meaningKey]} ${en[r.guidanceKey]}`;
       expect(text).not.toMatch(/alcoholic|abuse[rd]|failure|bad|shame|fault|weak/i);
     }
   });
@@ -104,7 +106,7 @@ describe("interpretAudit — WHO risk zones", () => {
   it("never claims to diagnose", () => {
     for (let s = 0; s <= 40; s++) {
       const r = interpretAudit(s);
-      expect(`${r.meaning} ${r.guidance}`).not.toMatch(/you have (an )?(alcohol use disorder|addiction)/i);
+      expect(`${en[r.meaningKey]} ${en[r.guidanceKey]}`).not.toMatch(/you have (an )?(alcohol use disorder|addiction)/i);
     }
   });
 });
