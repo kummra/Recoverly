@@ -208,7 +208,7 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                   <a href={`tel:${HELPLINES.india.teleManas}`} className="font-medium text-sky-700 underline underline-offset-2 dark:text-sky-300">
                     {HELPLINES.india.teleManas}
                   </a>{" "}
-                  · {t("sos.emergency")}{" "}
+                  · {t("common.emergency")}{" "}
                   <a href={`tel:${HELPLINES.india.emergency}`} className="font-medium text-sky-700 underline underline-offset-2 dark:text-sky-300">
                     {HELPLINES.india.emergency}
                   </a>

@@ -76,7 +76,6 @@ export const en: Dictionary = {
   "sos.scaleHint": "1 = mild · 5 = overwhelming",
   "sos.intensityAria": "Intensity {n} of 5",
   "sos.crisisPrefix": "In crisis?",
-  "sos.emergency": "Emergency",
   "sos.start": "Start",
   "sos.riding": "Riding the wave",
   "sos.breatheIn": "Breathe in",
@@ -109,7 +108,51 @@ export const en: Dictionary = {
   "safety.withdrawalBody":
     "If you drink heavily or every day, stopping suddenly can be medically dangerous — abrupt withdrawal can cause seizures or delirium tremens, which can be life-threatening. Please talk to a doctor before you quit, and only reduce or stop under medical supervision.",
 
+  // Home
+  "home.greetingMorning": "Good morning",
+  "home.greetingAfternoon": "Good afternoon",
+  "home.greetingEvening": "Good evening",
+  // {identity} is rendered as a gradient span, so its position stays flexible.
+  "home.heroTitle": "You are building a {identity}.",
+  "home.heroIdentity": "healthier identity",
+  "home.heroBody":
+    "This app helps you notice patterns, create gentle friction before choices, and celebrate every meaningful reduction in alcohol consumption.",
+  "home.badgeProgress": "Progress, not perfection",
+  "home.badgeCalm": "Calm decisions create long-term freedom",
+  "home.logCheckIn": "Log a check-in",
+  "home.thisMonth": "This month",
+  "home.totalCheckIns": "Total check-ins",
+  "home.logged": "logged",
+  "home.quickActions": "Quick actions",
+  "home.viewRecords": "View records",
+  "home.talkToAi": "Talk to AI",
+  "home.todaysFocus": "Today's focus",
+  "home.quoteFooter": "A new thought surfaces each day to anchor your intention.",
+  "home.recoveryMindset": "Recovery mindset",
+  "home.ctaTitle": "Start your recovery journey",
+  "home.ctaBody":
+    "Create a free account to track consumption, view insights, and talk to our AI guide.",
+  "home.getStarted": "Get started",
+  "home.quote1": "Small steps repeated daily become your strongest identity.",
+  "home.quote2": "Recovery is not about perfection; it is about direction.",
+  "home.quote3": "Each honest check-in is proof that you care about your future.",
+  "home.quote4": "The bravest thing you can do today is notice and choose differently.",
+  "home.quote5": "Patterns change one intentional pause at a time.",
+  "home.quote6": "What you track, you transform.",
+  "home.quote7": "Your commitment is visible in every log you make.",
+
+  // Offline / error
+  "offline.title": "You're offline",
+  "offline.body":
+    "Recoverly needs a connection to load your records. Everything you've logged is safe — it'll be here when you reconnect.",
+  "offline.needHelp": "Need help right now?",
+  "offline.worksOffline": "These work without internet.",
+  "error.title": "Something went wrong",
+  "error.body": "Please retry. If this keeps happening, check your connection and try again shortly.",
+  "error.retry": "Try again",
+
   // Common actions
+  "common.emergency": "Emergency",
   "common.save": "Save",
   "common.saving": "Saving…",
   "common.cancel": "Cancel",
