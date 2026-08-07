@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, Trash2 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -22,6 +23,7 @@ import { Label } from "@/components/ui/label";
 const CONFIRM_WORD = "DELETE";
 
 export function DeleteAccount() {
+  const t = useT();
   const { getIdToken, signOutUser } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -42,7 +44,7 @@ export function DeleteAccount() {
       await signOutUser();
       router.replace("/");
     } catch {
-      setError("Could not delete your account. Please try again.");
+      setError(t("account.deleteFailed"));
       setDeleting(false);
     }
   };
@@ -69,14 +71,13 @@ export function DeleteAccount() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Delete your account?</DialogTitle>
+              <DialogTitle>{t("account.deleteTitle")}</DialogTitle>
               <DialogDescription>
-                This permanently deletes your account and every record tied to it. There is
-                no way to recover it. Type <span className="font-semibold text-red-700 dark:text-red-300">{CONFIRM_WORD}</span> to confirm.
+                {t("account.deleteBody", { word: CONFIRM_WORD })}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-2 py-2">
-              <Label htmlFor="confirm-delete" className="sr-only">Type {CONFIRM_WORD} to confirm</Label>
+              <Label htmlFor="confirm-delete" className="sr-only">{t("account.deleteConfirmLabel", { word: CONFIRM_WORD })}</Label>
               <Input
                 id="confirm-delete"
                 value={confirmText}
@@ -100,7 +101,7 @@ export function DeleteAccount() {
                 disabled={deleting || confirmText !== CONFIRM_WORD}
                 className="bg-red-600 text-foreground hover:bg-red-700"
               >
-                {deleting ? "Deleting..." : "Permanently delete"}
+                {deleting ? t("account.deleting") : t("account.deletePermanently")}
               </Button>
             </DialogFooter>
           </DialogContent>

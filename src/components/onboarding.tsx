@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AlertCircle, ArrowLeft, ArrowRight, Heart, Sparkles, Target } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ export function Onboarding({
   onComplete: () => void;
   onSkip: () => void;
 }) {
+  const t = useT();
   const [step, setStep] = useState<1 | 2>(1);
   const [motivation, setMotivation] = useState("");
   const [goalWeeklyMl, setGoalWeeklyMl] = useState<number | "">("");
@@ -46,7 +48,7 @@ export function Onboarding({
       await saveUserPreferences(userId, parsed.data);
       onComplete();
     } catch {
-      setError("Could not save right now. Please try again.");
+      setError(t("onboarding.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -61,35 +63,35 @@ export function Onboarding({
             <div className="flex items-center gap-3">
               <Sparkles className="h-7 w-7 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
-                <h3 className="text-lg font-semibold">Welcome to Recoverly</h3>
-                <p className="text-sm text-muted-foreground">A calm, judgment-free space. Let&apos;s set you up in two small steps.</p>
+                <h3 className="text-lg font-semibold">{t("onboarding.welcome")}</h3>
+                <p className="text-sm text-muted-foreground">{t("onboarding.welcomeBody")}</p>
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="why" className="flex items-center gap-1.5">
                 <Heart className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                What&apos;s bringing you here?
+                {t("onboarding.whyLabel")}
               </Label>
               <textarea
                 id="why"
                 value={motivation}
                 onChange={(e) => setMotivation(e.target.value.slice(0, 200))}
                 rows={3}
-                placeholder="My family, my health, the person I want to be…"
+                placeholder={t("settings.yourWhyPlaceholder")}
                 className="w-full rounded-xl border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-subtle focus:border-emerald-500/50 focus:outline-none"
               />
               <p className="text-xs text-subtle">
-                This becomes your anchor on hard days. Optional — you can add it later in Settings.
+                {t("onboarding.whyHint")}
               </p>
             </div>
 
             <div className="flex items-center justify-between">
               <Button type="button" variant="ghost" size="sm" onClick={onSkip}>
-                Skip for now
+                {t("onboarding.skip")}
               </Button>
               <Button type="button" onClick={() => setStep(2)} className="gap-1.5">
-                Next <ArrowRight className="h-4 w-4" />
+                {t("onboarding.next")} <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
           </>
@@ -98,20 +100,20 @@ export function Onboarding({
             <div className="flex items-center gap-3">
               <Target className="h-7 w-7 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
-                <h3 className="text-lg font-semibold">Set a gentle goal</h3>
-                <p className="text-sm text-muted-foreground">Small and realistic beats all-or-nothing. You can change this any time.</p>
+                <h3 className="text-lg font-semibold">{t("onboarding.goalTitle")}</h3>
+                <p className="text-sm text-muted-foreground">{t("onboarding.goalBody")}</p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="goal">Weekly limit (ml)</Label>
+              <Label htmlFor="goal">{t("onboarding.goalLabel")}</Label>
               <Input
                 id="goal"
                 type="number"
                 min={0}
                 max={MAX_WEEKLY_GOAL_ML}
                 value={goalWeeklyMl}
-                placeholder="e.g. 750"
+                placeholder={t("onboarding.goalPlaceholder")}
                 onChange={(e) => setGoalWeeklyMl(e.target.value === "" ? "" : Number(e.target.value))}
               />
               <button
@@ -119,7 +121,7 @@ export function Onboarding({
                 onClick={() => setGoalWeeklyMl(0)}
                 className="text-xs text-emerald-700 dark:text-emerald-300 underline-offset-2 hover:underline"
               >
-                I&apos;m aiming to stop entirely (0 ml)
+                {t("onboarding.aimToStop")}
               </button>
             </div>
 
@@ -131,10 +133,10 @@ export function Onboarding({
 
             <div className="flex items-center justify-between">
               <Button type="button" variant="ghost" size="sm" onClick={() => setStep(1)} className="gap-1.5">
-                <ArrowLeft className="h-4 w-4" /> Back
+                <ArrowLeft className="h-4 w-4" /> {t("onboarding.back")}
               </Button>
               <Button type="button" onClick={finish} disabled={saving}>
-                {saving ? "Saving…" : "Start my journey"}
+                {saving ? t("common.saving") : t("onboarding.start")}
               </Button>
             </div>
           </>

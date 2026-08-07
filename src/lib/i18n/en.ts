@@ -141,6 +141,73 @@ export const en: Dictionary = {
   "home.quote6": "What you track, you transform.",
   "home.quote7": "Your commitment is visible in every log you make.",
 
+  // Log a drink
+  "log.quantity": "Quantity (ml)",
+  "log.quantityPlaceholder": "e.g. 330",
+  "log.drinkType": "Drink type",
+  "log.selectType": "Select drink type",
+  "log.typeBeer": "beer",
+  "log.typeWine": "wine",
+  "log.typeWhiskey": "whiskey",
+  "log.typeVodka": "vodka",
+  "log.typeOther": "other",
+  "log.otherPlaceholder": "e.g. rum, cider, cocktail",
+  "log.mood": "How are you feeling?",
+  "log.moodPlaceholder": "Stressed, social pressure, celebration…",
+  "log.secondsRemaining": "{n}s remaining",
+  "log.readyToSubmit": "Ready to submit",
+  "log.invalid": "Please provide a valid quantity and drink type.",
+  "log.saveFailed": "Could not save this record. Please try again.",
+
+  // Onboarding
+  "onboarding.welcome": "Welcome to Recoverly",
+  "onboarding.welcomeBody": "A calm, judgment-free space. Let's set you up in two small steps.",
+  "onboarding.whyLabel": "What's bringing you here?",
+  "onboarding.whyHint":
+    "This becomes your anchor on hard days. Optional — you can add it later in Settings.",
+  "onboarding.skip": "Skip for now",
+  "onboarding.next": "Next",
+  "onboarding.goalTitle": "Set a gentle goal",
+  "onboarding.goalBody":
+    "Small and realistic beats all-or-nothing. You can change this any time.",
+  "onboarding.goalLabel": "Weekly limit (ml)",
+  "onboarding.goalPlaceholder": "e.g. 750",
+  "onboarding.aimToStop": "I'm aiming to stop entirely (0 ml)",
+  "onboarding.back": "Back",
+  "onboarding.start": "Start my journey",
+  "onboarding.saveFailed": "Could not save right now. Please try again.",
+
+  // Daily nudge
+  "nudge.title": "Your daily check-in",
+  "nudge.dismiss": "Dismiss reminder",
+
+  // Account & data management
+  "account.yourData": "Your data",
+  "account.yourDataDesc": "Take a copy with you, or clear what you no longer need.",
+  "account.exporting": "Preparing…",
+  "account.exportCsv": "Export my records (CSV)",
+  "account.noRecordsToExport": "You have no records to export yet.",
+  "account.deleteTitle": "Delete your account?",
+  "account.deleteBody":
+    "This permanently deletes your account and every record tied to it. There is no way to recover it. Type {word} to confirm.",
+  "account.deleteConfirmLabel": "Type {word} to confirm",
+  "account.deleting": "Deleting…",
+  "account.deletePermanently": "Permanently delete",
+  "account.deleteFailed": "Could not delete your account. Please try again.",
+  "account.pwDesc": "You'll need your current password to confirm it's you.",
+  "account.currentPw": "Current password",
+  "account.newPw": "New password",
+  "account.confirmPw": "Confirm new password",
+  "account.updating": "Updating…",
+  "account.updatePw": "Update password",
+  "account.pwMismatch": "New passwords do not match.",
+  "account.pwSameAsOld": "New password must be different from the current one.",
+  "account.pwUpdated": "Password updated.",
+  "account.pwWrongCurrent": "Current password is incorrect.",
+  "account.pwTooWeak": "That password is too weak. Try a longer one.",
+  "account.pwTooManyAttempts": "Too many attempts. Please wait a moment and try again.",
+  "account.pwUpdateFailed": "Could not update password. Please try again.",
+
   // Records & insights
   "records.title": "Records & Insights",
   "records.subtitle": "Your data tells the story of progress.",

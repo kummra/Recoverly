@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Bell, X } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { dayKey, shouldShowReminder } from "@/lib/analytics";
@@ -19,6 +20,7 @@ const STORAGE_KEY = "recoverly:reminderDismissedOn";
  * native app.
  */
 export function DailyNudge({ reminderTime }: { reminderTime?: string }) {
+  const t = useT();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export function DailyNudge({ reminderTime }: { reminderTime?: string }) {
       <CardContent className="flex items-start gap-3 pt-6">
         <Bell className="mt-0.5 h-5 w-5 shrink-0 text-sky-600 dark:text-sky-400" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-sky-800 dark:text-sky-200">Your daily check-in</p>
+          <p className="text-sm font-medium text-sky-800 dark:text-sky-200">{t("nudge.title")}</p>
           <p className="mt-0.5 text-sm text-muted-foreground">
             However today went, showing up here is the win. Take a moment to reflect — no judgment either way.
           </p>
@@ -69,7 +71,7 @@ export function DailyNudge({ reminderTime }: { reminderTime?: string }) {
           size="icon"
           className="h-8 w-8 shrink-0"
           onClick={dismiss}
-          aria-label="Dismiss reminder"
+          aria-label={t("nudge.dismiss")}
         >
           <X className="h-4 w-4" />
         </Button>

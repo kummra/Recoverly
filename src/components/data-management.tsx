@@ -37,7 +37,7 @@ export function DataManagement() {
     try {
       const records = await getDrinkRecords(user.uid);
       if (records.length === 0) {
-        setStatus({ type: "error", text: "You have no records to export yet." });
+        setStatus({ type: "error", text: t("account.noRecordsToExport") });
         return;
       }
       const header = "Date,Type,Details,Quantity (ml),Mood\n";
@@ -85,9 +85,9 @@ export function DataManagement() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Database className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          Your data
+          {t("account.yourData")}
         </CardTitle>
-        <CardDescription>Take a copy with you, or clear what you no longer need.</CardDescription>
+        <CardDescription>{t("account.yourDataDesc")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <Button
@@ -98,7 +98,7 @@ export function DataManagement() {
           disabled={busy !== null}
         >
           <Download className="h-4 w-4" />
-          {busy === "export" ? "Preparing…" : "Export my records (CSV)"}
+          {busy === "export" ? t("account.exporting") : t("account.exportCsv")}
         </Button>
 
         <Button asChild variant="outline" className="w-full justify-start gap-2">
