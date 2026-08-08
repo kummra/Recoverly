@@ -278,7 +278,66 @@ export const en: Dictionary = {
     "Noticing when it tends to happen is what makes it easier to plan around — this isn't a judgement.",
   "progress.clusterAround": "Most of your logs cluster around",
 
-  // AUDIT result bands (the questionnaire text itself lives in src/lib/audit.ts)
+  // AI coach
+  "ai.newConversation": "New conversation",
+  "ai.newChatTitle": "New guidance chat",
+  "ai.assistantDesc": "This assistant focuses on non-judgmental recovery support.",
+  "ai.conversationLog": "AI conversation log",
+  "ai.inputPlaceholder": "What's on your mind today?",
+  "ai.send": "Send message",
+  "ai.requestFailed": "Could not get AI response. Please try again.",
+
+  // AUDIT questionnaire
+  "audit.pageTitle": "Alcohol self-check (AUDIT)",
+  "audit.pageIntro":
+    "Ten questions from the World Health Organization's screening tool. Answering honestly is the only way it tells you anything useful — nobody else sees this.",
+  "audit.notDiagnosisLead": "This is a screening questionnaire, not a diagnosis.",
+  "audit.translationNote":
+    "The questions are translated for readability. Scoring follows the WHO's English original, so please go through your result with a doctor.",
+  "audit.yourScore": "Your score",
+  "audit.findSupport": "Find support",
+  "audit.summaryForDoctor": "Summary for my doctor",
+  "audit.takeAgain": "Take it again",
+  "audit.previousResults": "Your previous results",
+  "audit.previousResultsDesc": "Scores can move as your drinking changes.",
+  "audit.answeredCount": "{n} of {total} answered",
+  "audit.freqNever": "Never",
+  "audit.freqLessMonthly": "Less than monthly",
+  "audit.freqMonthly": "Monthly",
+  "audit.freqWeekly": "Weekly",
+  "audit.freqDaily": "Daily or almost daily",
+  "audit.noAnswer": "No",
+  "audit.yesNotPastYear": "Yes, but not in the past year",
+  "audit.yesPastYear": "Yes, during the past year",
+  "audit.q1": "How often do you have a drink containing alcohol?",
+  "audit.q1o1": "Never",
+  "audit.q1o2": "Monthly or less",
+  "audit.q1o3": "2–4 times a month",
+  "audit.q1o4": "2–3 times a week",
+  "audit.q1o5": "4 or more times a week",
+  "audit.q2":
+    "How many standard drinks containing alcohol do you have on a typical day when drinking?",
+  "audit.q2o1": "1 or 2",
+  "audit.q2o2": "3 or 4",
+  "audit.q2o3": "5 or 6",
+  "audit.q2o4": "7 to 9",
+  "audit.q2o5": "10 or more",
+  "audit.q3": "How often do you have six or more drinks on one occasion?",
+  "audit.q4":
+    "During the past year, how often have you found that you were not able to stop drinking once you had started?",
+  "audit.q5":
+    "During the past year, how often have you failed to do what was normally expected of you because of drinking?",
+  "audit.q6":
+    "During the past year, how often have you needed a drink in the morning to get yourself going after a heavy drinking session?",
+  "audit.q7":
+    "During the past year, how often have you had a feeling of guilt or remorse after drinking?",
+  "audit.q8":
+    "During the past year, have you been unable to remember what happened the night before because you had been drinking?",
+  "audit.q9": "Have you or someone else been injured as a result of your drinking?",
+  "audit.q10":
+    "Has a relative or friend, doctor or other health worker been concerned about your drinking or suggested you cut down?",
+
+  // AUDIT result bands
   "audit.lowLabel": "Lower risk",
   "audit.lowMeaning":
     "Your answers suggest your drinking currently sits in a lower-risk range. That is worth acknowledging.",

@@ -2,8 +2,11 @@
  * AUDIT — Alcohol Use Disorders Identification Test (WHO).
  *
  * Ten items, each scored 0–4 (items 9 and 10 score 0/2/4), total 0–40.
- * Questions are reproduced verbatim; altering the wording invalidates the
- * instrument's scoring.
+ * The English wording is reproduced verbatim; altering it invalidates the
+ * instrument's scoring. Other languages are shown via i18n keys so the
+ * questionnaire is answerable by people who do not read English — those are
+ * plain translations, not the WHO's officially validated language versions,
+ * and the page says so.
  *
  * Source: Saunders JB, Aasland OG, Babor TF et al. Development of the Alcohol
  * Use Disorders Identification Test (AUDIT). Addiction 1993;88:791–803.
@@ -16,77 +19,96 @@
 
 export type AuditQuestion = {
   id: number;
-  text: string;
-  /** In order; index is the point value, except items 9–10 (see `points`). */
-  options: string[];
+  /** i18n key for the question text. */
+  textKey: string;
+  /** i18n keys, in order; index is the point value, except items 9–10. */
+  optionKeys: string[];
   /** Point value per option index. */
   points: number[];
 };
 
-const FREQ = ["Never", "Less than monthly", "Monthly", "Weekly", "Daily or almost daily"];
+const FREQ = [
+  "audit.freqNever",
+  "audit.freqLessMonthly",
+  "audit.freqMonthly",
+  "audit.freqWeekly",
+  "audit.freqDaily"
+];
 const FREQ_POINTS = [0, 1, 2, 3, 4];
-const YES_NO = ["No", "Yes, but not in the past year", "Yes, during the past year"];
+const YES_NO = ["audit.noAnswer", "audit.yesNotPastYear", "audit.yesPastYear"];
 const YES_NO_POINTS = [0, 2, 4];
 
 export const AUDIT_QUESTIONS: AuditQuestion[] = [
   {
     id: 1,
-    text: "How often do you have a drink containing alcohol?",
-    options: ["Never", "Monthly or less", "2–4 times a month", "2–3 times a week", "4 or more times a week"],
+    textKey: "audit.q1",
+    optionKeys: [
+      "audit.q1o1",
+      "audit.q1o2",
+      "audit.q1o3",
+      "audit.q1o4",
+      "audit.q1o5"
+    ],
     points: FREQ_POINTS
   },
   {
     id: 2,
-    text: "How many standard drinks containing alcohol do you have on a typical day when drinking?",
-    options: ["1 or 2", "3 or 4", "5 or 6", "7 to 9", "10 or more"],
+    textKey: "audit.q2",
+    optionKeys: [
+      "audit.q2o1",
+      "audit.q2o2",
+      "audit.q2o3",
+      "audit.q2o4",
+      "audit.q2o5"
+    ],
     points: FREQ_POINTS
   },
   {
     id: 3,
-    text: "How often do you have six or more drinks on one occasion?",
-    options: FREQ,
+    textKey: "audit.q3",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 4,
-    text: "During the past year, how often have you found that you were not able to stop drinking once you had started?",
-    options: FREQ,
+    textKey: "audit.q4",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 5,
-    text: "During the past year, how often have you failed to do what was normally expected of you because of drinking?",
-    options: FREQ,
+    textKey: "audit.q5",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 6,
-    text: "During the past year, how often have you needed a drink in the morning to get yourself going after a heavy drinking session?",
-    options: FREQ,
+    textKey: "audit.q6",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 7,
-    text: "During the past year, how often have you had a feeling of guilt or remorse after drinking?",
-    options: FREQ,
+    textKey: "audit.q7",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 8,
-    text: "During the past year, have you been unable to remember what happened the night before because you had been drinking?",
-    options: FREQ,
+    textKey: "audit.q8",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 9,
-    text: "Have you or someone else been injured as a result of your drinking?",
-    options: YES_NO,
+    textKey: "audit.q9",
+    optionKeys: YES_NO,
     points: YES_NO_POINTS
   },
   {
     id: 10,
-    text: "Has a relative or friend, doctor or other health worker been concerned about your drinking or suggested you cut down?",
-    options: YES_NO,
+    textKey: "audit.q10",
+    optionKeys: YES_NO,
     points: YES_NO_POINTS
   }
 ];
