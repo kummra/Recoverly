@@ -79,7 +79,7 @@ export function PasswordChange() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <KeyRound className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-          Change password
+          {t("account.changePassword")}
         </CardTitle>
         <CardDescription>{t("account.pwDesc")}</CardDescription>
       </CardHeader>

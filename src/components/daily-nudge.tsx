@@ -62,7 +62,7 @@ export function DailyNudge({ reminderTime }: { reminderTime?: string }) {
         <div className="flex-1">
           <p className="text-sm font-medium text-sky-800 dark:text-sky-200">{t("nudge.title")}</p>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            However today went, showing up here is the win. Take a moment to reflect — no judgment either way.
+            {t("nudge.body")}
           </p>
         </div>
         <Button

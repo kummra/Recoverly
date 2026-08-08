@@ -140,10 +140,10 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Pause className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            Pause before logging
+            {t("log.pauseTitle")}
           </DialogTitle>
           <DialogDescription>
-            This moment of friction helps bring your conscious choice back into the process.
+            {t("log.pauseBody")}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
@@ -182,7 +182,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
           {drinkType === "other" ? (
             <div className="space-y-2">
               <Label htmlFor="otherType">
-                What did you have? <span className="text-xs text-subtle">{t("common.optional")}</span>
+                {t("log.whatDidYouHave")} <span className="text-xs text-subtle">{t("common.optional")}</span>
               </Label>
               <Input
                 id="otherType"

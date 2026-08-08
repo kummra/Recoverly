@@ -1,8 +1,9 @@
 "use client";
 
 import { ShieldCheck } from "lucide-react";
+
 import { useT } from "@/components/i18n-provider";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SECTIONS = [
   { titleKey: "privacy.s1Title", bodyKey: "privacy.s1Body" },
@@ -12,7 +13,7 @@ const SECTIONS = [
   { titleKey: "privacy.s5Title", bodyKey: "privacy.s5Body" }
 ];
 
-export default function PrivacyPage() {
+export function PrivacyContent() {
   const t = useT();
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
@@ -33,7 +34,6 @@ export default function PrivacyPage() {
           </CardContent>
         </Card>
       ))}
-      {/* A translated legal page must say which version governs. */}
       <p className="px-1 text-center text-xs text-subtle">{t("legal.englishGoverns")}</p>
     </div>
   );

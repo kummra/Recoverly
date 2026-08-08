@@ -54,11 +54,10 @@ export function DeleteAccount() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base text-red-700 dark:text-red-300">
           <AlertTriangle className="h-4 w-4" />
-          Delete account
+          {t("account.deleteAccountTitle")}
         </CardTitle>
         <CardDescription>
-          Permanently remove your account and all of your data — drink records, goals, and
-          AI conversations. This cannot be undone.
+          {t("account.deleteAccountDesc")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -66,7 +65,7 @@ export function DeleteAccount() {
           <DialogTrigger asChild>
             <Button variant="outline" className="gap-2 border-red-500/30 text-red-700 dark:text-red-300 hover:bg-red-500/10 hover:text-red-800 dark:hover:text-red-200">
               <Trash2 className="h-4 w-4" />
-              Delete my account &amp; data
+              {t("account.deleteAccountCta")}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">

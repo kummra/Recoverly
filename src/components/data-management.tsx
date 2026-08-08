@@ -104,14 +104,14 @@ export function DataManagement() {
         <Button asChild variant="outline" className="w-full justify-start gap-2">
           <Link href="/report">
             <FileText className="h-4 w-4" />
-            Summary for my doctor
+            {t("audit.summaryForDoctor")}
           </Link>
         </Button>
 
         {confirmChats ? (
           <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-950/10 p-3">
             <p className="text-sm text-body">
-              This permanently removes every AI conversation. Your records and goals stay.
+              {t("account.deleteChatsDesc")}
             </p>
             <div className="flex gap-2">
               <Button
@@ -122,7 +122,7 @@ export function DataManagement() {
                 onClick={wipeChats}
                 disabled={busy !== null}
               >
-                {busy === "chats" ? "Deleting…" : "Yes, delete"}
+                {busy === "chats" ? t("account.deleting") : t("account.yesDelete")}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmChats(false)} disabled={busy !== null}>
                 {t("common.cancel")}
@@ -138,7 +138,7 @@ export function DataManagement() {
             disabled={busy !== null}
           >
             <Trash2 className="h-4 w-4" />
-            Delete all AI conversations
+            {t("account.deleteChats")}
           </Button>
         )}
 

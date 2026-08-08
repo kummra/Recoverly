@@ -123,7 +123,7 @@ function AssessmentContent() {
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base text-amber-800 dark:text-amber-300">
                   <ShieldAlert className="h-4 w-4" />
-                  Before you change anything, please read
+                  {t("audit.beforeYouChange")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -216,7 +216,7 @@ function AssessmentContent() {
             </div>
             {!complete && answeredCount > 0 && (
               <p className="mt-2 flex items-center gap-1.5 text-xs text-subtle">
-                <AlertCircle className="h-3.5 w-3.5" /> Answer every question for an accurate score.
+                <AlertCircle className="h-3.5 w-3.5" /> {t("audit.answerAll")}
               </p>
             )}
           </div>

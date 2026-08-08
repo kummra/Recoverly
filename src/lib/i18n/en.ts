@@ -208,6 +208,33 @@ export const en: Dictionary = {
   "account.pwTooManyAttempts": "Too many attempts. Please wait a moment and try again.",
   "account.pwUpdateFailed": "Could not update password. Please try again.",
 
+  // Remaining chrome & confirmations
+  "nav.primary": "Primary navigation",
+  "nav.mobile": "Mobile navigation",
+  "ai.pageTitle": "Recovery AI",
+  "ai.conversations": "Conversations",
+  "ai.newChat": "New chat",
+  "ai.loadingConversation": "Loading conversation…",
+  "ai.emptyState": "Start a conversation. I'm here to listen without judgment.",
+  "ai.sessionHistory": "Chat session history",
+  "log.pauseTitle": "Pause before logging",
+  "log.pauseBody":
+    "This moment of friction helps bring your conscious choice back into the process.",
+  "log.whatDidYouHave": "What did you have?",
+  "nudge.body":
+    "However today went, showing up here is the win. Take a moment to reflect — no judgment either way.",
+  "account.deleteChatsDesc":
+    "This permanently removes every AI conversation. Your records and goals stay.",
+  "account.deleteChats": "Delete all AI conversations",
+  "account.yesDelete": "Yes, delete",
+  "account.deleteAccountTitle": "Delete account",
+  "account.deleteAccountDesc":
+    "Permanently remove your account and all of your data — drink records, goals, and AI conversations. This cannot be undone.",
+  "account.deleteAccountCta": "Delete my account & data",
+  "account.changePassword": "Change password",
+  "audit.beforeYouChange": "Before you change anything, please read",
+  "audit.answerAll": "Answer every question for an accurate score.",
+
   // Records & insights
   "records.title": "Records & Insights",
   "records.subtitle": "Your data tells the story of progress.",
@@ -277,6 +304,128 @@ export const en: Dictionary = {
   "progress.patternsDesc":
     "Noticing when it tends to happen is what makes it easier to plan around — this isn't a judgement.",
   "progress.clusterAround": "Most of your logs cluster around",
+
+  // FAQ
+  "faq.title": "Frequently Asked Questions",
+  "faq.intro": "Honest answers about how Recoverly works and how we keep you safe.",
+  "faq.q1": "Is Recoverly a medical service?",
+  "faq.a1":
+    "No. Recoverly offers emotional support, motivation, and a simple way to track your drinking. It is not a doctor, and it does not diagnose, treat, or cure addiction. For anything medical, please speak to a qualified professional.",
+  "faq.q2": "Can I just stop drinking straight away?",
+  "faq.a2":
+    "If you drink heavily or every day, stopping suddenly can be medically dangerous — withdrawal can cause seizures or delirium tremens. Please see a doctor before you quit and only reduce or stop under medical supervision. Recoverly will never push you to quit cold turkey.",
+  "faq.q3": "Is my data private?",
+  "faq.a3":
+    "Yes. Your records, goals, and chats are tied to your own account and are not visible to anyone else. Data is encrypted in transit and at rest, and we never sell or share your personal information. You can permanently delete everything from Settings → Delete account at any time.",
+  "faq.q4": "How does the AI coach work?",
+  "faq.a4":
+    "When you chat, your message is sent through a secure server to an AI model that replies with non-judgmental support. It is designed to avoid medical advice and to point you to real help when needed. It is a companion for motivation and reflection — not a clinician.",
+  "faq.q5": "What happens if I mention self-harm or crisis?",
+  "faq.a5":
+    "Your safety comes first. If the app detects crisis language, it will always show real helpline numbers (such as Tele-MANAS 14416) so you can reach someone who can help right away. You can also visit the Support page at any time.",
+  "faq.q6": "Why does Recoverly add a short delay before logging a drink?",
+  "faq.a6":
+    "That brief pause is intentional — a few seconds to reconsider is a gentle, proven nudge. There's no shame either way: logging honestly is how you see real progress.",
+  "faq.q7": "Will Recoverly shame me if I slip?",
+  "faq.a7":
+    "Never. Recovery isn't a straight line. Recoverly is built on encouragement and identity-based reinforcement — you are someone who is choosing awareness — not guilt or scolding.",
+  "faq.q8": "Does Recoverly cost anything?",
+  "faq.a8":
+    "Recoverly is free to use. It is part of a youth-led anti-addiction project focused on helping people, not profit.",
+  "faq.q9": "Can Recoverly replace therapy or a de-addiction programme?",
+  "faq.a9":
+    "No. Think of it as support between and alongside professional care. If you need treatment, a doctor or de-addiction specialist is the right place to start — see the Support page for how to find help.",
+  "faq.stillHaveQuestion":
+    "Still have a question? If it's urgent or about your health, please reach out via the",
+  "faq.supportPage": "Support page",
+
+  // How it works
+  "guide.title": "How Recoverly works",
+  "guide.intro": "Six simple steps. Go at your own pace — every step toward awareness counts.",
+  "guide.step1Title": "1. Create your account",
+  "guide.step1Body":
+    "Sign up with email, Google, or your phone number. Your space is private and tied only to you.",
+  "guide.step2Title": "2. Set a gentle weekly goal",
+  "guide.step2Body":
+    "Choose a weekly limit that feels realistic. Small, sustainable change beats an all-or-nothing promise — and you can adjust it any time.",
+  "guide.step3Title": "3. Log honestly",
+  "guide.step3Body":
+    "Record each drink in a few taps. A short pause appears before you confirm — a few seconds to reconsider. There's no shame either way; honesty is what makes your progress real.",
+  "guide.step4Title": "4. Watch your progress",
+  "guide.step4Body":
+    "Your dashboard turns those logs into clear insights and trends — so you can see momentum building, even when the wins feel small.",
+  "guide.step5Title": "5. Talk to your AI companion",
+  "guide.step5Body":
+    "Whenever you need a non-judgmental nudge, motivation, or someone to think things through with, the AI coach is there — emotional support, never medical advice.",
+  "guide.step6Title": "6. Get real help when you need it",
+  "guide.step6Body":
+    "If things get hard, the Support page has crisis helplines and guidance on finding professional care. Quitting heavy drinking should always be done with a doctor.",
+  "guide.getStarted": "Get started",
+  "guide.needHelpNow": "Need help now?",
+
+  // Privacy & terms
+  "legal.lastUpdated": "Last updated: February 2026",
+  // Translations of legal text are for understanding; the English governs.
+  "legal.englishGoverns":
+    "This is a translation provided for your convenience. If anything differs, the English version applies.",
+  "privacy.title": "Privacy Policy",
+  "privacy.s1Title": "What we collect",
+  "privacy.s1Body":
+    "We only collect data needed to provide recovery tracking and guidance features: your email, drink records, weekly goals, and AI chat history.",
+  "privacy.s2Title": "Where data is stored",
+  "privacy.s2Body":
+    "Your account data is stored in Firebase and scoped to your authenticated identity. Records are encrypted in transit and at rest.",
+  "privacy.s3Title": "AI conversations",
+  "privacy.s3Body":
+    "AI requests are sent through secure server routes, where your identity is verified before any reply. API keys are never exposed to clients. Your conversation history is stored in Firestore under your account.",
+  "privacy.s4Title": "Data deletion",
+  "privacy.s4Body":
+    "You can permanently delete your account and all associated data at any time from Settings → Delete account. This removes your drink records, goals, and AI chat history, and cannot be undone.",
+  "privacy.s5Title": "Third parties",
+  "privacy.s5Body":
+    "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated.",
+  "terms.title": "Terms of Use",
+  "terms.s1Title": "Purpose",
+  "terms.s1Body":
+    "This application is designed for habit support and progress reflection. It helps you track alcohol consumption, identify patterns, and receive AI-assisted guidance.",
+  "terms.s2Title": "Not medical advice",
+  "terms.s2Body":
+    "Recoverly is not a substitute for medical diagnosis, treatment, or emergency intervention. Always consult a healthcare professional for medical concerns.",
+  "terms.s3Title": "Your responsibility",
+  "terms.s3Body":
+    "You are responsible for decisions made based on app content and AI responses. The insights and suggestions provided are informational, not prescriptive.",
+  "terms.s4Title": "Emergency situations",
+  "terms.s4Body":
+    "Do not use this service to delay urgent help if you are in immediate danger. If you or someone you know is at risk, contact emergency services immediately.",
+  "terms.s5Title": "AI limitations",
+  "terms.s5Body":
+    "The AI assistant is designed to be compassionate and supportive but may not always provide perfect advice. It cannot replace a licensed counselor or therapist.",
+
+  // Support & helplines page
+  "support.title": "Support & Helplines",
+  "support.intro":
+    "If things feel heavy right now, reaching out is a sign of strength — not weakness. You don't have to do this alone.",
+  "support.crisisHeading": "In crisis or thinking of self-harm? Call now (India)",
+  "support.teleManasName": "Tele-MANAS",
+  "support.teleManasDetail": "24/7 national mental-health support",
+  "support.kiranName": "KIRAN Helpline",
+  "support.kiranDetail": "24/7 mental-health rehabilitation",
+  "support.emergencyName": "Emergency services",
+  "support.emergencyDetail": "If you or someone else is in immediate danger",
+  "support.outsideIndia": "Outside India",
+  "support.outsideIndiaBefore": "You can find a free, confidential helpline in your country at",
+  "support.outsideIndiaAfter":
+    ". If you are in immediate danger, please call your local emergency number.",
+  "support.professionalHeading": "Finding professional help",
+  "support.professionalBody1":
+    "A doctor, psychiatrist, or de-addiction specialist can assess your situation and build a safe, personalised plan. Government de-addiction centres and many NGOs offer this free of cost.",
+  "support.professionalBody2":
+    "Tele-MANAS (above) can also connect you to qualified mental-health professionals near you.",
+  "support.leanOnHeading": "Lean on people you trust",
+  "support.leanOnBody":
+    "Telling one person you trust — a friend, family member, or colleague — makes a real difference. Recovery is easier when you're not carrying it alone.",
+  "support.footerNote":
+    "Recoverly offers emotional support and motivation only — not medical advice, diagnosis, or treatment.",
 
   // AI coach
   "ai.newConversation": "New conversation",

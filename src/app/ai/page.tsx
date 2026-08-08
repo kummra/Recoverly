@@ -204,7 +204,7 @@ function AIContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">Recovery AI</h2>
+        <h2 className="text-xl font-bold">{t("ai.pageTitle")}</h2>
         <p className="text-sm text-muted-foreground">A compassionate, non-judgmental conversation partner.</p>
       </div>
 
@@ -214,14 +214,14 @@ function AIContent() {
         {/* Sidebar */}
         <Card className="h-fit">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Conversations</CardTitle>
+            <CardTitle className="text-base">{t("ai.conversations")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <Button className="w-full gap-2" onClick={createNewChat}>
               <MessageSquarePlus className="h-4 w-4" />
-              New chat
+              {t("ai.newChat")}
             </Button>
-            <div className="max-h-[420px] space-y-1.5 overflow-auto pr-1" aria-label="Chat session history">
+            <div className="max-h-[420px] space-y-1.5 overflow-auto pr-1" aria-label={t("ai.sessionHistory")}>
               {sessions.map((session) => (
                 <button
                   key={session.id}
@@ -261,7 +261,7 @@ function AIContent() {
               aria-label={t("ai.conversationLog")}
             >
               {loading ? (
-                <p className="text-sm text-muted-foreground">Loading conversation...</p>
+                <p className="text-sm text-muted-foreground">{t("ai.loadingConversation")}</p>
               ) : null}
               {!loading && messages.length === 0 ? (
                 <div className="my-auto flex flex-col items-center gap-3 py-12 text-center">
@@ -269,7 +269,7 @@ function AIContent() {
                     <Bot className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Start a conversation. I&apos;m here to listen without judgment.
+                    {t("ai.emptyState")}
                   </p>
                 </div>
               ) : null}
