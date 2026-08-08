@@ -41,8 +41,10 @@ in `docs/legacy-port-inventory.md`.
 
 - Do **not** run `git add -A` from the parent folder — it would commit the legacy mess.
 - **Never** commit `.env*` or `*firebase-adminsdk*.json` (both are gitignored).
-- Active work happens on a feature branch / worktree, then merges to `main` (Vercel
-  builds `main`).
+- Active work happens on a feature branch / worktree, then merges to `main`. The
+  Vercel project is linked to `kummra/Recoverly` (GitHub integration connected
+  2026-08-08); pushing to `main` auto-deploys to production — no manual
+  `vercel --prod` needed.
 
 ## Development
 
