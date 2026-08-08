@@ -127,6 +127,15 @@ export const mr: Dictionary = {
   "home.quote6": "ज्याची नोंद ठेवता, तेच तुम्ही बदलता.",
   "home.quote7": "तुमची बांधिलकी प्रत्येक नोंदीत दिसते.",
 
+  "goal.question": "तुम्ही कशाच्या दिशेने काम करत आहात?",
+  "goal.reduce": "कमी करणे",
+  "goal.quit": "पूर्णपणे थांबणे",
+  "goal.reduceHint": "साप्ताहिक मर्यादेच्या तुलनेत मागोवा घ्या.",
+  "goal.quitHint": "तुमचे ध्येय शून्य मद्य आहे. मर्यादेऐवजी आम्ही मद्यमुक्त दिवस मोजू.",
+  "dashboard.goalQuit": "मद्यमुक्त राहणे",
+  "dashboard.quitThisWeek": "या आठवड्यात {n}",
+  "dashboard.quitClean": "या आठवड्यात कोणतेही सेवन नोंदवले नाही",
+
   "log.quantity": "प्रमाण (ml)",
   "log.quantityPlaceholder": "उदा. 330",
   "log.drinkType": "पेयाचा प्रकार",

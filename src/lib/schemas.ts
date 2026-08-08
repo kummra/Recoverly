@@ -4,8 +4,14 @@ export const MAX_WEEKLY_GOAL_ML = 5000;
 export const DRINK_TYPES = ["beer", "wine", "whiskey", "vodka", "other"] as const;
 export const MESSAGE_ROLES = ["user", "assistant"] as const;
 
+/** Goal intent. "reduce" tracks against a weekly ml limit; "quit" means the
+ *  target is zero alcohol. Without this, a 0 ml goal is indistinguishable from
+ *  "no goal set", and someone aiming to stop was shown "no goal". */
+export const GOAL_TYPES = ["reduce", "quit"] as const;
+
 export const goalSchema = z.object({
   goalWeeklyMl: z.number().int().min(0).max(MAX_WEEKLY_GOAL_ML),
+  goalType: z.enum(GOAL_TYPES).optional(),
   reminderTime: z
     .string()
     .regex(/^([01]\d|2[0-3]):([0-5]\d)$/)

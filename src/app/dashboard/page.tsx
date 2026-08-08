@@ -29,6 +29,7 @@ function DashboardContent() {
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
   const [weeklyGoal, setWeeklyGoal] = useState(0);
+  const [goalType, setGoalType] = useState<"reduce" | "quit" | undefined>(undefined);
   const [motivation, setMotivation] = useState("");
   const [reminderTime, setReminderTime] = useState<string | undefined>(undefined);
   const [hasProfile, setHasProfile] = useState(false);
@@ -76,6 +77,7 @@ function DashboardContent() {
       setHasProfile(profile !== null);
       if (profile) {
         setWeeklyGoal(profile.goalWeeklyMl);
+        setGoalType(profile.goalType);
         setMotivation(profile.motivation ?? "");
         setReminderTime(profile.reminderTime);
       }
@@ -249,27 +251,54 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
-        <Card className={weeklyGoal > 0 ? (weeklyTotal <= weeklyGoal ? "border-emerald-500/20 bg-emerald-50 dark:bg-emerald-950/10" : "border-amber-500/20 bg-amber-50 dark:bg-amber-950/10") : ""}>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5">
-              <Target className="h-3.5 w-3.5" />
-              {t("dashboard.weeklyVsGoal")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {weeklyTotal} <span className="text-sm font-normal text-muted-foreground">/ {weeklyGoal || t("dashboard.noGoal")} ml</span>
-            </p>
-            {weeklyGoal > 0 && (
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${weeklyTotal <= weeklyGoal ? "bg-emerald-500" : "bg-amber-500"}`}
-                  style={{ width: `${weeklyProgress}%` }}
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Someone aiming to quit has no ml limit to fill, so a progress bar
+            toward a target is meaningless — and showing "no goal" told the most
+            committed users their goal didn't exist. Track abstinence instead. */}
+        {goalType === "quit" ? (
+          <Card className={weeklyTotal === 0 ? "border-emerald-500/20 bg-emerald-50 dark:bg-emerald-950/10" : ""}>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5">
+                <Target className="h-3.5 w-3.5" />
+                {t("dashboard.goalQuit")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">
+                {progress.currentStreakDays}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  {t(progress.currentStreakDays === 1 ? "dashboard.dayAlcoholFree" : "dashboard.daysAlcoholFree")}
+                </span>
+              </p>
+              <p className="mt-1 text-xs text-subtle">
+                {weeklyTotal === 0
+                  ? t("dashboard.quitClean")
+                  : t("dashboard.quitThisWeek", { n: `${weeklyTotal} ml` })}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className={weeklyGoal > 0 ? (weeklyTotal <= weeklyGoal ? "border-emerald-500/20 bg-emerald-50 dark:bg-emerald-950/10" : "border-amber-500/20 bg-amber-50 dark:bg-amber-950/10") : ""}>
+            <CardHeader className="pb-2">
+              <CardDescription className="flex items-center gap-1.5">
+                <Target className="h-3.5 w-3.5" />
+                {t("dashboard.weeklyVsGoal")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">
+                {weeklyTotal} <span className="text-sm font-normal text-muted-foreground">/ {weeklyGoal || t("dashboard.noGoal")} ml</span>
+              </p>
+              {weeklyGoal > 0 && (
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${weeklyTotal <= weeklyGoal ? "bg-emerald-500" : "bg-amber-500"}`}
+                    style={{ width: `${weeklyProgress}%` }}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader className="pb-2">

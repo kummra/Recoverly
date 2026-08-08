@@ -141,6 +141,16 @@ export const en: Dictionary = {
   "home.quote6": "What you track, you transform.",
   "home.quote7": "Your commitment is visible in every log you make.",
 
+  // Goal intent (reduce vs quit)
+  "goal.question": "What are you working towards?",
+  "goal.reduce": "Cutting down",
+  "goal.quit": "Stopping entirely",
+  "goal.reduceHint": "Track against a weekly limit.",
+  "goal.quitHint": "Your goal is zero alcohol. We'll track alcohol-free days instead of a limit.",
+  "dashboard.goalQuit": "Staying alcohol-free",
+  "dashboard.quitThisWeek": "{n} this week",
+  "dashboard.quitClean": "No alcohol logged this week",
+
   // Log a drink
   "log.quantity": "Quantity (ml)",
   "log.quantityPlaceholder": "e.g. 330",

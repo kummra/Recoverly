@@ -127,6 +127,15 @@ export const gu: Dictionary = {
   "home.quote6": "જેની તમે નોંધ રાખો છો, તેને તમે બદલો છો.",
   "home.quote7": "તમારી પ્રતિબદ્ધતા તમે કરેલી દરેક નોંધમાં દેખાય છે.",
 
+  "goal.question": "તમે કઈ દિશામાં કામ કરી રહ્યા છો?",
+  "goal.reduce": "ઘટાડવું",
+  "goal.quit": "સંપૂર્ણપણે છોડવું",
+  "goal.reduceHint": "સાપ્તાહિક મર્યાદા સામે ટ્રેક કરો.",
+  "goal.quitHint": "તમારું લક્ષ્ય શૂન્ય દારૂ છે. મર્યાદાને બદલે અમે દારૂ-મુક્ત દિવસો ગણીશું.",
+  "dashboard.goalQuit": "દારૂ-મુક્ત રહેવું",
+  "dashboard.quitThisWeek": "આ અઠવાડિયે {n}",
+  "dashboard.quitClean": "આ અઠવાડિયે કોઈ સેવન નોંધાયું નથી",
+
   "log.quantity": "જથ્થો (ml)",
   "log.quantityPlaceholder": "દા.ત. 330",
   "log.drinkType": "પીણાનો પ્રકાર",

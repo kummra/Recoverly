@@ -127,6 +127,15 @@ export const pa: Dictionary = {
   "home.quote6": "ਜਿਸ ਨੂੰ ਤੁਸੀਂ ਦਰਜ ਕਰਦੇ ਹੋ, ਉਸ ਨੂੰ ਤੁਸੀਂ ਬਦਲ ਦਿੰਦੇ ਹੋ।",
   "home.quote7": "ਤੁਹਾਡੀ ਵਚਨਬੱਧਤਾ ਹਰ ਦਰਜ ਕੀਤੀ ਐਂਟਰੀ ਵਿੱਚ ਦਿਸਦੀ ਹੈ।",
 
+  "goal.question": "ਤੁਸੀਂ ਕਿਸ ਵੱਲ ਕੰਮ ਕਰ ਰਹੇ ਹੋ?",
+  "goal.reduce": "ਘਟਾਉਣਾ",
+  "goal.quit": "ਪੂਰੀ ਤਰ੍ਹਾਂ ਛੱਡਣਾ",
+  "goal.reduceHint": "ਹਫ਼ਤਾਵਾਰੀ ਹੱਦ ਦੇ ਮੁਕਾਬਲੇ ਟਰੈਕ ਕਰੋ।",
+  "goal.quitHint": "ਤੁਹਾਡਾ ਟੀਚਾ ਜ਼ੀਰੋ ਸ਼ਰਾਬ ਹੈ। ਅਸੀਂ ਹੱਦ ਦੀ ਥਾਂ ਸ਼ਰਾਬ-ਮੁਕਤ ਦਿਨ ਗਿਣਾਂਗੇ।",
+  "dashboard.goalQuit": "ਸ਼ਰਾਬ-ਮੁਕਤ ਰਹਿਣਾ",
+  "dashboard.quitThisWeek": "ਇਸ ਹਫ਼ਤੇ {n}",
+  "dashboard.quitClean": "ਇਸ ਹਫ਼ਤੇ ਕੋਈ ਸੇਵਨ ਦਰਜ ਨਹੀਂ",
+
   "log.quantity": "ਮਾਤਰਾ (ml)",
   "log.quantityPlaceholder": "ਜਿਵੇਂ 330",
   "log.drinkType": "ਪੀਣ ਦੀ ਕਿਸਮ",

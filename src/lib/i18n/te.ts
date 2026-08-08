@@ -127,6 +127,15 @@ export const te: Dictionary = {
   "home.quote6": "మీరు దేన్ని నమోదు చేస్తారో, దాన్నే మారుస్తారు.",
   "home.quote7": "మీ నిబద్ధత మీరు చేసే ప్రతి నమోదులో కనిపిస్తుంది.",
 
+  "goal.question": "మీరు దేని దిశగా కృషి చేస్తున్నారు?",
+  "goal.reduce": "తగ్గించడం",
+  "goal.quit": "పూర్తిగా ఆపడం",
+  "goal.reduceHint": "వారపు పరిమితికి వ్యతిరేకంగా ట్రాక్ చేయండి.",
+  "goal.quitHint": "మీ లక్ష్యం సున్నా మద్యం. పరిమితికి బదులు మద్యం-రహిత రోజులను లెక్కిస్తాం.",
+  "dashboard.goalQuit": "మద్యం-రహితంగా ఉండటం",
+  "dashboard.quitThisWeek": "ఈ వారం {n}",
+  "dashboard.quitClean": "ఈ వారం ఎలాంటి వినియోగం నమోదు కాలేదు",
+
   "log.quantity": "పరిమాణం (ml)",
   "log.quantityPlaceholder": "ఉదా. 330",
   "log.drinkType": "పానీయం రకం",

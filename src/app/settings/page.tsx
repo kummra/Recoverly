@@ -11,6 +11,7 @@ import { NotificationOptIn } from "@/components/notification-optin";
 import { DeleteAccount } from "@/components/delete-account";
 import { PasswordChange } from "@/components/password-change";
 import { ProtectedRoute } from "@/components/protected-route";
+import { WithdrawalWarning } from "@/components/safety-notice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ function SettingsContent() {
   const t = useT();
   const { user } = useAuth();
   const [goalWeeklyMl, setGoalWeeklyMl] = useState(0);
+  const [goalType, setGoalType] = useState<"reduce" | "quit">("reduce");
   const [reminderTime, setReminderTime] = useState("");
   const [motivation, setMotivation] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -43,6 +45,7 @@ function SettingsContent() {
     getUserProfile(user.uid).then((profile) => {
       if (!profile) return;
       setGoalWeeklyMl(profile.goalWeeklyMl ?? 0);
+      setGoalType(profile.goalType ?? "reduce");
       setReminderTime(profile.reminderTime ?? "");
       setMotivation(profile.motivation ?? "");
       setDisplayName(profile.displayName ?? "");
@@ -58,7 +61,14 @@ function SettingsContent() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    const parsed = goalSchema.safeParse({ goalWeeklyMl, reminderTime: reminderTime || undefined, motivation: motivation.trim() || undefined, displayName: displayName.trim() || undefined });
+    const parsed = goalSchema.safeParse({
+      // Quitting means zero alcohol, so the ml limit is not meaningful.
+      goalWeeklyMl: goalType === "quit" ? 0 : goalWeeklyMl,
+      goalType,
+      reminderTime: reminderTime || undefined,
+      motivation: motivation.trim() || undefined,
+      displayName: displayName.trim() || undefined
+    });
     if (!parsed.success) {
       setMessage({ type: "error", text: `Goal must be a whole number between 0 and ${MAX_WEEKLY_GOAL_ML} ml, and reminder must be HH:MM.` });
       return;
@@ -126,6 +136,34 @@ function SettingsContent() {
                 />
               </div>
               <div className="space-y-2">
+                <Label>{t("goal.question")}</Label>
+                <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={t("goal.question")}>
+                  {(["reduce", "quit"] as const).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      role="radio"
+                      aria-checked={goalType === type}
+                      onClick={() => setGoalType(type)}
+                      className={`min-h-11 rounded-xl border px-3 py-2 text-left text-sm transition-colors ${
+                        goalType === type
+                          ? "border-emerald-500 bg-emerald-500/10 font-medium text-foreground"
+                          : "border-border text-body hover:bg-surface"
+                      }`}
+                    >
+                      {t(type === "reduce" ? "goal.reduce" : "goal.quit")}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-subtle">
+                  {t(goalType === "quit" ? "goal.quitHint" : "goal.reduceHint")}
+                </p>
+                {/* Rule #3: switching to abstinence is the medically risky change. */}
+                {goalType === "quit" && <WithdrawalWarning />}
+              </div>
+
+              {goalType === "reduce" && (
+              <div className="space-y-2">
                 <Label htmlFor="goal">{t("settings.weeklyGoal")}</Label>
                 <Input
                   id="goal"
@@ -137,6 +175,7 @@ function SettingsContent() {
                 />
                 <p className="text-xs text-subtle">{t("settings.weeklyGoalHint")}</p>
               </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="reminder">{t("settings.reminderTime")}</Label>
                 <Input

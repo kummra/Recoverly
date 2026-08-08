@@ -68,6 +68,8 @@ export type CravingEvent = {
 
 export type UserProfile = {
   goalWeeklyMl: number;
+  /** Absent on profiles written before goal intent existed — treat as "reduce". */
+  goalType?: "reduce" | "quit";
   reminderTime?: string;
   motivation?: string;
   displayName?: string;
@@ -108,6 +110,7 @@ export async function saveUserPreferences(userId: string, input: GoalInput) {
     ref,
     {
       goalWeeklyMl: input.goalWeeklyMl,
+      goalType: input.goalType ?? null,
       // Explicitly write null when a field is absent so merge:true actually
       // clears it instead of silently preserving the old value.
       reminderTime: input.reminderTime ?? null,
@@ -122,6 +125,7 @@ export async function saveUserPreferences(userId: string, input: GoalInput) {
     type: "user_profile",
     data: {
       goalWeeklyMl: input.goalWeeklyMl,
+      goalType: input.goalType ?? null,
       reminderTime: input.reminderTime ?? null,
       motivation: input.motivation ?? null,
       displayName: input.displayName ?? null,
@@ -137,6 +141,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
   const data = snap.data();
   return {
     goalWeeklyMl: Number(data.goalWeeklyMl ?? 0),
+    goalType: data.goalType === "quit" ? "quit" : data.goalType === "reduce" ? "reduce" : undefined,
     reminderTime: data.reminderTime,
     motivation: typeof data.motivation === "string" ? data.motivation : undefined,
     displayName: typeof data.displayName === "string" ? data.displayName : undefined,

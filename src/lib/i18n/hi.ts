@@ -143,6 +143,15 @@ export const hi: Dictionary = {
   "home.quote6": "जिसे आप दर्ज करते हैं, उसे आप बदल देते हैं।",
   "home.quote7": "आपकी प्रतिबद्धता हर दर्ज प्रविष्टि में दिखती है।",
 
+  "goal.question": "आप किस दिशा में काम कर रहे हैं?",
+  "goal.reduce": "कम करना",
+  "goal.quit": "पूरी तरह छोड़ना",
+  "goal.reduceHint": "एक साप्ताहिक सीमा के सापेक्ष ट्रैक करें।",
+  "goal.quitHint": "आपका लक्ष्य शून्य शराब है। हम सीमा के बजाय मद्य-मुक्त दिन गिनेंगे।",
+  "dashboard.goalQuit": "मद्य-मुक्त बने रहना",
+  "dashboard.quitThisWeek": "इस हफ़्ते {n}",
+  "dashboard.quitClean": "इस हफ़्ते कोई सेवन दर्ज नहीं",
+
   "log.quantity": "मात्रा (ml)",
   "log.quantityPlaceholder": "जैसे 330",
   "log.drinkType": "पेय का प्रकार",

@@ -54,6 +54,25 @@ describe("goalSchema", () => {
     expect(goalSchema.safeParse({ goalWeeklyMl: 0, motivation: "For my family" }).success).toBe(true);
     expect(goalSchema.safeParse({ goalWeeklyMl: 0, motivation: "x".repeat(201) }).success).toBe(false);
   });
+
+  // Goal intent exists because 0 ml alone is ambiguous: it used to mean both
+  // "no goal set" and "I want to stop entirely", so anyone aiming to quit was
+  // shown "no goal" and given no tracking at all.
+  it("records goal intent alongside the number", () => {
+    expect(goalSchema.safeParse({ goalWeeklyMl: 0, goalType: "quit" }).success).toBe(true);
+    expect(goalSchema.safeParse({ goalWeeklyMl: 750, goalType: "reduce" }).success).toBe(true);
+  });
+
+  it("stays optional so profiles written before it still validate", () => {
+    const parsed = goalSchema.safeParse({ goalWeeklyMl: 750 });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data.goalType).toBeUndefined();
+  });
+
+  it("rejects an unknown intent rather than silently ignoring it", () => {
+    expect(goalSchema.safeParse({ goalWeeklyMl: 0, goalType: "abstain" }).success).toBe(false);
+    expect(goalSchema.safeParse({ goalWeeklyMl: 0, goalType: "" }).success).toBe(false);
+  });
 });
 
 describe("sobrietySignalSchema — honesty guard", () => {

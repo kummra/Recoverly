@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AlertCircle, ArrowLeft, ArrowRight, Heart, Sparkles, Target } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
+import { WithdrawalWarning } from "@/components/safety-notice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,10 @@ export function Onboarding({
 }) {
   const t = useT();
   const [step, setStep] = useState<1 | 2>(1);
+  // Tracks the explicit "I want to stop entirely" choice. We can't infer this
+  // from the goal value: 0 is stored as "no goal" everywhere else in the app,
+  // so someone typing 0 to mean "no limit" must not get a withdrawal warning.
+  const [aimingToStop, setAimingToStop] = useState(false);
   const [motivation, setMotivation] = useState("");
   const [goalWeeklyMl, setGoalWeeklyMl] = useState<number | "">("");
   const [saving, setSaving] = useState(false);
@@ -36,6 +41,8 @@ export function Onboarding({
     const goal = goalWeeklyMl === "" ? 0 : Number(goalWeeklyMl);
     const parsed = goalSchema.safeParse({
       goalWeeklyMl: goal,
+      // Record the intent, not just the number: 0 alone reads as "no goal".
+      goalType: aimingToStop ? "quit" : "reduce",
       motivation: motivation.trim() || undefined
     });
     if (!parsed.success) {
@@ -114,16 +121,30 @@ export function Onboarding({
                 max={MAX_WEEKLY_GOAL_ML}
                 value={goalWeeklyMl}
                 placeholder={t("onboarding.goalPlaceholder")}
-                onChange={(e) => setGoalWeeklyMl(e.target.value === "" ? "" : Number(e.target.value))}
+                onChange={(e) => {
+                  setGoalWeeklyMl(e.target.value === "" ? "" : Number(e.target.value));
+                  setAimingToStop(false);
+                }}
               />
               <button
                 type="button"
-                onClick={() => setGoalWeeklyMl(0)}
+                onClick={() => {
+                  setGoalWeeklyMl(0);
+                  setAimingToStop(true);
+                }}
                 className="text-xs text-emerald-700 dark:text-emerald-300 underline-offset-2 hover:underline"
               >
                 {t("onboarding.aimToStop")}
               </button>
             </div>
+
+            {/* Project rule #3: never let someone choose cold turkey without the
+                withdrawal warning. We don't know their drinking level yet, and
+                the copy is conditionally worded ("if you drink heavily…"), so it
+                informs a dependent drinker without alarming a light one.
+                Informs rather than blocks — refusing the goal would just teach
+                people to lie about it. */}
+            {aimingToStop && <WithdrawalWarning />}
 
             {error && (
               <div className="flex items-center gap-2 rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">

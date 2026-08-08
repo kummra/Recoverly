@@ -127,6 +127,15 @@ export const kn: Dictionary = {
   "home.quote6": "ನೀವು ಯಾವುದನ್ನು ದಾಖಲಿಸುತ್ತೀರೋ, ಅದನ್ನೇ ಬದಲಾಯಿಸುತ್ತೀರಿ.",
   "home.quote7": "ನಿಮ್ಮ ಬದ್ಧತೆ ನೀವು ಮಾಡುವ ಪ್ರತಿ ದಾಖಲೆಯಲ್ಲೂ ಕಾಣುತ್ತದೆ.",
 
+  "goal.question": "ನೀವು ಯಾವುದರತ್ತ ಕೆಲಸ ಮಾಡುತ್ತಿದ್ದೀರಿ?",
+  "goal.reduce": "ಕಡಿಮೆ ಮಾಡುವುದು",
+  "goal.quit": "ಸಂಪೂರ್ಣವಾಗಿ ನಿಲ್ಲಿಸುವುದು",
+  "goal.reduceHint": "ವಾರದ ಮಿತಿಗೆ ಎದುರಾಗಿ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ.",
+  "goal.quitHint": "ನಿಮ್ಮ ಗುರಿ ಶೂನ್ಯ ಮದ್ಯ. ಮಿತಿಯ ಬದಲು ಮದ್ಯರಹಿತ ದಿನಗಳನ್ನು ಎಣಿಸುತ್ತೇವೆ.",
+  "dashboard.goalQuit": "ಮದ್ಯರಹಿತವಾಗಿ ಉಳಿಯುವುದು",
+  "dashboard.quitThisWeek": "ಈ ವಾರ {n}",
+  "dashboard.quitClean": "ಈ ವಾರ ಯಾವುದೇ ಸೇವನೆ ದಾಖಲಾಗಿಲ್ಲ",
+
   "log.quantity": "ಪ್ರಮಾಣ (ml)",
   "log.quantityPlaceholder": "ಉದಾ. 330",
   "log.drinkType": "ಪಾನೀಯದ ಬಗೆ",
