@@ -5,6 +5,7 @@ import { Check, AlertCircle, User, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 import { DataManagement } from "@/components/data-management";
+import { useT } from "@/components/i18n-provider";
 import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { DeleteAccount } from "@/components/delete-account";
@@ -27,6 +28,7 @@ export default function SettingsPage() {
 }
 
 function SettingsContent() {
+  const t = useT();
   const { user } = useAuth();
   const [goalWeeklyMl, setGoalWeeklyMl] = useState(0);
   const [reminderTime, setReminderTime] = useState("");
@@ -47,7 +49,7 @@ function SettingsContent() {
     }).catch(() => {
       setMessage({
         type: "error",
-        text: "Could not load your current preferences. Refresh before saving, so you don't overwrite them."
+        text: t("settings.loadFailed")
       });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,9 +68,9 @@ function SettingsContent() {
     setMessage(null);
     try {
       await saveUserPreferences(user.uid, parsed.data);
-      setMessage({ type: "success", text: "Preferences saved successfully." });
+      setMessage({ type: "success", text: t("settings.saved") });
     } catch {
-      setMessage({ type: "error", text: "Could not save preferences. Try again." });
+      setMessage({ type: "error", text: t("settings.saveFailed") });
     } finally {
       setSaving(false);
     }
@@ -78,8 +80,8 @@ function SettingsContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">Settings</h2>
-        <p className="text-sm text-muted-foreground">Customize your recovery experience.</p>
+        <h2 className="text-xl font-bold">{t("settings.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("settings.subtitle")}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -87,44 +89,44 @@ function SettingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              Profile & Preferences
+              {t("settings.profileTitle")}
             </CardTitle>
-            <CardDescription>Keep your goals realistic and consistent.</CardDescription>
+            <CardDescription>{t("settings.profileDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={submit} className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs text-subtle">Account</Label>
-                <Input value={user?.email ?? user?.phoneNumber ?? "Unknown"} readOnly className="bg-surface-muted text-muted-foreground" />
+                <Label className="text-xs text-subtle">{t("settings.account")}</Label>
+                <Input value={user?.email ?? user?.phoneNumber ?? t("settings.unknown")} readOnly className="bg-surface-muted text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-subtle">Timezone</Label>
+                <Label className="text-xs text-subtle">{t("settings.timezone")}</Label>
                 <Input value={timezone} readOnly className="bg-surface-muted text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="motivation">Your why</Label>
+                <Label htmlFor="motivation">{t("settings.yourWhy")}</Label>
                 <textarea
                   id="motivation"
                   value={motivation}
                   onChange={(e) => setMotivation(e.target.value.slice(0, 200))}
                   rows={2}
-                  placeholder="My family, my health, the person I want to be…"
+                  placeholder={t("settings.yourWhyPlaceholder")}
                   className="w-full rounded-xl border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-subtle focus:border-emerald-500/50 focus:outline-none"
                 />
-                <p className="text-xs text-subtle">Your anchor on hard days — shown on your dashboard.</p>
+                <p className="text-xs text-subtle">{t("settings.yourWhyHint")}</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="displayName">Display name</Label>
+                <Label htmlFor="displayName">{t("settings.displayName")}</Label>
                 <Input
                   id="displayName"
                   value={displayName}
                   maxLength={60}
-                  placeholder="What should we call you?"
+                  placeholder={t("settings.displayNamePlaceholder")}
                   onChange={(e) => setDisplayName(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="goal">Weekly Goal (ml)</Label>
+                <Label htmlFor="goal">{t("settings.weeklyGoal")}</Label>
                 <Input
                   id="goal"
                   type="number"
@@ -133,10 +135,10 @@ function SettingsContent() {
                   value={goalWeeklyMl}
                   onChange={(e) => setGoalWeeklyMl(Number(e.target.value))}
                 />
-                <p className="text-xs text-subtle">Set a weekly consumption limit to track against. 0 means no limit.</p>
+                <p className="text-xs text-subtle">{t("settings.weeklyGoalHint")}</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="reminder">Preferred reminder time</Label>
+                <Label htmlFor="reminder">{t("settings.reminderTime")}</Label>
                 <Input
                   id="reminder"
                   type="time"
@@ -144,7 +146,7 @@ function SettingsContent() {
                   onChange={(e) => setReminderTime(e.target.value)}
                 />
                 <p className="text-xs text-subtle">
-                  After this time, a gentle check-in prompt appears on your dashboard, once a day.
+                  {t("settings.reminderHint")}
                 </p>
                 <NotificationOptIn reminderTime={reminderTime || undefined} />
               </div>
@@ -161,7 +163,7 @@ function SettingsContent() {
               )}
 
               <Button type="submit" disabled={saving} className="w-full sm:w-auto">
-                {saving ? "Saving..." : "Save preferences"}
+                {saving ? t("common.saving") : t("common.save")}
               </Button>
             </form>
           </CardContent>
@@ -174,16 +176,15 @@ function SettingsContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Shield className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-                App & Safety
+                {t("settings.appSafety")}
               </CardTitle>
-              <CardDescription>Use this app as support, not as medical replacement.</CardDescription>
+              <CardDescription>{t("settings.appSafetyDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div className="rounded-xl border border-amber-500/20 bg-amber-50 dark:bg-amber-950/10 p-3">
-                <p className="font-medium text-amber-700 dark:text-amber-300">Important notice</p>
+                <p className="font-medium text-amber-700 dark:text-amber-300">{t("settings.importantNotice")}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  This app is not a substitute for professional medical advice. If you feel in danger
-                  or at risk of self-harm, please seek immediate help from a trusted professional or emergency service.
+                  {t("settings.importantNoticeBody")}
                 </p>
               </div>
               <div className="flex flex-col gap-2">
@@ -192,14 +193,14 @@ function SettingsContent() {
                   className="flex items-center gap-2 rounded-xl border border-border p-3 text-sm text-body transition hover:bg-surface-muted"
                 >
                   <ExternalLink className="h-4 w-4 text-subtle" />
-                  Privacy Policy
+                  {t("settings.privacyPolicy")}
                 </Link>
                 <Link
                   href="/terms"
                   className="flex items-center gap-2 rounded-xl border border-border p-3 text-sm text-body transition hover:bg-surface-muted"
                 >
                   <ExternalLink className="h-4 w-4 text-subtle" />
-                  Terms of Use
+                  {t("settings.termsOfUse")}
                 </Link>
               </div>
             </CardContent>

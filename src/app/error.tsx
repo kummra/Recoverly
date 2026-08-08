@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AlertCircle, RotateCcw } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 
 export default function GlobalError({
@@ -12,6 +13,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useT();
   useEffect(() => {
     // eslint-disable-next-line no-console
     console.error(error);
@@ -22,13 +24,11 @@ export default function GlobalError({
       <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10">
         <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
       </div>
-      <h2 className="text-lg font-semibold text-red-800 dark:text-red-200">Something went wrong</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Please retry. If this keeps happening, check your environment variables and Firebase setup.
-      </p>
+      <h2 className="text-lg font-semibold text-red-800 dark:text-red-200">{t("error.title")}</h2>
+      <p className="mt-2 text-sm text-muted-foreground">{t("error.body")}</p>
       <Button className="mt-4 gap-2" variant="secondary" onClick={reset}>
         <RotateCcw className="h-4 w-4" />
-        Try again
+        {t("error.retry")}
       </Button>
     </div>
   );

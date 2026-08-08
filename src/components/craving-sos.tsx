@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bot, Heart, LifeBuoy, LifeBuoy as Ring, Waves, X } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,7 +38,16 @@ const SUGGESTED_SECONDS = 300;
 
 type Phase = "intro" | "surfing" | "outcome" | "done";
 
+/** `breathPhaseAt` stays language-neutral (and unit-tested on these labels); the
+ *  translation happens here at the edge. */
+const BREATH_LABEL_KEYS: Record<string, string> = {
+  "Breathe in": "sos.breatheIn",
+  Hold: "sos.hold",
+  "Breathe out": "sos.breatheOut"
+};
+
 export function CravingSos({ userId, motivation }: { userId: string; motivation?: string }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("intro");
   const [intensity, setIntensity] = useState(3);
@@ -94,7 +104,7 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
         className="w-full justify-center gap-2 border-sky-500/40 text-sky-700 hover:bg-sky-500/10 dark:text-sky-300 sm:w-auto"
       >
         <Waves className="h-4 w-4" />
-        I&apos;m struggling right now
+        {t("sos.trigger")}
       </Button>
 
       <Dialog open={open} onOpenChange={(v) => (v ? setOpen(true) : close())}>
@@ -104,24 +114,21 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <Waves className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-                  Let&apos;s ride this out together
+                  {t("sos.title")}
                 </DialogTitle>
-                <DialogDescription>
-                  Cravings rise, peak and pass — usually within a few minutes. You don&apos;t have to
-                  fight it, just outlast it.
-                </DialogDescription>
+                <DialogDescription>{t("sos.intro")}</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4 py-2">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">How strong is it right now?</p>
+                  <p className="text-sm font-medium">{t("sos.howStrong")}</p>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button
                         key={n}
                         type="button"
                         onClick={() => setIntensity(n)}
-                        aria-label={`Intensity ${n} of 5`}
+                        aria-label={t("sos.intensityAria", { n })}
                         aria-pressed={intensity === n}
                         className={`h-11 flex-1 rounded-xl border text-sm font-medium transition-colors ${
                           intensity === n
@@ -133,11 +140,11 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                       </button>
                     ))}
                   </div>
-                  <p className="text-xs text-subtle">1 = mild · 5 = overwhelming</p>
+                  <p className="text-xs text-subtle">{t("sos.scaleHint")}</p>
                 </div>
 
                 <Button type="button" className="w-full" onClick={() => setPhase("surfing")}>
-                  Start
+                  {t("sos.start")}
                 </Button>
               </div>
             </>
@@ -148,7 +155,7 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <Waves className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-                  Riding the wave
+                  {t("sos.riding")}
                 </DialogTitle>
               </DialogHeader>
 
@@ -160,7 +167,9 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                     style={{ transform: `scale(${step.scale})` }}
                   >
                     <div className="text-center">
-                      <p className="text-base font-semibold text-sky-700 dark:text-sky-200">{step.label}</p>
+                      <p className="text-base font-semibold text-sky-700 dark:text-sky-200">
+                        {t(BREATH_LABEL_KEYS[step.label] ?? "sos.breatheIn")}
+                      </p>
                       <p className="text-2xl font-bold tabular-nums">{step.remaining}</p>
                     </div>
                   </div>
@@ -171,7 +180,7 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                     />
                   </div>
                   <p className="text-xs text-subtle tabular-nums">
-                    {mins}:{secs.toString().padStart(2, "0")} — most cravings ease within about five minutes
+                    {mins}:{secs.toString().padStart(2, "0")} — {t("sos.easeHint")}
                   </p>
                 </div>
 
@@ -184,29 +193,29 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Button asChild variant="outline" className="gap-1.5">
                     <Link href="/ai">
-                      <Bot className="h-4 w-4" /> Talk it through
+                      <Bot className="h-4 w-4" /> {t("sos.talkItThrough")}
                     </Link>
                   </Button>
                   <Button asChild variant="outline" className="gap-1.5">
                     <Link href="/support">
-                      <LifeBuoy className="h-4 w-4" /> Get help now
+                      <LifeBuoy className="h-4 w-4" /> {t("sos.getHelpNow")}
                     </Link>
                   </Button>
                 </div>
 
                 <p className="text-xs text-subtle">
-                  In crisis? Tele-MANAS{" "}
+                  {t("sos.crisisPrefix")} Tele-MANAS{" "}
                   <a href={`tel:${HELPLINES.india.teleManas}`} className="font-medium text-sky-700 underline underline-offset-2 dark:text-sky-300">
                     {HELPLINES.india.teleManas}
                   </a>{" "}
-                  · Emergency{" "}
+                  · {t("common.emergency")}{" "}
                   <a href={`tel:${HELPLINES.india.emergency}`} className="font-medium text-sky-700 underline underline-offset-2 dark:text-sky-300">
                     {HELPLINES.india.emergency}
                   </a>
                 </p>
 
                 <Button type="button" className="w-full" onClick={() => setPhase("outcome")}>
-                  I&apos;m done
+                  {t("sos.done")}
                 </Button>
               </div>
             </>
@@ -215,20 +224,18 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
           {phase === "outcome" && (
             <>
               <DialogHeader>
-                <DialogTitle>How did it go?</DialogTitle>
-                <DialogDescription>
-                  There&apos;s no wrong answer here. Reaching for support is the part that counts.
-                </DialogDescription>
+                <DialogTitle>{t("sos.outcomeTitle")}</DialogTitle>
+                <DialogDescription>{t("sos.outcomeBody")}</DialogDescription>
               </DialogHeader>
               <div className="space-y-2 py-2">
                 <Button type="button" variant="outline" className="w-full justify-start" disabled={saving} onClick={() => record("passed")}>
-                  It passed — I didn&apos;t drink
+                  {t("sos.outcomePassed")}
                 </Button>
                 <Button type="button" variant="outline" className="w-full justify-start" disabled={saving} onClick={() => record("drank")}>
-                  I drank
+                  {t("sos.outcomeDrank")}
                 </Button>
                 <Button type="button" variant="outline" className="w-full justify-start" disabled={saving} onClick={() => record("unresolved")}>
-                  Still with me
+                  {t("sos.outcomeUnresolved")}
                 </Button>
               </div>
             </>
@@ -239,15 +246,12 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <Ring className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  That took strength
+                  {t("sos.doneTitle")}
                 </DialogTitle>
-                <DialogDescription>
-                  You reached for support instead of doing this alone — that&apos;s the skill that
-                  carries forward. Every time you ride one out, the next is a little easier.
-                </DialogDescription>
+                <DialogDescription>{t("sos.doneBody")}</DialogDescription>
               </DialogHeader>
               <Button type="button" className="mt-2 w-full" onClick={close}>
-                Close
+                {t("sos.close")}
               </Button>
             </>
           )}
@@ -257,7 +261,7 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
               type="button"
               onClick={close}
               className="absolute right-4 top-4 rounded-lg p-1 text-muted-foreground transition-colors hover:bg-surface"
-              aria-label="Close"
+              aria-label={t("common.close")}
             >
               <X className="h-4 w-4" />
             </button>

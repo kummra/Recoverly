@@ -3,8 +3,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pause, Wine } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { addDrinkRecord } from "@/lib/firestore";
 import { DRINK_TYPES, drinkRecordSchema } from "@/lib/schemas";
+
+/** Drink types are stored as stable English ids; only the label is translated. */
+const TYPE_KEYS: Record<(typeof DRINK_TYPES)[number], string> = {
+  beer: "log.typeBeer",
+  wine: "log.typeWine",
+  whiskey: "log.typeWhiskey",
+  vodka: "log.typeVodka",
+  other: "log.typeOther"
+};
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -64,6 +74,7 @@ const drinkEmoji: Record<string, string> = {
 };
 
 export function LogDrinkModal({ userId, onSaved }: Props) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [drinkType, setDrinkType] = useState<(typeof DRINK_TYPES)[number]>("beer");
@@ -97,7 +108,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
     });
 
     if (!parsed.success) {
-      setError("Please provide a valid quantity and drink type.");
+      setError(t("log.invalid"));
       return;
     }
 
@@ -111,7 +122,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
       setOtherType("");
       onSaved?.();
     } catch {
-      setError("Could not save this record. Please try again.");
+      setError(t("log.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -122,22 +133,22 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
       <DialogTrigger asChild>
         <Button className="h-14 w-full gap-2 text-base font-semibold sm:w-auto sm:px-8">
           <Wine className="h-5 w-5" />
-          Alcohol consumed.
+          {t("dashboard.logDrink")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Pause className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            Pause before logging
+            {t("log.pauseTitle")}
           </DialogTitle>
           <DialogDescription>
-            This moment of friction helps bring your conscious choice back into the process.
+            {t("log.pauseBody")}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label htmlFor="quantity">Quantity (ml)</Label>
+            <Label htmlFor="quantity">{t("log.quantity")}</Label>
             <Input
               id="quantity"
               type="number"
@@ -145,14 +156,14 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
               max={5000}
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              placeholder="e.g. 330"
+              placeholder={t("log.quantityPlaceholder")}
             />
           </div>
           <div className="space-y-2">
-            <Label>Drink type</Label>
+            <Label>{t("log.drinkType")}</Label>
             <Select value={drinkType} onValueChange={(value) => setDrinkType(value as (typeof DRINK_TYPES)[number])}>
-              <SelectTrigger aria-label="Drink type">
-                <SelectValue placeholder="Select drink type" />
+              <SelectTrigger aria-label={t("log.drinkType")}>
+                <SelectValue placeholder={t("log.selectType")} />
               </SelectTrigger>
               <SelectContent>
                 {DRINK_TYPES.map((type) => (
@@ -161,7 +172,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
                       <span className="flex h-5 w-5 items-center justify-center rounded bg-surface text-[10px] font-bold text-body">
                         {drinkEmoji[type] ?? type.slice(0, 2)}
                       </span>
-                      <span className="capitalize">{type}</span>
+                      <span className="capitalize">{t(TYPE_KEYS[type])}</span>
                     </span>
                   </SelectItem>
                 ))}
@@ -171,25 +182,25 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
           {drinkType === "other" ? (
             <div className="space-y-2">
               <Label htmlFor="otherType">
-                What did you have? <span className="text-xs text-subtle">(optional)</span>
+                {t("log.whatDidYouHave")} <span className="text-xs text-subtle">{t("common.optional")}</span>
               </Label>
               <Input
                 id="otherType"
                 value={otherType}
                 onChange={(e) => setOtherType(e.target.value)}
                 maxLength={40}
-                placeholder="e.g. rum, cider, cocktail"
+                placeholder={t("log.otherPlaceholder")}
               />
             </div>
           ) : null}
           <div className="space-y-2">
-            <Label htmlFor="mood">How are you feeling? <span className="text-xs text-subtle">(optional)</span></Label>
+            <Label htmlFor="mood">{t("log.mood")} <span className="text-xs text-subtle">{t("common.optional")}</span></Label>
             <Textarea
               id="mood"
               value={mood}
               onChange={(e) => setMood(e.target.value)}
               maxLength={120}
-              placeholder="Stressed, social pressure, celebration..."
+              placeholder={t("log.moodPlaceholder")}
               rows={2}
             />
           </div>
@@ -203,11 +214,11 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
           <div className="mr-auto flex items-center gap-2">
             <CountdownRing seconds={countdown} total={5} />
             <span id="submit-status" className="text-sm text-muted-foreground">
-              {countdown > 0 ? `${countdown}s remaining` : "Ready to submit"}
+              {countdown > 0 ? t("log.secondsRemaining", { n: countdown }) : t("log.readyToSubmit")}
             </span>
           </div>
           <Button onClick={submit} disabled={!canSubmit} aria-describedby="submit-status">
-            {saving ? "Saving..." : "Submit"}
+            {saving ? t("common.saving") : "Submit"}
           </Button>
         </DialogFooter>
       </DialogContent>

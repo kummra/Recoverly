@@ -4,6 +4,7 @@ import { useState } from "react";
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 import { AlertCircle, Check, KeyRound } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ const MIN_LENGTH = 8;
  * Hidden for Google/phone users, who have no password to change.
  */
 export function PasswordChange() {
+  const t = useT();
   const { user } = useAuth();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
@@ -41,11 +43,11 @@ export function PasswordChange() {
       return;
     }
     if (next !== confirm) {
-      setStatus({ type: "error", text: "New passwords do not match." });
+      setStatus({ type: "error", text: t("account.pwMismatch") });
       return;
     }
     if (next === current) {
-      setStatus({ type: "error", text: "New password must be different from the current one." });
+      setStatus({ type: "error", text: t("account.pwSameAsOld") });
       return;
     }
 
@@ -55,17 +57,17 @@ export function PasswordChange() {
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, next);
       setCurrent(""); setNext(""); setConfirm("");
-      setStatus({ type: "success", text: "Password updated." });
+      setStatus({ type: "success", text: t("account.pwUpdated") });
     } catch (err) {
       const code = (err as { code?: string }).code ?? "";
       const text =
         code === "auth/wrong-password" || code === "auth/invalid-credential"
-          ? "Current password is incorrect."
+          ? t("account.pwWrongCurrent")
           : code === "auth/weak-password"
-            ? "That password is too weak. Try a longer one."
+            ? t("account.pwTooWeak")
             : code === "auth/too-many-requests"
-              ? "Too many attempts. Please wait a moment and try again."
-              : "Could not update password. Please try again.";
+              ? t("account.pwTooManyAttempts")
+              : t("account.pwUpdateFailed");
       setStatus({ type: "error", text });
     } finally {
       setSaving(false);
@@ -77,14 +79,14 @@ export function PasswordChange() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <KeyRound className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-          Change password
+          {t("account.changePassword")}
         </CardTitle>
-        <CardDescription>You&apos;ll need your current password to confirm it&apos;s you.</CardDescription>
+        <CardDescription>{t("account.pwDesc")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPw">Current password</Label>
+            <Label htmlFor="currentPw">{t("account.currentPw")}</Label>
             <Input
               id="currentPw"
               type="password"
@@ -95,7 +97,7 @@ export function PasswordChange() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="newPw">New password</Label>
+            <Label htmlFor="newPw">{t("account.newPw")}</Label>
             <Input
               id="newPw"
               type="password"
@@ -107,7 +109,7 @@ export function PasswordChange() {
             <p className="text-xs text-subtle">At least {MIN_LENGTH} characters.</p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPw">Confirm new password</Label>
+            <Label htmlFor="confirmPw">{t("account.confirmPw")}</Label>
             <Input
               id="confirmPw"
               type="password"
@@ -130,7 +132,7 @@ export function PasswordChange() {
           )}
 
           <Button type="submit" disabled={saving} className="w-full sm:w-auto">
-            {saving ? "Updating…" : "Update password"}
+            {saving ? t("account.updating") : t("account.updatePw")}
           </Button>
         </form>
       </CardContent>

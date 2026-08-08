@@ -5,6 +5,7 @@ import { AlertCircle, Check, Database, Download, FileText, Trash2 } from "lucide
 
 import Link from "next/link";
 
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,6 +24,7 @@ function csvCell(value: string): string {
  * of data, without destroying their whole history.
  */
 export function DataManagement() {
+  const t = useT();
   const { user } = useAuth();
   const [busy, setBusy] = useState<null | "export" | "chats">(null);
   const [confirmChats, setConfirmChats] = useState(false);
@@ -35,7 +37,7 @@ export function DataManagement() {
     try {
       const records = await getDrinkRecords(user.uid);
       if (records.length === 0) {
-        setStatus({ type: "error", text: "You have no records to export yet." });
+        setStatus({ type: "error", text: t("account.noRecordsToExport") });
         return;
       }
       const header = "Date,Type,Details,Quantity (ml),Mood\n";
@@ -57,7 +59,7 @@ export function DataManagement() {
       URL.revokeObjectURL(url);
       setStatus({ type: "success", text: `Exported ${records.length} record${records.length === 1 ? "" : "s"}.` });
     } catch {
-      setStatus({ type: "error", text: "Export failed. Please try again." });
+      setStatus({ type: "error", text: `Export failed. ${t("common.tryAgain")}` });
     } finally {
       setBusy(null);
     }
@@ -72,7 +74,7 @@ export function DataManagement() {
       setConfirmChats(false);
       setStatus({ type: "success", text: `Deleted ${n} conversation${n === 1 ? "" : "s"}.` });
     } catch {
-      setStatus({ type: "error", text: "Could not delete. Please try again." });
+      setStatus({ type: "error", text: `Could not delete. ${t("common.tryAgain")}` });
     } finally {
       setBusy(null);
     }
@@ -83,9 +85,9 @@ export function DataManagement() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Database className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          Your data
+          {t("account.yourData")}
         </CardTitle>
-        <CardDescription>Take a copy with you, or clear what you no longer need.</CardDescription>
+        <CardDescription>{t("account.yourDataDesc")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <Button
@@ -96,20 +98,20 @@ export function DataManagement() {
           disabled={busy !== null}
         >
           <Download className="h-4 w-4" />
-          {busy === "export" ? "Preparing…" : "Export my records (CSV)"}
+          {busy === "export" ? t("account.exporting") : t("account.exportCsv")}
         </Button>
 
         <Button asChild variant="outline" className="w-full justify-start gap-2">
           <Link href="/report">
             <FileText className="h-4 w-4" />
-            Summary for my doctor
+            {t("audit.summaryForDoctor")}
           </Link>
         </Button>
 
         {confirmChats ? (
           <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-950/10 p-3">
             <p className="text-sm text-body">
-              This permanently removes every AI conversation. Your records and goals stay.
+              {t("account.deleteChatsDesc")}
             </p>
             <div className="flex gap-2">
               <Button
@@ -120,10 +122,10 @@ export function DataManagement() {
                 onClick={wipeChats}
                 disabled={busy !== null}
               >
-                {busy === "chats" ? "Deleting…" : "Yes, delete"}
+                {busy === "chats" ? t("account.deleting") : t("account.yesDelete")}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmChats(false)} disabled={busy !== null}>
-                Cancel
+                {t("common.cancel")}
               </Button>
             </div>
           </div>
@@ -136,7 +138,7 @@ export function DataManagement() {
             disabled={busy !== null}
           >
             <Trash2 className="h-4 w-4" />
-            Delete all AI conversations
+            {t("account.deleteChats")}
           </Button>
         )}
 

@@ -4,43 +4,47 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { HeartHandshake, Sparkles, ArrowRight, TrendingDown, Calendar, Quote } from "lucide-react";
 
+import { useT } from "@/components/i18n-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { getDrinkRecords } from "@/lib/firestore";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const allQuotes = [
-  "Small steps repeated daily become your strongest identity.",
-  "Recovery is not about perfection; it is about direction.",
-  "Each honest check-in is proof that you care about your future.",
-  "The bravest thing you can do today is notice and choose differently.",
-  "Patterns change one intentional pause at a time.",
-  "What you track, you transform.",
-  "Your commitment is visible in every log you make."
+const QUOTE_KEYS = [
+  "home.quote1",
+  "home.quote2",
+  "home.quote3",
+  "home.quote4",
+  "home.quote5",
+  "home.quote6",
+  "home.quote7"
 ];
 
-function getGreeting() {
+function getGreetingKey() {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
+  if (hour < 12) return "home.greetingMorning";
+  if (hour < 17) return "home.greetingAfternoon";
+  return "home.greetingEvening";
 }
 
-function getDailyQuote() {
+/** Same quote for everyone on a given day — the key is picked, not the text, so
+ *  it follows whatever language the reader has chosen. */
+function getDailyQuoteKey() {
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
   );
-  return allQuotes[dayOfYear % allQuotes.length];
+  return QUOTE_KEYS[dayOfYear % QUOTE_KEYS.length];
 }
 
 export default function HomePage() {
+  const t = useT();
   const { user } = useAuth();
   const [monthlyTotal, setMonthlyTotal] = useState<number | null>(null);
   const [recordCount, setRecordCount] = useState(0);
 
-  const greeting = useMemo(getGreeting, []);
-  const dailyQuote = useMemo(getDailyQuote, []);
+  const greetingKey = useMemo(getGreetingKey, []);
+  const dailyQuoteKey = useMemo(getDailyQuoteKey, []);
 
   useEffect(() => {
     if (!user) {
@@ -73,29 +77,35 @@ export default function HomePage() {
         <div className="relative">
           <div className="mb-2 flex items-center gap-2">
             <HeartHandshake className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{greeting}</span>
+            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{t(greetingKey)}</span>
           </div>
           <h2 className="mb-3 text-2xl font-bold leading-tight sm:text-3xl">
-            You are building a{" "}
-            <span className="bg-gradient-to-r from-emerald-600 to-sky-600 dark:from-emerald-400 dark:to-sky-400 bg-clip-text text-transparent">
-              healthier identity
-            </span>
-            .
+            {(() => {
+              const [before, after = ""] = t("home.heroTitle").split("{identity}");
+              return (
+                <>
+                  {before}
+                  <span className="bg-gradient-to-r from-emerald-600 to-sky-600 dark:from-emerald-400 dark:to-sky-400 bg-clip-text text-transparent">
+                    {t("home.heroIdentity")}
+                  </span>
+                  {after}
+                </>
+              );
+            })()}
           </h2>
           <p className="mb-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            This app helps you notice patterns, create gentle friction before choices, and celebrate every
-            meaningful reduction in alcohol consumption.
+            {t("home.heroBody")}
           </p>
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary" className="gap-1">
               <Sparkles className="h-3 w-3" />
-              Progress, not perfection
+              {t("home.badgeProgress")}
             </Badge>
-            <Badge variant="outline">Calm decisions create long-term freedom</Badge>
+            <Badge variant="outline">{t("home.badgeCalm")}</Badge>
             {user && (
               <Button asChild size="sm" className="gap-1.5">
                 <Link href="/dashboard">
-                  Log a check-in
+                  {t("home.logCheckIn")}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </Button>
@@ -111,7 +121,7 @@ export default function HomePage() {
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                 <Calendar className="h-3.5 w-3.5" />
-                This month
+                {t("home.thisMonth")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -122,23 +132,23 @@ export default function HomePage() {
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400">
                 <TrendingDown className="h-3.5 w-3.5" />
-                Total check-ins
+                {t("home.totalCheckIns")}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{recordCount} <span className="text-sm font-normal text-muted-foreground">logged</span></p>
+              <p className="text-2xl font-bold">{recordCount} <span className="text-sm font-normal text-muted-foreground">{t("home.logged")}</span></p>
             </CardContent>
           </Card>
           <Card className="sm:col-span-2 lg:col-span-1">
             <CardHeader className="pb-2">
-              <CardDescription>Quick actions</CardDescription>
+              <CardDescription>{t("home.quickActions")}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild size="sm" variant="secondary">
-                <Link href="/records">View records</Link>
+                <Link href="/records">{t("home.viewRecords")}</Link>
               </Button>
               <Button asChild size="sm" variant="secondary">
-                <Link href="/ai">Talk to AI</Link>
+                <Link href="/ai">{t("home.talkToAi")}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -153,27 +163,27 @@ export default function HomePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-            Today&apos;s focus
+            {t("home.todaysFocus")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="relative text-lg font-medium leading-relaxed text-foreground">
-            &ldquo;{dailyQuote}&rdquo;
+            &ldquo;{t(dailyQuoteKey)}&rdquo;
           </p>
-          <p className="mt-3 text-xs text-subtle">A new thought surfaces each day to anchor your intention.</p>
+          <p className="mt-3 text-xs text-subtle">{t("home.quoteFooter")}</p>
         </CardContent>
       </Card>
 
       {/* Motivational cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        {allQuotes.slice(0, 3).map((quote) => (
-          <Card key={quote} className="group transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:bg-surface-muted hover:shadow-lg hover:shadow-emerald-500/5">
+        {QUOTE_KEYS.slice(0, 3).map((quoteKey) => (
+          <Card key={quoteKey} className="group transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:bg-surface-muted hover:shadow-lg hover:shadow-emerald-500/5">
             <CardHeader>
               <CardTitle className="text-sm font-semibold text-body group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
-                Recovery mindset
+                {t("home.recoveryMindset")}
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm leading-relaxed text-muted-foreground">{quote}</CardContent>
+            <CardContent className="text-sm leading-relaxed text-muted-foreground">{t(quoteKey)}</CardContent>
           </Card>
         ))}
       </div>
@@ -183,14 +193,12 @@ export default function HomePage() {
         <Card className="border-emerald-500/20 bg-gradient-to-r from-emerald-50 dark:from-emerald-950/30 to-card">
           <CardContent className="flex flex-col items-center gap-4 py-8 text-center sm:flex-row sm:text-left">
             <div className="flex-1">
-              <h3 className="text-lg font-semibold">Start your recovery journey</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Create a free account to track consumption, view insights, and talk to our AI guide.
-              </p>
+              <h3 className="text-lg font-semibold">{t("home.ctaTitle")}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{t("home.ctaBody")}</p>
             </div>
             <Button asChild size="lg" className="gap-2">
               <Link href="/login">
-                Get started
+                {t("home.getStarted")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

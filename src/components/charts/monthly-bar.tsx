@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
+import { useT } from "@/components/i18n-provider";
 import { useChartTheme } from "@/components/charts/chart-theme";
 
 type Props = {
@@ -9,10 +10,11 @@ type Props = {
 };
 
 export function MonthlyBarChart({ data }: Props) {
+  const t = useT();
   const theme = useChartTheme();
 
   if (!data.length) {
-    return <p className="text-sm text-muted-foreground">No records yet.</p>;
+    return <p className="text-sm text-muted-foreground">{t("records.noneYet")}</p>;
   }
 
   return (

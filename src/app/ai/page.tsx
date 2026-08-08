@@ -6,6 +6,7 @@ import { Bot, MessageSquarePlus, Send, User } from "lucide-react";
 
 import { ProtectedRoute } from "@/components/protected-route";
 import { CrisisHelpline } from "@/components/safety-notice";
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ function TypingIndicator() {
 }
 
 function AIContent() {
+  const t = useT();
   const { user, getIdToken } = useAuth();
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [chatId, setChatId] = useState<string | null>(null);
@@ -46,7 +48,7 @@ function AIContent() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const skipNextMessageLoad = useRef(false);
 
-  const activeSessionTitle = useMemo(() => sessions.find((item) => item.id === chatId)?.title ?? "New conversation", [chatId, sessions]);
+  const activeSessionTitle = useMemo(() => sessions.find((item) => item.id === chatId)?.title ?? t("ai.newConversation"), [chatId, sessions]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -112,7 +114,7 @@ function AIContent() {
 
   const createNewChat = async () => {
     if (!user) return;
-    const id = await createChatSession(user.uid, "New guidance chat");
+    const id = await createChatSession(user.uid, t("ai.newChatTitle"));
     await refreshSessions();
     setChatId(id);
   };
@@ -192,7 +194,7 @@ function AIContent() {
       // so they can retry without losing their text.
       setMessages(messages);
       setInput(optimisticUserMessage.content);
-      setError("Could not get AI response. Please try again.");
+      setError(t("ai.requestFailed"));
     } finally {
       setSending(false);
     }
@@ -202,7 +204,7 @@ function AIContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">Recovery AI</h2>
+        <h2 className="text-xl font-bold">{t("ai.pageTitle")}</h2>
         <p className="text-sm text-muted-foreground">A compassionate, non-judgmental conversation partner.</p>
       </div>
 
@@ -212,14 +214,14 @@ function AIContent() {
         {/* Sidebar */}
         <Card className="h-fit">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Conversations</CardTitle>
+            <CardTitle className="text-base">{t("ai.conversations")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <Button className="w-full gap-2" onClick={createNewChat}>
               <MessageSquarePlus className="h-4 w-4" />
-              New chat
+              {t("ai.newChat")}
             </Button>
-            <div className="max-h-[420px] space-y-1.5 overflow-auto pr-1" aria-label="Chat session history">
+            <div className="max-h-[420px] space-y-1.5 overflow-auto pr-1" aria-label={t("ai.sessionHistory")}>
               {sessions.map((session) => (
                 <button
                   key={session.id}
@@ -249,17 +251,17 @@ function AIContent() {
               <Bot className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               {activeSessionTitle}
             </CardTitle>
-            <CardDescription>This assistant focuses on non-judgmental recovery support.</CardDescription>
+            <CardDescription>{t("ai.assistantDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-3">
             <div
               className="flex max-h-[460px] flex-1 flex-col gap-3 overflow-auto rounded-2xl border border-border bg-surface-muted p-4"
               role="log"
               aria-live="polite"
-              aria-label="AI conversation log"
+              aria-label={t("ai.conversationLog")}
             >
               {loading ? (
-                <p className="text-sm text-muted-foreground">Loading conversation...</p>
+                <p className="text-sm text-muted-foreground">{t("ai.loadingConversation")}</p>
               ) : null}
               {!loading && messages.length === 0 ? (
                 <div className="my-auto flex flex-col items-center gap-3 py-12 text-center">
@@ -267,7 +269,7 @@ function AIContent() {
                     <Bot className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Start a conversation. I&apos;m here to listen without judgment.
+                    {t("ai.emptyState")}
                   </p>
                 </div>
               ) : null}
@@ -306,7 +308,7 @@ function AIContent() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="What's on your mind today?"
+                placeholder={t("ai.inputPlaceholder")}
                 className="flex-1"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -317,7 +319,7 @@ function AIContent() {
               />
               <Button onClick={send} disabled={sending || !input.trim()} size="icon" className="h-10 w-10 shrink-0">
                 <Send className="h-4 w-4" />
-                <span className="sr-only">Send message</span>
+                <span className="sr-only">{t("ai.send")}</span>
               </Button>
             </div>
           </CardContent>

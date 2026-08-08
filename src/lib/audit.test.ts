@@ -1,3 +1,4 @@
+import { en } from "@/lib/i18n/en";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -9,7 +10,7 @@ import {
 } from "@/lib/audit";
 
 const answerAll = (optionIndex: number) =>
-  Object.fromEntries(AUDIT_QUESTIONS.map((q) => [q.id, Math.min(optionIndex, q.options.length - 1)]));
+  Object.fromEntries(AUDIT_QUESTIONS.map((q) => [q.id, Math.min(optionIndex, q.optionKeys.length - 1)]));
 
 describe("AUDIT instrument integrity", () => {
   it("has exactly 10 questions", () => {
@@ -18,22 +19,30 @@ describe("AUDIT instrument integrity", () => {
 
   it("items 1-8 have 5 options scored 0-4", () => {
     for (const q of AUDIT_QUESTIONS.slice(0, 8)) {
-      expect(q.options).toHaveLength(5);
+      expect(q.optionKeys).toHaveLength(5);
       expect(q.points).toEqual([0, 1, 2, 3, 4]);
     }
   });
 
   it("items 9 and 10 have 3 options scored 0, 2, 4", () => {
     for (const q of AUDIT_QUESTIONS.slice(8)) {
-      expect(q.options).toHaveLength(3);
+      expect(q.optionKeys).toHaveLength(3);
       expect(q.points).toEqual([0, 2, 4]);
     }
   });
 
   it("every option has a matching point value", () => {
     for (const q of AUDIT_QUESTIONS) {
-      expect(q.points).toHaveLength(q.options.length);
+      expect(q.points).toHaveLength(q.optionKeys.length);
     }
+  });
+
+  it("keeps the English question wording verbatim", () => {
+    // Altering WHO's wording invalidates the scoring, so pin the two most
+    // easily-reworded items against the dictionary the instrument ships with.
+    expect(en["audit.q1"]).toBe("How often do you have a drink containing alcohol?");
+    expect(en["audit.q3"]).toBe("How often do you have six or more drinks on one occasion?");
+    for (const q of AUDIT_QUESTIONS) expect(en[q.textKey]?.length ?? 0).toBeGreaterThan(20);
   });
 
   it("maximum possible score is 40", () => {
@@ -89,14 +98,15 @@ describe("interpretAudit — WHO risk zones", () => {
 
   it("points every at-risk band toward a professional", () => {
     for (const s of [8, 16, 20, 40]) {
-      expect(interpretAudit(s).guidance).toMatch(/doctor|professional|de-addiction/i);
+      expect(en[interpretAudit(s).guidanceKey]).toMatch(/doctor|professional|de-addiction/i);
     }
   });
 
   it("never uses shaming language", () => {
     for (let s = 0; s <= 40; s++) {
       const r = interpretAudit(s);
-      const text = `${r.label} ${r.meaning} ${r.guidance}`;
+      // The wording lives in the dictionary now; assert on what a reader sees.
+      const text = `${en[r.labelKey]} ${en[r.meaningKey]} ${en[r.guidanceKey]}`;
       expect(text).not.toMatch(/alcoholic|abuse[rd]|failure|bad|shame|fault|weak/i);
     }
   });
@@ -104,7 +114,7 @@ describe("interpretAudit — WHO risk zones", () => {
   it("never claims to diagnose", () => {
     for (let s = 0; s <= 40; s++) {
       const r = interpretAudit(s);
-      expect(`${r.meaning} ${r.guidance}`).not.toMatch(/you have (an )?(alcohol use disorder|addiction)/i);
+      expect(`${en[r.meaningKey]} ${en[r.guidanceKey]}`).not.toMatch(/you have (an )?(alcohol use disorder|addiction)/i);
     }
   });
 });

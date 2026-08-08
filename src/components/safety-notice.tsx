@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, LifeBuoy } from "lucide-react";
+import { AlertTriangle, LifeBuoy, ShieldAlert } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
 import { HELPLINES } from "@/lib/safety";
@@ -24,6 +24,28 @@ export function MedicalDisclaimer({ className }: { className?: string }) {
         {t("safety.notMedicalTitle")}
       </p>
       <p className="mt-1">{t("safety.notMedicalBody")}</p>
+    </div>
+  );
+}
+
+/**
+ * Sudden-cessation warning (firm project rule #3). Translated in every locale —
+ * someone reading the app in Tamil must get this warning in Tamil, not English.
+ */
+export function WithdrawalWarning({ className }: { className?: string }) {
+  const t = useT();
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 leading-relaxed",
+        className
+      )}
+    >
+      <p className="flex items-center gap-2 text-base font-semibold text-amber-700 dark:text-amber-300">
+        <ShieldAlert className="h-4 w-4 shrink-0" />
+        {t("safety.withdrawalTitle")}
+      </p>
+      <p className="mt-2 text-sm text-body">{t("safety.withdrawalBody")}</p>
     </div>
   );
 }
@@ -53,6 +75,7 @@ export function CrisisHelpline({ className }: { className?: string }) {
           href={HELPLINES.internationalDirectoryUrl}
           target="_blank"
           rel="noopener noreferrer"
+          title={t("safety.findHelpline")}
           className="underline underline-offset-2 hover:text-sky-800 dark:hover:text-sky-200"
         >
           findahelpline.com

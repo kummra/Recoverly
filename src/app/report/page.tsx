@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { Printer } from "lucide-react";
 
 import { ProtectedRoute } from "@/components/protected-route";
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -43,6 +44,10 @@ export default function ReportPage() {
 }
 
 function ReportContent() {
+  const t = useT();
+  // Streaks read as "3 days" / "1 day"; the unit keys already exist for the dashboard.
+  const days = (n: number) =>
+    `${n} ${t(n === 1 ? "dashboard.dayUnit" : "dashboard.daysUnit")}`;
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -78,48 +83,51 @@ function ReportContent() {
   const triggers = useMemo(() => buildTriggerInsights(records), [records]);
   const latestAudit = audits.length ? audits[audits.length - 1] : null;
 
-  if (loading) return <p className="text-sm text-muted-foreground">Preparing your summary…</p>;
+  if (loading) return <p className="text-sm text-muted-foreground">{t("report.preparing")}</p>;
 
   const rows: Array<[string, string]> = [
-    ["Records kept since", records.length ? format(records[0].createdAt, "d MMM yyyy") : "—"],
-    ["Total check-ins logged", String(records.length)],
-    ["This month", `${summary.currentMonthTotal} ml`],
-    ["Previous month", `${summary.previousMonthTotal} ml`],
-    ["Daily average (this month)", `${summary.dailyAverage} ml`],
-    ["Current alcohol-free streak", `${progress.currentStreakDays} day${progress.currentStreakDays === 1 ? "" : "s"}`],
-    ["Longest alcohol-free streak", `${progress.longestStreakDays} day${progress.longestStreakDays === 1 ? "" : "s"}`],
-    ["Alcohol-free days this month", `${progress.alcoholFreeDaysThisMonth} of ${progress.daysElapsedThisMonth}`],
-    ["Weekly goal set", profile?.goalWeeklyMl ? `${profile.goalWeeklyMl} ml` : "not set"]
+    [t("report.recordsSince"), records.length ? format(records[0].createdAt, "d MMM yyyy") : "—"],
+    [t("report.totalLogged"), String(records.length)],
+    [t("report.thisMonth"), `${summary.currentMonthTotal} ml`],
+    [t("report.previousMonth"), `${summary.previousMonthTotal} ml`],
+    [t("report.dailyAverage"), `${summary.dailyAverage} ml`],
+    [t("report.currentStreak"), days(progress.currentStreakDays)],
+    [t("report.longestStreak"), days(progress.longestStreakDays)],
+    [
+      t("report.freeDaysThisMonth"),
+      t("report.ofTotal", {
+        n: progress.alcoholFreeDaysThisMonth,
+        total: progress.daysElapsedThisMonth
+      })
+    ],
+    [t("report.weeklyGoal"), profile?.goalWeeklyMl ? `${profile.goalWeeklyMl} ml` : t("report.notSet")]
   ];
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
-          <h2 className="text-xl font-bold">Summary for your clinician</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            A one-page overview to bring to an appointment. Use Print, then choose &ldquo;Save as
-            PDF&rdquo; if you&apos;d rather send it.
-          </p>
+          <h2 className="text-xl font-bold">{t("report.title")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("report.subtitle")}</p>
         </div>
         <Button type="button" onClick={() => window.print()} className="gap-1.5">
-          <Printer className="h-4 w-4" /> Print / Save as PDF
+          <Printer className="h-4 w-4" /> {t("report.print")}
         </Button>
       </div>
 
       <article className="space-y-6 rounded-2xl border border-border bg-card p-6 print:border-0 print:p-0">
         <header className="border-b border-border pb-4">
-          <h1 className="text-lg font-semibold">Recoverly — self-reported summary</h1>
+          <h1 className="text-lg font-semibold">{t("report.docTitle")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {profile?.displayName ? `${profile.displayName} · ` : ""}
             {user?.email ?? ""}
           </p>
-          <p className="text-sm text-muted-foreground">Generated {format(new Date(), "d MMM yyyy")}</p>
+          <p className="text-sm text-muted-foreground">{t("report.generated", { date: format(new Date(), "d MMM yyyy") })}</p>
         </header>
 
         <section>
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Consumption
+            {t("report.consumption")}
           </h2>
           <table className="w-full text-sm">
             <tbody>
@@ -136,29 +144,32 @@ function ReportContent() {
         {latestAudit && (
           <section>
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              AUDIT screening
+              {t("report.auditHeading")}
             </h2>
             <p className="text-sm text-body">
-              Most recent score <span className="font-semibold">{latestAudit.score} / {AUDIT_MAX_SCORE}</span>{" "}
-              ({interpretAudit(latestAudit.score).label}) on {format(latestAudit.createdAt, "d MMM yyyy")}.
-              {audits.length > 1 ? ` ${audits.length} assessments recorded.` : ""}
+              {t("report.auditLine", {
+                score: latestAudit.score,
+                max: AUDIT_MAX_SCORE,
+                label: t(interpretAudit(latestAudit.score).labelKey),
+                date: format(latestAudit.createdAt, "d MMM yyyy"),
+                extra: audits.length > 1 ? t("report.auditExtra", { n: audits.length }) : ""
+              })}
             </p>
-            <p className="mt-1 text-xs text-subtle">
-              Self-administered WHO AUDIT screening questionnaire. Screening only — not a diagnosis.
-            </p>
+            <p className="mt-1 text-xs text-subtle">{t("report.auditNote")}</p>
           </section>
         )}
 
         {cravings.length > 0 && (
           <section>
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Cravings
+              {t("report.cravingsHeading")}
             </h2>
             <p className="text-sm text-body">
-              {cravings.length} craving episode{cravings.length === 1 ? "" : "s"} logged.{" "}
-              {cravings.filter((c) => c.outcome === "passed").length} passed without drinking.
-              Average self-rated intensity{" "}
-              {(cravings.reduce((s, c) => s + c.intensity, 0) / cravings.length).toFixed(1)} of 5.
+              {t("report.cravingsLine", {
+                total: cravings.length,
+                passed: cravings.filter((c) => c.outcome === "passed").length,
+                avg: (cravings.reduce((s, c) => s + c.intensity, 0) / cravings.length).toFixed(1)
+              })}
             </p>
           </section>
         )}
@@ -166,12 +177,15 @@ function ReportContent() {
         {triggers.length > 0 && (
           <section>
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Self-reported patterns
+              {t("report.patternsHeading")}
             </h2>
             <ul className="list-inside list-disc text-sm text-body">
-              {triggers.map((t) => (
-                <li key={t.label}>
-                  Drinking clusters around {t.label} ({Math.round(t.share * 100)}% of logs)
+              {triggers.map((insight) => (
+                <li key={insight.labelKey}>
+                  {t("report.clusterLine", {
+                    pattern: t(insight.labelKey, insight.mood ? { mood: insight.mood } : undefined),
+                    percent: Math.round(insight.share * 100)
+                  })}
                 </li>
               ))}
             </ul>
@@ -181,17 +195,14 @@ function ReportContent() {
         {profile?.motivation && (
           <section>
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Stated motivation
+              {t("report.motivationHeading")}
             </h2>
             <p className="text-sm italic text-body">&ldquo;{profile.motivation}&rdquo;</p>
           </section>
         )}
 
         <footer className="border-t border-border pt-4 text-xs leading-relaxed text-subtle">
-          All figures are self-reported by the user through the Recoverly app and are not clinically
-          verified. Recoverly is a self-management and support tool; it does not diagnose, treat or
-          provide medical advice. This summary is intended to support — not replace — clinical
-          assessment.
+          {t("report.disclaimer")}
         </footer>
       </article>
     </div>

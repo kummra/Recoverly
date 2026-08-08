@@ -6,6 +6,7 @@ import { AlertCircle, ClipboardCheck, LifeBuoy, RotateCcw, ShieldAlert } from "l
 import { format } from "date-fns";
 
 import { ProtectedRoute } from "@/components/protected-route";
+import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -27,6 +28,7 @@ export default function AssessmentPage() {
 }
 
 function AssessmentContent() {
+  const t = useT();
   const { user } = useAuth();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -83,20 +85,18 @@ function AssessmentContent() {
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold">
           <ClipboardCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-          Alcohol self-check (AUDIT)
+          {t("audit.pageTitle")}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Ten questions from the World Health Organization&apos;s screening tool. Answering honestly is
-          the only way it tells you anything useful — nobody else sees this.
+          {t("audit.pageIntro")}
         </p>
       </div>
 
       <Card className="border-sky-500/30 bg-sky-50 dark:bg-sky-950/10">
         <CardContent className="pt-6">
           <p className="text-sm text-body">
-            <span className="font-medium">This is a screening questionnaire, not a diagnosis.</span> It can
-            suggest whether your drinking may be putting you at risk, but only a doctor or qualified
-            professional can actually assess that.
+            <span className="font-medium">{t("audit.notDiagnosisLead")}</span>{" "}
+            {t("audit.translationNote")}
           </p>
         </CardContent>
       </Card>
@@ -105,16 +105,16 @@ function AssessmentContent() {
         <>
           <Card className={zoneStyles[result.zone]}>
             <CardHeader>
-              <CardDescription>Your score</CardDescription>
+              <CardDescription>{t("audit.yourScore")}</CardDescription>
               <CardTitle className="text-3xl">
                 {result.score}
                 <span className="ml-1 text-base font-normal text-muted-foreground">/ {AUDIT_MAX_SCORE}</span>
               </CardTitle>
-              <p className="text-sm font-medium text-body">{result.label}</p>
+              <p className="text-sm font-medium text-body">{t(result.labelKey)}</p>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm leading-relaxed text-body">{result.meaning}</p>
-              <p className="text-sm leading-relaxed text-body">{result.guidance}</p>
+              <p className="text-sm leading-relaxed text-body">{t(result.meaningKey)}</p>
+              <p className="text-sm leading-relaxed text-body">{t(result.guidanceKey)}</p>
             </CardContent>
           </Card>
 
@@ -123,7 +123,7 @@ function AssessmentContent() {
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base text-amber-800 dark:text-amber-300">
                   <ShieldAlert className="h-4 w-4" />
-                  Before you change anything, please read
+                  {t("audit.beforeYouChange")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -140,22 +140,22 @@ function AssessmentContent() {
           <div className="flex flex-wrap gap-3">
             <Button asChild className="gap-1.5">
               <Link href="/support">
-                <LifeBuoy className="h-4 w-4" /> Find support
+                <LifeBuoy className="h-4 w-4" /> {t("audit.findSupport")}
               </Link>
             </Button>
             <Button asChild variant="outline" className="gap-1.5">
-              <Link href="/report">Summary for my doctor</Link>
+              <Link href="/report">{t("audit.summaryForDoctor")}</Link>
             </Button>
             <Button type="button" variant="outline" className="gap-1.5" onClick={restart}>
-              <RotateCcw className="h-4 w-4" /> Take it again
+              <RotateCcw className="h-4 w-4" /> {t("audit.takeAgain")}
             </Button>
           </div>
 
           {history.length > 1 && (
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Your previous results</CardTitle>
-                <CardDescription>Scores can move as your drinking changes.</CardDescription>
+                <CardTitle className="text-base">{t("audit.previousResults")}</CardTitle>
+                <CardDescription>{t("audit.previousResultsDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-1.5">
@@ -176,16 +176,16 @@ function AssessmentContent() {
             <Card key={q.id}>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-medium leading-snug">
-                  {q.id}. {q.text}
+                  {q.id}. {t(q.textKey)}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2" role="radiogroup" aria-label={q.text}>
-                  {q.options.map((opt, idx) => {
+                <div className="space-y-2" role="radiogroup" aria-label={t(q.textKey)}>
+                  {q.optionKeys.map((optKey, idx) => {
                     const selected = answers[q.id] === idx;
                     return (
                       <button
-                        key={opt}
+                        key={optKey}
                         type="button"
                         role="radio"
                         aria-checked={selected}
@@ -196,7 +196,7 @@ function AssessmentContent() {
                             : "border-border text-body hover:bg-surface"
                         }`}
                       >
-                        {opt}
+                        {t(optKey)}
                       </button>
                     );
                   })}
@@ -208,7 +208,7 @@ function AssessmentContent() {
           <div className="sticky bottom-4 rounded-2xl border border-border bg-card/95 p-4 backdrop-blur">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-muted-foreground">
-                {answeredCount} of {AUDIT_QUESTIONS.length} answered
+                {t("audit.answeredCount", { n: answeredCount, total: AUDIT_QUESTIONS.length })}
               </p>
               <Button type="button" onClick={submit} disabled={!complete || saving}>
                 {saving ? "Saving…" : "See my result"}
@@ -216,7 +216,7 @@ function AssessmentContent() {
             </div>
             {!complete && answeredCount > 0 && (
               <p className="mt-2 flex items-center gap-1.5 text-xs text-subtle">
-                <AlertCircle className="h-3.5 w-3.5" /> Answer every question for an accurate score.
+                <AlertCircle className="h-3.5 w-3.5" /> {t("audit.answerAll")}
               </p>
             )}
           </div>

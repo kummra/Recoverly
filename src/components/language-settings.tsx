@@ -24,7 +24,7 @@ export function LanguageSettings() {
           {t("common.language")}
         </CardTitle>
         <CardDescription>
-          Choose the language for the app. Your choice is remembered on this device.
+          {t("settings.languageDesc")}
         </CardDescription>
       </CardHeader>
       <CardContent>

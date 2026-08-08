@@ -37,7 +37,7 @@ export function TopNav() {
         </Link>
 
         {/* Desktop nav */}
-        <nav aria-label="Primary navigation" className="hidden gap-1 text-sm text-body md:flex">
+        <nav aria-label={t("nav.primary")} className="hidden gap-1 text-sm text-body md:flex">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -92,7 +92,7 @@ export function TopNav() {
 
       {/* Mobile nav drawer */}
       {mobileOpen && (
-        <nav className="mt-3 flex flex-col gap-1 border-t border-border pt-3 md:hidden" aria-label="Mobile navigation">
+        <nav className="mt-3 flex flex-col gap-1 border-t border-border pt-3 md:hidden" aria-label={t("nav.mobile")}>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (

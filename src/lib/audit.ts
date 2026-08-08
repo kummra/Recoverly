@@ -2,8 +2,11 @@
  * AUDIT — Alcohol Use Disorders Identification Test (WHO).
  *
  * Ten items, each scored 0–4 (items 9 and 10 score 0/2/4), total 0–40.
- * Questions are reproduced verbatim; altering the wording invalidates the
- * instrument's scoring.
+ * The English wording is reproduced verbatim; altering it invalidates the
+ * instrument's scoring. Other languages are shown via i18n keys so the
+ * questionnaire is answerable by people who do not read English — those are
+ * plain translations, not the WHO's officially validated language versions,
+ * and the page says so.
  *
  * Source: Saunders JB, Aasland OG, Babor TF et al. Development of the Alcohol
  * Use Disorders Identification Test (AUDIT). Addiction 1993;88:791–803.
@@ -16,77 +19,96 @@
 
 export type AuditQuestion = {
   id: number;
-  text: string;
-  /** In order; index is the point value, except items 9–10 (see `points`). */
-  options: string[];
+  /** i18n key for the question text. */
+  textKey: string;
+  /** i18n keys, in order; index is the point value, except items 9–10. */
+  optionKeys: string[];
   /** Point value per option index. */
   points: number[];
 };
 
-const FREQ = ["Never", "Less than monthly", "Monthly", "Weekly", "Daily or almost daily"];
+const FREQ = [
+  "audit.freqNever",
+  "audit.freqLessMonthly",
+  "audit.freqMonthly",
+  "audit.freqWeekly",
+  "audit.freqDaily"
+];
 const FREQ_POINTS = [0, 1, 2, 3, 4];
-const YES_NO = ["No", "Yes, but not in the past year", "Yes, during the past year"];
+const YES_NO = ["audit.noAnswer", "audit.yesNotPastYear", "audit.yesPastYear"];
 const YES_NO_POINTS = [0, 2, 4];
 
 export const AUDIT_QUESTIONS: AuditQuestion[] = [
   {
     id: 1,
-    text: "How often do you have a drink containing alcohol?",
-    options: ["Never", "Monthly or less", "2–4 times a month", "2–3 times a week", "4 or more times a week"],
+    textKey: "audit.q1",
+    optionKeys: [
+      "audit.q1o1",
+      "audit.q1o2",
+      "audit.q1o3",
+      "audit.q1o4",
+      "audit.q1o5"
+    ],
     points: FREQ_POINTS
   },
   {
     id: 2,
-    text: "How many standard drinks containing alcohol do you have on a typical day when drinking?",
-    options: ["1 or 2", "3 or 4", "5 or 6", "7 to 9", "10 or more"],
+    textKey: "audit.q2",
+    optionKeys: [
+      "audit.q2o1",
+      "audit.q2o2",
+      "audit.q2o3",
+      "audit.q2o4",
+      "audit.q2o5"
+    ],
     points: FREQ_POINTS
   },
   {
     id: 3,
-    text: "How often do you have six or more drinks on one occasion?",
-    options: FREQ,
+    textKey: "audit.q3",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 4,
-    text: "During the past year, how often have you found that you were not able to stop drinking once you had started?",
-    options: FREQ,
+    textKey: "audit.q4",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 5,
-    text: "During the past year, how often have you failed to do what was normally expected of you because of drinking?",
-    options: FREQ,
+    textKey: "audit.q5",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 6,
-    text: "During the past year, how often have you needed a drink in the morning to get yourself going after a heavy drinking session?",
-    options: FREQ,
+    textKey: "audit.q6",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 7,
-    text: "During the past year, how often have you had a feeling of guilt or remorse after drinking?",
-    options: FREQ,
+    textKey: "audit.q7",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 8,
-    text: "During the past year, have you been unable to remember what happened the night before because you had been drinking?",
-    options: FREQ,
+    textKey: "audit.q8",
+    optionKeys: FREQ,
     points: FREQ_POINTS
   },
   {
     id: 9,
-    text: "Have you or someone else been injured as a result of your drinking?",
-    options: YES_NO,
+    textKey: "audit.q9",
+    optionKeys: YES_NO,
     points: YES_NO_POINTS
   },
   {
     id: 10,
-    text: "Has a relative or friend, doctor or other health worker been concerned about your drinking or suggested you cut down?",
-    options: YES_NO,
+    textKey: "audit.q10",
+    optionKeys: YES_NO,
     points: YES_NO_POINTS
   }
 ];
@@ -98,12 +120,10 @@ export type AuditZone = "low" | "hazardous" | "harmful" | "possible-dependence";
 export type AuditResult = {
   score: number;
   zone: AuditZone;
-  /** Short, non-alarming band name for the UI. */
-  label: string;
-  /** Plain-language meaning — never a diagnosis. */
-  meaning: string;
-  /** What we suggest they do next. */
-  guidance: string;
+  /** i18n keys — the UI translates these, so the result speaks the reader's language. */
+  labelKey: string;
+  meaningKey: string;
+  guidanceKey: string;
   /** True when the sudden-cessation warning must be shown (project rule #3). */
   showWithdrawalWarning: boolean;
 };
@@ -138,11 +158,9 @@ export function interpretAudit(score: number): AuditResult {
     return {
       score,
       zone: "low",
-      label: "Lower risk",
-      meaning:
-        "Your answers suggest your drinking currently sits in a lower-risk range. That is worth acknowledging.",
-      guidance:
-        "Keep doing what is working. If you are using Recoverly to cut down further, your goals and check-ins will help you track it.",
+      labelKey: "audit.lowLabel",
+      meaningKey: "audit.lowMeaning",
+      guidanceKey: "audit.lowGuidance",
       showWithdrawalWarning: false
     };
   }
@@ -150,11 +168,9 @@ export function interpretAudit(score: number): AuditResult {
     return {
       score,
       zone: "hazardous",
-      label: "Hazardous range",
-      meaning:
-        "Your answers suggest a pattern that may be putting your health at risk over time. This is common, and noticing it now is a genuinely useful thing to have done.",
-      guidance:
-        "Setting a weekly goal and logging honestly can make a real difference. Talking it through with a doctor or counsellor is a genuinely useful next step.",
+      labelKey: "audit.hazardousLabel",
+      meaningKey: "audit.hazardousMeaning",
+      guidanceKey: "audit.hazardousGuidance",
       showWithdrawalWarning: true
     };
   }
@@ -162,22 +178,18 @@ export function interpretAudit(score: number): AuditResult {
     return {
       score,
       zone: "harmful",
-      label: "Harmful range",
-      meaning:
-        "Your answers suggest drinking that is likely already affecting your health or daily life. Recognising that takes courage.",
-      guidance:
-        "Please speak with a doctor or a de-addiction professional. They can assess your situation properly and build a plan with you. Recoverly can support you alongside that, not instead of it.",
+      labelKey: "audit.harmfulLabel",
+      meaningKey: "audit.harmfulMeaning",
+      guidanceKey: "audit.harmfulGuidance",
       showWithdrawalWarning: true
     };
   }
   return {
     score,
     zone: "possible-dependence",
-    label: "Possible dependence",
-    meaning:
-      "Your answers are consistent with a level of drinking where professional support really matters. This is a screening result, not a diagnosis — but it is worth acting on.",
-    guidance:
-      "Please contact a doctor or a de-addiction service soon. You do not have to sort this out on your own, and getting help early makes it easier.",
+    labelKey: "audit.dependenceLabel",
+    meaningKey: "audit.dependenceMeaning",
+    guidanceKey: "audit.dependenceGuidance",
     showWithdrawalWarning: true
   };
 }
