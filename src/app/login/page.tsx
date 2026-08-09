@@ -107,7 +107,7 @@ export default function LoginPage() {
         <div>
           <div className="mb-3 flex items-center gap-2">
             <HeartHandshake className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Recoverly</span>
+            <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Recoverly</span>
           </div>
           <h2 className="text-2xl font-bold leading-tight sm:text-3xl">
             {(() => {

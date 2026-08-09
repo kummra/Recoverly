@@ -196,7 +196,7 @@ function DashboardContent() {
           {progress.hasHistory && (
             <div className="grid grid-cols-3 gap-3 border-t border-border pt-4 text-center">
               <div>
-                <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{progress.longestStreakDays}</p>
+                <p className="text-xl font-bold text-emerald-700 dark:text-emerald-400">{progress.longestStreakDays}</p>
                 <p className="text-[11px] text-muted-foreground">{t("dashboard.longestStreak")}</p>
               </div>
               <div>

@@ -172,7 +172,7 @@ function RecordsContent() {
 type StatColor = "emerald" | "sky" | "amber" | "indigo" | "violet" | "slate";
 
 const colorMap: Record<StatColor, { border: string; bg: string; text: string }> = {
-  emerald: { border: "border-emerald-500/20", bg: "bg-emerald-50 dark:bg-emerald-950/15", text: "text-emerald-600 dark:text-emerald-400" },
+  emerald: { border: "border-emerald-500/20", bg: "bg-emerald-50 dark:bg-emerald-950/15", text: "text-emerald-700 dark:text-emerald-400" },
   sky: { border: "border-sky-500/20", bg: "bg-sky-50 dark:bg-sky-950/15", text: "text-sky-600 dark:text-sky-400" },
   amber: { border: "border-amber-500/20", bg: "bg-amber-50 dark:bg-amber-950/15", text: "text-amber-600 dark:text-amber-400" },
   indigo: { border: "border-indigo-500/20", bg: "bg-indigo-50 dark:bg-indigo-950/15", text: "text-indigo-600 dark:text-indigo-400" },

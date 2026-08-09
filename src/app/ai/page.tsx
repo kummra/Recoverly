@@ -281,7 +281,7 @@ function AIContent() {
                 >
                   <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${
                     message.role === "assistant"
-                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
                       : "bg-sky-500/15 text-sky-600 dark:text-sky-400"
                   }`}>
                     {message.role === "assistant" ? <Bot className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}

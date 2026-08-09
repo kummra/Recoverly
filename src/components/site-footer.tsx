@@ -13,7 +13,7 @@ export function SiteFooter() {
         <span aria-hidden>&middot;</span>
         <a href="/faq" className="underline underline-offset-2 hover:text-foreground">{t("footer.faq")}</a>
         <span aria-hidden>&middot;</span>
-        <a href="/support" className="font-medium text-sky-600 dark:text-sky-400 underline underline-offset-2 hover:text-sky-700 dark:hover:text-sky-300">{t("nav.support")}</a>
+        <a href="/support" className="font-medium text-sky-700 dark:text-sky-400 underline underline-offset-2 hover:text-sky-800 dark:hover:text-sky-300">{t("nav.support")}</a>
         <span aria-hidden>&middot;</span>
         <a href="/privacy" className="underline underline-offset-2 hover:text-foreground">{t("footer.privacy")}</a>
         <span aria-hidden>&middot;</span>

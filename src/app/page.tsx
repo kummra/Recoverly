@@ -77,7 +77,7 @@ export default function HomePage() {
         <div className="relative">
           <div className="mb-2 flex items-center gap-2">
             <HeartHandshake className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{t(greetingKey)}</span>
+            <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{t(greetingKey)}</span>
           </div>
           <h2 className="mb-3 text-2xl font-bold leading-tight sm:text-3xl">
             {(() => {
@@ -119,7 +119,7 @@ export default function HomePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Card className="border-emerald-500/20 bg-emerald-50 dark:bg-emerald-950/20">
             <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+              <CardDescription className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
                 <Calendar className="h-3.5 w-3.5" />
                 {t("home.thisMonth")}
               </CardDescription>

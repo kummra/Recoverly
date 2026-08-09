@@ -31,7 +31,7 @@ export function TopNav() {
       <div className="flex items-center justify-between gap-3">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20">
-            <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">R</span>
+            <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">R</span>
           </div>
           <h1 className="text-lg font-semibold tracking-tight">Recoverly</h1>
         </Link>
