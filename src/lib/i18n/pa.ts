@@ -71,6 +71,8 @@ export const pa: Dictionary = {
   "sos.hold": "ਰੋਕੋ",
   "sos.breatheOut": "ਸਾਹ ਛੱਡੋ",
   "sos.easeHint": "ਜ਼ਿਆਦਾਤਰ ਤਲਬ ਲਗਭਗ ਪੰਜ ਮਿੰਟਾਂ ਵਿੱਚ ਘੱਟ ਜਾਂਦੀ ਹੈ",
+  "sos.textSomeone": "ਕਿਸੇ ਭਰੋਸੇਯੋਗ ਨੂੰ ਸੁਨੇਹਾ ਭੇਜੋ",
+  "sos.textBody": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ — ਇਸ ਵੇਲੇ ਸ਼ਰਾਬ ਨੂੰ ਲੈ ਕੇ ਮੇਰਾ ਸਮਾਂ ਔਖਾ ਚੱਲ ਰਿਹਾ ਹੈ ਅਤੇ ਮੈਨੂੰ ਕਿਸੇ ਨਾਲ ਗੱਲ ਕਰਨੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਵਿਹਲੇ ਹੋ?",
   "sos.talkItThrough": "ਗੱਲ ਕਰੋ",
   "sos.getHelpNow": "ਹੁਣੇ ਮਦਦ ਲਓ",
   "sos.done": "ਹੋ ਗਿਆ",

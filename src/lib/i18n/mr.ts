@@ -71,6 +71,8 @@ export const mr: Dictionary = {
   "sos.hold": "थांबा",
   "sos.breatheOut": "श्वास सोडा",
   "sos.easeHint": "बहुतेक तल्लफ सुमारे पाच मिनिटांत कमी होते",
+  "sos.textSomeone": "विश्वासू व्यक्तीला संदेश पाठवा",
+  "sos.textBody": "नमस्कार — सध्या मद्याबाबत माझी अवस्था कठीण आहे आणि मला कोणाशी तरी बोलायचे आहे. तुम्ही मोकळे आहात का?",
   "sos.talkItThrough": "बोलून पहा",
   "sos.getHelpNow": "आत्ता मदत घ्या",
   "sos.done": "झाले",

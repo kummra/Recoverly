@@ -85,6 +85,8 @@ export const hi: Dictionary = {
   "sos.hold": "रोकें",
   "sos.breatheOut": "साँस छोड़ें",
   "sos.easeHint": "ज़्यादातर तलब लगभग पाँच मिनट में कम हो जाती है",
+  "sos.textSomeone": "किसी भरोसेमंद को संदेश भेजें",
+  "sos.textBody": "नमस्ते — अभी शराब को लेकर मेरा समय कठिन चल रहा है और मुझे किसी से बात करनी है। क्या आप बात कर सकते हैं?",
   "sos.talkItThrough": "बात करें",
   "sos.getHelpNow": "अभी मदद लें",
   "sos.done": "हो गया",

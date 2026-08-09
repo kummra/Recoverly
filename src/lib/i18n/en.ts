@@ -82,6 +82,11 @@ export const en: Dictionary = {
   "sos.hold": "Hold",
   "sos.breatheOut": "Breathe out",
   "sos.easeHint": "most cravings ease within about five minutes",
+  "sos.textSomeone": "Text someone you trust",
+  // Prefilled SMS body. No recipient is set and nothing is stored — the user
+  // picks the person from their own phone, so we never hold a third party's number.
+  "sos.textBody":
+    "Hi — I'm having a hard moment with drinking right now and could do with someone to talk to. Are you free?",
   "sos.talkItThrough": "Talk it through",
   "sos.getHelpNow": "Get help now",
   "sos.done": "I'm done",

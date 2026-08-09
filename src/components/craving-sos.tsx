@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bot, Heart, LifeBuoy, LifeBuoy as Ring, Waves, X } from "lucide-react";
+import { Bot, Heart, LifeBuoy, LifeBuoy as Ring, Waves, X, MessageCircle } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
@@ -189,6 +189,16 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                     <Heart className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {motivation}
                   </p>
                 )}
+
+                {/* Reaching a real person beats any in-app support, so offer it
+                    first. The sms: link carries no recipient — the user chooses
+                    from their own contacts — so we never store, transmit or even
+                    see a third party's number. Nothing touches the server. */}
+                <Button asChild variant="outline" className="w-full gap-1.5">
+                  <a href={`sms:?&body=${encodeURIComponent(t("sos.textBody"))}`}>
+                    <MessageCircle className="h-4 w-4" /> {t("sos.textSomeone")}
+                  </a>
+                </Button>
 
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Button asChild variant="outline" className="gap-1.5">
