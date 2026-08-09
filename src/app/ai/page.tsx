@@ -7,6 +7,7 @@ import { Bot, MessageSquarePlus, Send, User } from "lucide-react";
 import { ProtectedRoute } from "@/components/protected-route";
 import { CrisisHelpline } from "@/components/safety-notice";
 import { useT } from "@/components/i18n-provider";
+import { VoiceInput } from "@/components/voice-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -317,11 +318,17 @@ function AIContent() {
                   }
                 }}
               />
+              <VoiceInput
+                onTranscript={(text) => setInput((prev) => (prev ? `${prev} ${text}` : text))}
+              />
               <Button onClick={send} disabled={sending || !input.trim()} size="icon" className="h-10 w-10 shrink-0">
                 <Send className="h-4 w-4" />
                 <span className="sr-only">{t("ai.send")}</span>
               </Button>
             </div>
+            {/* Shown unconditionally rather than on first use: someone should
+                know the audio may leave their device before they tap, not after. */}
+            <p className="mt-1.5 text-xs text-subtle">{t("voice.notice")}</p>
           </CardContent>
         </Card>
       </div>

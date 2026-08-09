@@ -396,6 +396,9 @@ export const en: Dictionary = {
   "privacy.s4Title": "Data deletion",
   "privacy.s4Body":
     "You can permanently delete your account and all associated data at any time from Settings → Delete account. This removes your drink records, goals, and AI chat history, and cannot be undone.",
+  "privacy.s6Title": "Voice input",
+  "privacy.s6Body":
+    "Speaking to the AI coach is optional and off unless you tap the microphone. The transcription is done by your browser, not by us — depending on your browser and device, the audio may be sent to the browser's provider to be turned into text. We never record, store or receive the audio itself; only the resulting text reaches Recoverly, and only when you choose to speak. Typing is always available and keeps everything on your device.",
   "privacy.s5Title": "Third parties",
   "privacy.s5Body":
     "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated.",
@@ -450,6 +453,11 @@ export const en: Dictionary = {
   "ai.inputPlaceholder": "What's on your mind today?",
   "ai.send": "Send message",
   "ai.requestFailed": "Could not get AI response. Please try again.",
+
+  "voice.start": "Speak your message",
+  "voice.stop": "Stop recording",
+  "voice.notice":
+    "Tap the mic to speak instead of typing. Your browser does the transcribing and may send the audio to its provider, so type instead if you'd rather it never left your device.",
 
   // AUDIT questionnaire
   "audit.pageTitle": "Alcohol self-check (AUDIT)",

@@ -9,7 +9,8 @@ const SECTIONS = [
   { titleKey: "privacy.s2Title", bodyKey: "privacy.s2Body" },
   { titleKey: "privacy.s3Title", bodyKey: "privacy.s3Body" },
   { titleKey: "privacy.s4Title", bodyKey: "privacy.s4Body" },
-  { titleKey: "privacy.s5Title", bodyKey: "privacy.s5Body" }
+  { titleKey: "privacy.s5Title", bodyKey: "privacy.s5Body" },
+  { titleKey: "privacy.s6Title", bodyKey: "privacy.s6Body" }
 ];
 
 export default function PrivacyPage() {
