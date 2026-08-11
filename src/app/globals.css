@@ -10,7 +10,9 @@
   --card-foreground: 222 47% 11%;
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
-  --primary: 165 60% 36%;
+  /* 31% puts white text on the primary button at 4.95:1. At the previous 36%
+     it was 3.81:1 — buttons carry normal-size text, so they owe 4.5:1. */
+  --primary: 165 60% 31%;
   --primary-foreground: 0 0% 100%;
   --secondary: 210 30% 94%;
   --secondary-foreground: 222 47% 11%;

@@ -2,7 +2,7 @@
 
 A Next.js 16 (App Router) web app that helps people reduce and quit alcohol. It is one
 part of a larger anti-addiction project being submitted for the **Pradhan Mantri
-Rashtriya Bal Puraskar** (national youth award, India). **Deadline: 31 July 2026.**
+Rashtriya Bal Puraskar** (national youth award, India). **Deadline: 15 August 2026.**
 
 Users may be vulnerable people in recovery, so **correctness and safety come before
 features**. When in doubt, choose the safer, gentler behaviour.
@@ -15,7 +15,9 @@ Live deployment: https://recoverly-app.vercel.app
 - **UI:** Tailwind CSS + shadcn-style primitives (Radix), Recharts, lucide-react.
 - **Auth:** Firebase Authentication (email/password, Google, phone/OTP).
 - **Data:** Cloud Firestore, written from the browser via the Firebase client SDK.
-  - `users/{uid}` — `goalWeeklyMl`, `reminderTime`, `updatedAt`
+  - `users/{uid}` — `goalWeeklyMl`, `goalType` (`reduce`|`quit`), `reminderTime`,
+    `motivation`, `displayName`, `updatedAt`. `goalType` matters: `goalWeeklyMl: 0`
+    alone is ambiguous between "no weekly limit" and "aiming for zero alcohol".
   - `users/{uid}/drinkRecords/{id}` — `quantity` (ml), `type`, `mood?`, `createdAt`
   - `users/{uid}/aiChats/{chatId}/messages/{id}` — chat history
 - **AI coach:** a **Qwen** model on **Groq Cloud** (OpenAI-compatible API) in
