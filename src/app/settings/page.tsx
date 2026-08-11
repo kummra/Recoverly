@@ -145,7 +145,7 @@ function SettingsContent() {
                       role="radio"
                       aria-checked={goalType === type}
                       onClick={() => setGoalType(type)}
-                      className={`min-h-11 rounded-xl border px-3 py-2 text-left text-sm transition-colors ${
+                      className={`min-h-11 rounded-xl border px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                         goalType === type
                           ? "border-emerald-500 bg-emerald-500/10 font-medium text-foreground"
                           : "border-border text-body hover:bg-surface"

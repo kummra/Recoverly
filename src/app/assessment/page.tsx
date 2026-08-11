@@ -190,7 +190,7 @@ function AssessmentContent() {
                         role="radio"
                         aria-checked={selected}
                         onClick={() => setAnswers((a) => ({ ...a, [q.id]: idx }))}
-                        className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition-colors ${
+                        className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                           selected
                             ? "border-emerald-500 bg-emerald-500/10 font-medium text-foreground"
                             : "border-border text-body hover:bg-surface"

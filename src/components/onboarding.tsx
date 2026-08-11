@@ -132,7 +132,7 @@ export function Onboarding({
                   setGoalWeeklyMl(0);
                   setAimingToStop(true);
                 }}
-                className="text-xs text-emerald-700 dark:text-emerald-300 underline-offset-2 hover:underline"
+                className="rounded text-xs text-emerald-700 dark:text-emerald-300 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {t("onboarding.aimToStop")}
               </button>

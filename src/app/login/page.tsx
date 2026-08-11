@@ -165,7 +165,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => { setTab("email"); setLocalError(""); }}
               className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 tab === "email" ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -176,7 +176,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => { setTab("phone"); setLocalError(""); setOtpSent(false); setOtpCode(""); }}
               className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 tab === "phone" ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >

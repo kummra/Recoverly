@@ -39,7 +39,7 @@ export function LanguageSettings() {
                 aria-checked={selected}
                 onClick={() => setLocale(l)}
                 lang={l}
-                className={`flex min-h-11 flex-col items-start rounded-xl border px-3 py-2 text-left transition-colors ${
+                className={`flex min-h-11 flex-col items-start rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   selected
                     ? "border-emerald-500 bg-emerald-500/10"
                     : "border-border hover:bg-surface"

@@ -228,7 +228,7 @@ function AIContent() {
                   key={session.id}
                   type="button"
                   aria-pressed={chatId === session.id}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition-all ${
+                  className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     chatId === session.id
                       ? "border-emerald-400/40 bg-emerald-500/10 text-foreground shadow-sm"
                       : "border-border text-body hover:bg-surface"

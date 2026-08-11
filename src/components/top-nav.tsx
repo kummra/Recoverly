@@ -29,7 +29,7 @@ export function TopNav() {
   return (
     <header className="mb-6 rounded-2xl border border-border bg-surface-muted px-4 py-3 backdrop-blur-md">
       <div className="flex items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20">
             <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">R</span>
           </div>
@@ -46,7 +46,7 @@ export function TopNav() {
                 href={item.href}
                 aria-current={pathname === item.href ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-xl px-3 py-2 transition-all hover:bg-surface hover:text-foreground",
+                  "flex items-center gap-1.5 rounded-xl px-3 py-2 transition-all hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   pathname === item.href && "bg-surface text-foreground shadow-sm"
                 )}
               >

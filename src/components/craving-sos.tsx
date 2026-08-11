@@ -130,7 +130,7 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                         onClick={() => setIntensity(n)}
                         aria-label={t("sos.intensityAria", { n })}
                         aria-pressed={intensity === n}
-                        className={`h-11 flex-1 rounded-xl border text-sm font-medium transition-colors ${
+                        className={`h-11 flex-1 rounded-xl border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                           intensity === n
                             ? "border-sky-500 bg-sky-500/15 text-sky-700 dark:text-sky-200"
                             : "border-border text-muted-foreground hover:bg-surface"
