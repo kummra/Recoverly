@@ -156,6 +156,26 @@ export const en: Dictionary = {
   "dashboard.quitThisWeek": "{n} this week",
   "dashboard.quitClean": "No alcohol logged this week",
 
+  // Looking-ahead nudge. Tone rules: name the pattern as *theirs*, never
+  // predict that they will drink, and always offer an action rather than a
+  // warning. "You always drink on Fridays" would be both untrue and shaming.
+  "ahead.title": "{pattern} have been busier for you",
+  "ahead.body":
+    "That's just your own pattern, not a prediction. Having a plan ready tends to make these stretches easier.",
+  "ahead.planIntention": "Set an intention",
+  "ahead.reviewWhy": "Read your why",
+  "ahead.dismiss": "Not today, thanks",
+
+  // Cravings the user has already ridden out — their own evidence that it passes.
+  "cravings.title": "Cravings you've ridden out",
+  "cravings.body": "Every one of these is a time you felt it and came through.",
+  "cravings.riddenOut": "{passed} of {total} passed without a drink",
+  "cravings.typicalTime": "Typically eases in about {time}",
+  "cravings.minutes": "{n} min",
+  "cravings.seconds": "{n} sec",
+  "cravings.averageIntensity": "Average intensity {n} of 5",
+  "cravings.empty": "When you use the SOS button, what happens will show up here.",
+
   // Log a drink
   "log.quantity": "Quantity (ml)",
   "log.quantityPlaceholder": "e.g. 330",

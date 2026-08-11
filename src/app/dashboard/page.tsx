@@ -6,6 +6,7 @@ import { format } from "date-fns";
 
 import { CravingSos } from "@/components/craving-sos";
 import { DailyNudge } from "@/components/daily-nudge";
+import { LookingAhead } from "@/components/looking-ahead";
 import { useT } from "@/components/i18n-provider";
 import { LogDrinkModal } from "@/components/log-drink-modal";
 import { Onboarding } from "@/components/onboarding";
@@ -129,6 +130,10 @@ function DashboardContent() {
       )}
 
       <DailyNudge reminderTime={reminderTime} />
+
+      {/* Uses the patterns already computed from their own logs to offer help
+          before a historically harder stretch, not just describe it after. */}
+      <LookingAhead records={records} motivation={motivation || undefined} />
 
       {/* Identity + streak hero — the motivational anchor (never shaming) */}
       <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-50 dark:from-emerald-950/30 via-card to-card">

@@ -6,12 +6,13 @@ import { TrendingDown, TrendingUp, Calendar, Activity, BarChart3, Target } from 
 import { ConsumptionLineChart } from "@/components/charts/consumption-line";
 import { useT } from "@/components/i18n-provider";
 import { MonthlyBarChart } from "@/components/charts/monthly-bar";
+import { CravingHistory } from "@/components/craving-history";
 import { ProgressInsights } from "@/components/progress-insights";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { buildAnalytics, buildProgress, suggestInsight } from "@/lib/analytics";
-import { type DrinkRecord, getDrinkRecords } from "@/lib/firestore";
+import { type CravingEvent, type DrinkRecord, getCravingEvents, getDrinkRecords } from "@/lib/firestore";
 
 export default function RecordsPage() {
   return (
@@ -25,6 +26,7 @@ function RecordsContent() {
   const t = useT();
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
+  const [cravings, setCravings] = useState<CravingEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
 
@@ -33,6 +35,14 @@ function RecordsContent() {
     let cancelled = false;
     setLoading(true);
     setLoadFailed(false);
+    // Cravings are supplementary: swallow their failure so a problem fetching
+    // them can never take down the records page, which is the primary content.
+    getCravingEvents(user.uid)
+      .then((data) => {
+        if (!cancelled) setCravings(data);
+      })
+      .catch(() => undefined);
+
     getDrinkRecords(user.uid)
       .then((data) => {
         if (!cancelled) setRecords(data);
@@ -88,6 +98,10 @@ function RecordsContent() {
         <h2 className="text-xl font-bold">{t("records.title")}</h2>
         <p className="text-sm text-muted-foreground">{t("records.subtitle")}</p>
       </div>
+
+      {/* Their own record of cravings survived — until now only the clinician
+          report ever read this. */}
+      <CravingHistory events={cravings} />
 
       <ProgressInsights
         records={records}

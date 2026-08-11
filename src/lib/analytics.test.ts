@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   breathPhaseAt,
+  buildCravingSummary,
+  findUpcomingRisk,
   buildAnalytics,
   buildMilestones,
   buildProgress,
@@ -293,5 +295,74 @@ describe("buildTriggerInsights", () => {
       expect(i.share).toBeGreaterThan(0);
       expect(i.share).toBeLessThanOrEqual(1);
     }
+  });
+});
+
+describe("findUpcomingRisk", () => {
+  const friday = { labelKey: "trigger.fridays", count: 9, share: 0.4 };
+  const evenings = { labelKey: "trigger.evenings", count: 12, share: 0.5 };
+
+  it("flags a day pattern on that day", () => {
+    const onAFriday = new Date(2026, 7, 14, 9, 0); // Fri 14 Aug 2026, morning
+    expect(findUpcomingRisk([friday], onAFriday)?.kind).toBe("day");
+  });
+
+  it("stays quiet on other days", () => {
+    const onATuesday = new Date(2026, 7, 11, 9, 0);
+    expect(findUpcomingRisk([friday], onATuesday)).toBeNull();
+  });
+
+  it("only raises a time pattern while you are inside that window", () => {
+    const breakfast = new Date(2026, 7, 11, 8, 0);
+    const evening = new Date(2026, 7, 11, 20, 0);
+    expect(findUpcomingRisk([evenings], breakfast)).toBeNull();
+    expect(findUpcomingRisk([evenings], evening)?.labelKey).toBe("trigger.evenings");
+  });
+
+  it("never guesses from a mood pattern", () => {
+    // We cannot know today's mood, and acting as if we did would be intrusive.
+    const mood = { labelKey: "trigger.mood", mood: "stressed", count: 5, share: 0.6 };
+    expect(findUpcomingRisk([mood], new Date(2026, 7, 11, 20, 0))).toBeNull();
+  });
+
+  it("returns nothing when no pattern was significant enough to surface", () => {
+    expect(findUpcomingRisk([], new Date())).toBeNull();
+  });
+});
+
+describe("buildCravingSummary", () => {
+  it("handles someone who has never logged a craving", () => {
+    const s = buildCravingSummary([]);
+    expect(s).toEqual({ total: 0, passed: 0, passRate: null, medianSeconds: null, averageIntensity: null });
+  });
+
+  it("counts how many were ridden out", () => {
+    const s = buildCravingSummary([
+      { intensity: 4, outcome: "passed", secondsElapsed: 120 },
+      { intensity: 2, outcome: "passed", secondsElapsed: 60 },
+      { intensity: 5, outcome: "drank" }
+    ]);
+    expect(s.total).toBe(3);
+    expect(s.passed).toBe(2);
+    expect(s.passRate).toBeCloseTo(2 / 3);
+  });
+
+  it("uses the median so one long night does not distort the figure", () => {
+    // A mean would report 1205s here; the median keeps it honest at 120s.
+    const s = buildCravingSummary([
+      { intensity: 3, outcome: "passed", secondsElapsed: 60 },
+      { intensity: 3, outcome: "passed", secondsElapsed: 120 },
+      { intensity: 3, outcome: "passed", secondsElapsed: 3600 }
+    ]);
+    expect(s.medianSeconds).toBe(120);
+  });
+
+  it("times only episodes that actually passed", () => {
+    // A craving that ended in a drink says nothing about how long riding one out takes.
+    const s = buildCravingSummary([
+      { intensity: 3, outcome: "passed", secondsElapsed: 90 },
+      { intensity: 5, outcome: "drank", secondsElapsed: 5 }
+    ]);
+    expect(s.medianSeconds).toBe(90);
   });
 });

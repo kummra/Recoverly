@@ -403,3 +403,95 @@ export function suggestInsight(summary: AnalyticsSummary): {
   if (summary.improvementPercent < 0) return { key: "insight.up" };
   return { key: "insight.stable" };
 }
+
+// ─── Looking forward, not just back ─────────────────────────────────────────
+
+export type UpcomingRisk = {
+  /** The matched pattern, e.g. "trigger.fridays" or "trigger.evenings". */
+  labelKey: string;
+  /** Share of their logged drinks that fall in this window, 0–1. */
+  share: number;
+  /** "day" fires from the moment the day starts; "time" only inside the window. */
+  kind: "day" | "time";
+};
+
+const PART_OF_DAY_RANGES: Record<string, [number, number]> = {
+  "trigger.lateNights": [0, 6],
+  "trigger.mornings": [6, 12],
+  "trigger.afternoons": [12, 18],
+  "trigger.evenings": [18, 24]
+};
+
+/**
+ * Turn the retrospective trigger patterns into something the app can act on
+ * *before* a hard window rather than reporting it afterwards.
+ *
+ * Deliberately conservative:
+ * - Only fires on patterns `buildTriggerInsights` already judged significant,
+ *   so it inherits the "enough records, clearly above chance" bar.
+ * - Mood patterns are excluded — we can't know today's mood, and guessing it
+ *   would be both wrong and intrusive.
+ * - A time window matches only while you're actually in it, so an evening
+ *   pattern doesn't nag at breakfast.
+ *
+ * This is a prompt to prepare, never a prediction that someone *will* drink.
+ */
+export function findUpcomingRisk(
+  triggers: TriggerInsight[],
+  now: Date = new Date()
+): UpcomingRisk | null {
+  const dayMatch = triggers.find(
+    (t) => t.labelKey === DAY_KEYS[now.getDay()] && !t.mood
+  );
+  if (dayMatch) return { labelKey: dayMatch.labelKey, share: dayMatch.share, kind: "day" };
+
+  const hour = now.getHours();
+  const timeMatch = triggers.find((t) => {
+    const range = PART_OF_DAY_RANGES[t.labelKey];
+    return range && hour >= range[0] && hour < range[1];
+  });
+  if (timeMatch) return { labelKey: timeMatch.labelKey, share: timeMatch.share, kind: "time" };
+
+  return null;
+}
+
+// ─── Cravings ridden out ────────────────────────────────────────────────────
+
+export type CravingSummary = {
+  total: number;
+  /** Episodes that ended without a drink. */
+  passed: number;
+  /** 0–1, or null when there is nothing to divide by. */
+  passRate: number | null;
+  /** Median seconds to ride one out — median, not mean, so one long night
+   *  doesn't distort the number someone leans on during a craving. */
+  medianSeconds: number | null;
+  averageIntensity: number | null;
+};
+
+export function buildCravingSummary(
+  events: Array<{ intensity: number; outcome: string; secondsElapsed?: number }>
+): CravingSummary {
+  const total = events.length;
+  if (total === 0) {
+    return { total: 0, passed: 0, passRate: null, medianSeconds: null, averageIntensity: null };
+  }
+
+  const passed = events.filter((e) => e.outcome === "passed").length;
+
+  // Only episodes that actually passed tell us how long riding one out takes.
+  const durations = events
+    .filter((e) => e.outcome === "passed" && typeof e.secondsElapsed === "number")
+    .map((e) => e.secondsElapsed as number)
+    .sort((a, b) => a - b);
+  const medianSeconds = durations.length
+    ? durations.length % 2
+      ? durations[(durations.length - 1) / 2]
+      : Math.round((durations[durations.length / 2 - 1] + durations[durations.length / 2]) / 2)
+    : null;
+
+  const averageIntensity =
+    Math.round((events.reduce((sum, e) => sum + e.intensity, 0) / total) * 10) / 10;
+
+  return { total, passed, passRate: passed / total, medianSeconds, averageIntensity };
+}
