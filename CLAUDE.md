@@ -48,6 +48,24 @@ in `docs/legacy-port-inventory.md`.
   2026-08-08); pushing to `main` auto-deploys to production — no manual
   `vercel --prod` needed.
 
+## Known build failure: Google Fonts 404 on Vercel
+
+`src/app/layout.tsx` loads seven Noto Sans Indic families via `next/font/google`,
+which fetches the font files at build time. Google rotates those `fonts.gstatic.com`
+URLs, and Vercel restores a build cache that can still hold the old ones — so a
+build fails with `status 404 when requesting …notosanstamil…woff2` even though the
+same commit builds locally (a local `.next` gets re-fetched).
+
+It is a stale cache, not a code fault. Rebuild without the cache:
+
+```bash
+npx vercel --prod --force        # or: Vercel dashboard -> Redeploy, untick "Use existing Build Cache"
+```
+
+One clean build repopulates the cache with working URLs, and subsequent pushes are
+fine. If it starts recurring often, move the Indic fonts to `next/font/local` and
+commit the woff2 files so the build stops depending on Google at all.
+
 ## Development
 
 ```bash
