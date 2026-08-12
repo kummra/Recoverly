@@ -14,6 +14,7 @@ import { AuthProvider } from "@/components/auth-provider";
 import { I18nProvider } from "@/components/i18n-provider";
 import { ServiceWorkerRegistrar } from "@/components/service-worker";
 import { SiteFooter } from "@/components/site-footer";
+import { AppStructuredData } from "@/components/structured-data";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TopNav } from "@/components/top-nav";
 import "./globals.css";
@@ -45,6 +46,7 @@ const fontVars = [
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://recoverly-app.vercel.app"),
+  alternates: { canonical: "/" },
   title: {
     default: "Recoverly — Anti-Alcohol Recovery",
     template: "%s · Recoverly"
@@ -87,6 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={fontVars} suppressHydrationWarning>
       <body>
+        <AppStructuredData />
         <ThemeProvider>
         <I18nProvider>
         <ServiceWorkerRegistrar />

@@ -1,26 +1,25 @@
 "use client";
 
-import { ShieldCheck } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useT } from "@/components/i18n-provider";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SECTIONS = [
-  { titleKey: "privacy.s1Title", bodyKey: "privacy.s1Body" },
-  { titleKey: "privacy.s2Title", bodyKey: "privacy.s2Body" },
-  { titleKey: "privacy.s3Title", bodyKey: "privacy.s3Body" },
-  { titleKey: "privacy.s4Title", bodyKey: "privacy.s4Body" },
-  { titleKey: "privacy.s5Title", bodyKey: "privacy.s5Body" },
-  { titleKey: "privacy.s6Title", bodyKey: "privacy.s6Body" }
+  { titleKey: "terms.s1Title", bodyKey: "terms.s1Body" },
+  { titleKey: "terms.s2Title", bodyKey: "terms.s2Body" },
+  { titleKey: "terms.s3Title", bodyKey: "terms.s3Body" },
+  { titleKey: "terms.s4Title", bodyKey: "terms.s4Body" },
+  { titleKey: "terms.s5Title", bodyKey: "terms.s5Body" }
 ];
 
-export function PrivacyContent() {
+export function TermsContent() {
   const t = useT();
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold">
-          <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-          {t("privacy.title")}
+          <FileText className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+          {t("terms.title")}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">{t("legal.lastUpdated")}</p>
       </div>
