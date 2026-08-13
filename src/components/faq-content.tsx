@@ -1,8 +1,7 @@
-"use client";
-
 import { HelpCircle } from "lucide-react";
 
-import { useT } from "@/components/i18n-provider";
+import { createTranslator } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 /** Explicit key pairs, not template literals — the orphaned-key test scans for
@@ -19,8 +18,8 @@ const FAQ_ITEMS: Array<[string, string]> = [
   ["faq.q9", "faq.a9"]
 ];
 
-export function FaqContent() {
-  const t = useT();
+export function FaqContent({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>

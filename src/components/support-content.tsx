@@ -1,8 +1,7 @@
-"use client";
-
 import { LifeBuoy, Phone, Globe, HeartPulse, Users } from "lucide-react";
 
-import { useT } from "@/components/i18n-provider";
+import { createTranslator } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/types";
 import { WithdrawalWarning } from "@/components/safety-notice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HELPLINES } from "@/lib/safety";
@@ -25,8 +24,8 @@ const indiaHelplines = [
   }
 ];
 
-export function SupportContent() {
-  const t = useT();
+export function SupportContent({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>

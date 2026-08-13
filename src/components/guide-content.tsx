@@ -1,9 +1,8 @@
-"use client";
-
 import Link from "next/link";
 import { Compass, UserPlus, Target, NotebookPen, LineChart, Bot, LifeBuoy } from "lucide-react";
 
-import { useT } from "@/components/i18n-provider";
+import { createTranslator } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -16,8 +15,8 @@ const STEPS = [
   { icon: LifeBuoy, titleKey: "guide.step6Title", bodyKey: "guide.step6Body" }
 ];
 
-export function GuideContent() {
-  const t = useT();
+export function GuideContent({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>

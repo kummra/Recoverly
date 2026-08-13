@@ -1,6 +1,7 @@
 "use client";
 
 import { useT } from "@/components/i18n-provider";
+import { LanguageLinks } from "@/components/language-links";
 
 export function SiteFooter() {
   const t = useT();
@@ -19,6 +20,7 @@ export function SiteFooter() {
         <span aria-hidden>&middot;</span>
         <a href="/terms" className="rounded underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{t("footer.terms")}</a>
       </nav>
+      <LanguageLinks />
       <p className="mt-2">{t("footer.disclaimer")}</p>
     </footer>
   );

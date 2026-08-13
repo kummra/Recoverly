@@ -1,12 +1,15 @@
+import { createTranslator } from "@/lib/i18n/dictionaries";
 import { en } from "@/lib/i18n/en";
+import type { Locale } from "@/lib/i18n/types";
 
 const BASE_URL = "https://recoverly-app.vercel.app";
 
 /**
  * JSON-LD for search engines.
  *
- * Rendered from the English dictionary rather than a hand-kept copy, so the
- * structured data cannot drift away from what the page actually says — Google
+ * Rendered from the dictionaries rather than a hand-kept copy, and in the
+ * language of the page it sits on, so the markup cannot drift from what the
+ * reader actually sees — Google
  * treats a mismatch between markup and visible content as a reason to drop the
  * rich result, and for a health topic that scrutiny is higher still.
  *
@@ -22,7 +25,13 @@ function Ld({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-/** The app itself. `isAccessibleForFree` is a genuine differentiator here. */
+/**
+ * The app itself. `isAccessibleForFree` is a genuine differentiator here.
+ *
+ * Deliberately stays English: this is site-level entity data rendered from the
+ * root layout, which has no locale, and Google accepts one canonical
+ * description per entity. Only page-content schemas are localised.
+ */
 export function AppStructuredData() {
   return (
     <Ld
@@ -52,7 +61,8 @@ export function AppStructuredData() {
 const FAQ_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 
 /** FAQPage markup — the one schema here eligible for a rich result. */
-export function FaqStructuredData() {
+export function FaqStructuredData({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
   return (
     <Ld
       data={{
@@ -60,8 +70,8 @@ export function FaqStructuredData() {
         "@type": "FAQPage",
         mainEntity: FAQ_NUMBERS.map((n) => ({
           "@type": "Question",
-          name: en[`faq.q${n}`],
-          acceptedAnswer: { "@type": "Answer", text: en[`faq.a${n}`] }
+          name: t(`faq.q${n}`),
+          acceptedAnswer: { "@type": "Answer", text: t(`faq.a${n}`) }
         }))
       }}
     />
@@ -69,18 +79,19 @@ export function FaqStructuredData() {
 }
 
 /** The step-by-step guide, marked up as a HowTo. */
-export function GuideStructuredData() {
+export function GuideStructuredData({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
   return (
     <Ld
       data={{
         "@context": "https://schema.org",
         "@type": "HowTo",
-        name: en["guide.title"],
-        description: en["guide.intro"],
+        name: t("guide.title"),
+        description: t("guide.intro"),
         step: [1, 2, 3, 4, 5, 6].map((n) => ({
           "@type": "HowToStep",
-          name: en[`guide.step${n}Title`],
-          text: en[`guide.step${n}Body`]
+          name: t(`guide.step${n}Title`),
+          text: t(`guide.step${n}Body`)
         }))
       }}
     />

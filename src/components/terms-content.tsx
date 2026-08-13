@@ -1,7 +1,6 @@
-"use client";
-
 import { FileText } from "lucide-react";
-import { useT } from "@/components/i18n-provider";
+import { createTranslator } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SECTIONS = [
@@ -12,8 +11,8 @@ const SECTIONS = [
   { titleKey: "terms.s5Title", bodyKey: "terms.s5Body" }
 ];
 
-export function TermsContent() {
-  const t = useT();
+export function TermsContent({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>

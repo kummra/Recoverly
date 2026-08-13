@@ -1,7 +1,6 @@
-"use client";
-
 import { ShieldCheck } from "lucide-react";
-import { useT } from "@/components/i18n-provider";
+import { createTranslator } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SECTIONS = [
@@ -13,8 +12,8 @@ const SECTIONS = [
   { titleKey: "privacy.s6Title", bodyKey: "privacy.s6Body" }
 ];
 
-export function PrivacyContent() {
-  const t = useT();
+export function PrivacyContent({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
