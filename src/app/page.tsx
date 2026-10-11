@@ -79,7 +79,7 @@ export default function HomePage() {
             <HeartHandshake className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{t(greetingKey)}</span>
           </div>
-          <h2 className="mb-3 text-2xl font-bold leading-tight sm:text-3xl">
+          <h1 className="mb-3 text-2xl font-bold leading-tight sm:text-3xl">
             {(() => {
               const [before, after = ""] = t("home.heroTitle").split("{identity}");
               return (
@@ -92,7 +92,7 @@ export default function HomePage() {
                 </>
               );
             })()}
-          </h2>
+          </h1>
           <p className="mb-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             {t("home.heroBody")}
           </p>
@@ -197,7 +197,7 @@ export default function HomePage() {
               <p className="mt-1 text-sm text-muted-foreground">{t("home.ctaBody")}</p>
             </div>
             <Button asChild size="lg" className="gap-2">
-              <Link href="/login">
+              <Link href="/login?mode=signup">
                 {t("home.getStarted")}
                 <ArrowRight className="h-4 w-4" />
               </Link>

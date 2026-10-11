@@ -8,7 +8,8 @@ is done — this is configuration + verification.
 - [ ] **Authentication → Sign-in method:** enable the providers you use:
   - [ ] Email/Password
   - [ ] Google (optional)
-  - [ ] Phone (optional — requires billing + reCAPTCHA; SMS costs apply)
+  - [ ] Phone: leave **disabled**. The app no longer offers phone sign-in, and an enabled
+        provider with no UI is still an open SMS endpoint someone else can run up a bill on.
 - [ ] **Firestore Database:** created (production mode).
 - [ ] **Service account:** Project Settings → Service Accounts → *Generate new private key*.
       Use it for the server env vars below. **Rotate the old key** that was sitting in the

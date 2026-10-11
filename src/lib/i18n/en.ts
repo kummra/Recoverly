@@ -267,6 +267,11 @@ export const en: Dictionary = {
     "Permanently remove your account and all of your data — drink records, goals, and AI conversations. This cannot be undone.",
   "account.deleteAccountCta": "Delete my account & data",
   "account.changePassword": "Change password",
+  "account.verifyTitle": "Confirm your email",
+  "account.verifyBody":
+    "Confirming your email keeps your password sign-in safe. Until you do, signing in with Google on this same address can remove your password.",
+  "account.verifySend": "Send me a confirmation link",
+  "account.verifySent": "Link sent to {email}. Open it to confirm, then sign in again.",
   "audit.beforeYouChange": "Before you change anything, please read",
   "audit.answerAll": "Answer every question for an accurate score.",
 
@@ -379,7 +384,7 @@ export const en: Dictionary = {
   "guide.intro": "Six simple steps. Go at your own pace — every step toward awareness counts.",
   "guide.step1Title": "1. Create your account",
   "guide.step1Body":
-    "Sign up with email, Google, or your phone number. Your space is private and tied only to you.",
+    "Sign up with email or Google. Your space is private and tied only to you.",
   "guide.step2Title": "2. Set a gentle weekly goal",
   "guide.step2Body":
     "Choose a weekly limit that feels realistic. Small, sustainable change beats an all-or-nothing promise — and you can adjust it any time.",
@@ -639,34 +644,49 @@ export const en: Dictionary = {
   "login.noJudgmentBody": "Built on identity-reinforcement, not shame.",
   "login.createAccount": "Create account",
   "login.welcomeBack": "Welcome back",
-  "login.phoneSignIn": "Phone sign-in",
   "login.createDesc": "Set up your recovery companion in seconds.",
   "login.welcomeDesc": "Your journey continues. Sign in to pick up where you left off.",
-  "login.otpDesc": "Enter the 6-digit code sent to your phone.",
-  "login.smsDesc": "We'll send a verification code via SMS.",
   "login.tabEmail": "Email",
-  "login.tabPhone": "Phone",
   "login.password": "Password",
-  "login.passwordPlaceholder": "Minimum 6 characters",
   "login.pleaseWait": "Please wait…",
   "login.signIn": "Sign in",
-  "login.haveAccount": "Already have an account? Sign in",
-  "login.newHere": "New here? Create an account",
-  "login.phoneNumber": "Phone number",
-  "login.countryCodeHint": "Include country code (e.g. +1 for US, +91 for India).",
-  "login.sendingCode": "Sending code…",
-  "login.sendCode": "Send verification code",
-  "login.verificationCode": "Verification code",
-  "login.codeSentTo": "Code sent to {phone}.",
-  "login.verifying": "Verifying…",
-  "login.verifyAndSignIn": "Verify & sign in",
-  "login.changePhone": "Change phone number",
   "login.orContinue": "or continue with",
   "login.googleSignIn": "Sign in with Google",
-  "login.authFailed": "Authentication failed. Please verify your credentials and try again.",
+  "login.authFailed": "We couldn't sign you in just now. Please try again in a moment.",
+  "login.signUpFailed": "We couldn't create your account just now. Please try again in a moment.",
+  // Firebase gives one answer for a mistyped password, an address with no
+  // account and an account that only has Google sign-in, so this one message
+  // has to show the way out of all three.
+  "login.errInvalidCredentials":
+    "We couldn't sign you in with that email and password. If you joined with Google, use the Google button below. Otherwise choose “Forgot password?” to set a new one, or create an account if you are new here.",
+  // Worded as "if you already have one" rather than "this email is registered":
+  // someone typing a relative's address should not get a flat confirmation
+  // that the relative uses a recovery app.
+  "login.errEmailInUse":
+    "We couldn't create an account with that email. If you already have one, sign in instead. If you joined with Google, use the Google button below, or choose “Forgot password?” to add a password.",
+  "login.errWeakPassword": "Please use at least {min} characters for your password.",
+  "login.errInvalidEmail": "That email address does not look complete. Please check it.",
+  "login.errTooMany":
+    "Too many attempts, so sign-in is paused for a short while. Please wait a few minutes, or choose “Forgot password?” to set a new password now.",
+  "login.errNetwork": "We couldn't reach the server. Please check your internet connection and try again.",
+  "login.errDisabled": "This account has been turned off and can't be used to sign in.",
+  "login.errUnavailable": "Sign-in isn't available right now. Please try again later.",
+  "login.errStorage":
+    "Your browser is blocking the storage that sign-in needs. Please leave private browsing or allow cookies for this site, then try again.",
+  "login.errPopupBlocked": "Your browser blocked the Google window. Please allow pop-ups for this site and try again.",
+  "login.passwordHint": "At least {min} characters.",
+  "login.showPassword": "Show password",
+  "login.hidePassword": "Hide password",
+  "login.forgotPassword": "Forgot password?",
+  "login.resetTitle": "Set a new password",
+  "login.resetDesc":
+    "Enter your email and we'll send you a link to set a new password. This also works if you joined with Google and would like a password as well.",
+  "login.resetSend": "Email me a link",
+  "login.resetSent":
+    "If there is an account for {email}, a link is on its way. It can take a few minutes. Please check your spam folder too.",
+  "login.resetBack": "Back to sign in",
+  "login.resetFailed": "We couldn't send the link just now. Please try again in a moment.",
   "login.googleFailed": "Google sign-in failed. Please try again.",
-  "login.sendFailed": "Could not send code. Verify the phone number and try again.",
-  "login.invalidCode": "Invalid code. Please check and try again.",
 
   // Offline / error
   "offline.title": "You're offline",

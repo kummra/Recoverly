@@ -20,10 +20,10 @@ export function GuideContent({ locale }: { locale: Locale }) {
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
-        <h2 className="flex items-center gap-2 text-xl font-bold">
+        <h1 className="flex items-center gap-2 text-xl font-bold">
           <Compass className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           {t("guide.title")}
-        </h2>
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("guide.intro")}
         </p>
@@ -52,7 +52,7 @@ export function GuideContent({ locale }: { locale: Locale }) {
 
       <div className="flex flex-wrap justify-center gap-3 pt-2">
         <Button asChild>
-          <Link href="/login">{t("guide.getStarted")}</Link>
+          <Link href="/login?mode=signup">{t("guide.getStarted")}</Link>
         </Button>
         <Button asChild variant="outline">
           <Link href="/support">{t("guide.needHelpNow")}</Link>

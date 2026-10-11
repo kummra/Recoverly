@@ -9,6 +9,7 @@ import { useT } from "@/components/i18n-provider";
 import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { DeleteAccount } from "@/components/delete-account";
+import { EmailVerification } from "@/components/email-verification";
 import { PasswordChange } from "@/components/password-change";
 import { ProtectedRoute } from "@/components/protected-route";
 import { WithdrawalWarning } from "@/components/safety-notice";
@@ -90,7 +91,7 @@ function SettingsContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">{t("settings.title")}</h2>
+        <h1 className="text-xl font-bold">{t("settings.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("settings.subtitle")}</p>
       </div>
 
@@ -245,6 +246,7 @@ function SettingsContent() {
             </CardContent>
           </Card>
 
+          <EmailVerification />
           <PasswordChange />
 
           <DataManagement />

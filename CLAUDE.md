@@ -13,7 +13,9 @@ Live deployment: https://recoverly-app.vercel.app
 
 - **Framework:** Next.js 16 (App Router, Turbopack), React 18, TypeScript.
 - **UI:** Tailwind CSS + shadcn-style primitives (Radix), Recharts, lucide-react.
-- **Auth:** Firebase Authentication (email/password, Google, phone/OTP).
+- **Auth:** Firebase Authentication (email/password, Google). Phone/OTP sign-in was
+  removed on 2026-10-11 — keep the Phone provider disabled in the Firebase console too,
+  or the SMS endpoint stays open to abuse even with no UI for it.
 - **Data:** Cloud Firestore, written from the browser via the Firebase client SDK.
   - `users/{uid}` — `goalWeeklyMl`, `goalType` (`reduce`|`quit`), `reminderTime`,
     `motivation`, `displayName`, `updatedAt`. `goalType` matters: `goalWeeklyMl: 0`
@@ -47,6 +49,34 @@ in `docs/legacy-port-inventory.md`.
   Vercel project is linked to `kummra/Recoverly` (GitHub integration connected
   2026-08-08); pushing to `main` auto-deploys to production — no manual
   `vercel --prod` needed.
+
+## Sign-in: the behaviour that looks like a bug
+
+Firebase treats an email/password account whose address was never confirmed as
+*untrusted*, and Google sign-in as *trusted*. With "one account per email" (the
+default), the first time such a person uses **Sign in with Google** on the same
+address, Google's sign-in **replaces** the password: same uid, same data, but email
+sign-in now fails with `auth/invalid-credential` and sign-up fails with
+`auth/email-already-in-use`. Email-enumeration protection is on, so Firebase gives
+that same code for a wrong password and for an unknown address — the app cannot tell
+which, and must not pretend to.
+
+What the app does about it (do not remove any of these):
+- `src/lib/auth-errors.ts` maps each Firebase code to a translated message that names
+  the ways out (Google button, "Forgot password?", create an account).
+- **Forgot password?** on `/login` (`sendPasswordResetEmail`). Completing a reset puts a
+  password back *and* confirms the address, after which Google links instead of
+  replacing. The confirmation text is deliberately conditional ("if there is an
+  account…") — never confirm that an address is registered.
+- **Confirm your email** in Settings (`EmailVerification`). Opt-in, not automatic at
+  sign-up: an email from a recovery app landing in a shared inbox is the user's choice.
+- New passwords need 8+ characters; the sign-in form has **no** minimum, or existing
+  shorter passwords would be locked out.
+
+To check a real account, look at the Providers column in Firebase console →
+Authentication → Users. Do **not** "test" by signing in with Google — that is the
+action that removes the password. `docs/testing-sign-in.md` shows how to exercise all
+of this against the Auth emulator.
 
 ## Known build failure: Google Fonts 404 on Vercel
 

@@ -1,49 +1,65 @@
 "use client";
 
 import {
-  type ConfirmationResult,
   type User,
-  RecaptchaVerifier,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPhoneNumber,
   signInWithPopup,
   signOut
 } from "firebase/auth";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
+import { useI18n } from "@/components/i18n-provider";
+import { authErrorCode } from "@/lib/auth-errors";
 import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
-  error: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  sendPhoneCode: (phoneNumber: string) => Promise<void>;
-  confirmPhoneCode: (code: string) => Promise<void>;
+  /** Emails a link to set a new password. Resolves for unknown addresses too,
+   *  so the caller must never say "sent" as if the address were confirmed. */
+  resetPassword: (email: string) => Promise<void>;
+  /** Emails the signed-in user a link that confirms their address. */
+  sendVerificationEmail: () => Promise<void>;
   signOutUser: () => Promise<void>;
   getIdToken: () => Promise<string | null>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Rethrows after noting the failure in the console. Only the action and the
+ * Firebase code are logged — never the address or the password — so there is
+ * something to look at the next time a sign-in problem is reported, without
+ * the console becoming a record of who tried to sign in.
+ */
+function report(action: string, error: unknown): never {
+  // eslint-disable-next-line no-console
+  console.warn(`[auth] ${action} failed:`, authErrorCode(error) || "unknown");
+  throw error;
+}
+
+function requireAuth() {
+  if (!auth) throw new Error("Firebase auth is not configured.");
+  return auth;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Phone auth state stored in refs so the context value doesn't
-  // trigger re-renders for intermediate phone-auth steps.
-  const confirmationRef = useRef<ConfirmationResult | null>(null);
-  const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
+  const { locale } = useI18n();
 
   useEffect(() => {
     if (!auth || !isFirebaseConfigured) {
       setLoading(false);
-      setError("Firebase client configuration is missing. Add NEXT_PUBLIC_FIREBASE_* variables.");
+      // eslint-disable-next-line no-console
+      console.warn("[auth] Firebase client configuration is missing. Add NEXT_PUBLIC_FIREBASE_* variables.");
       return;
     }
     const unsub = onAuthStateChanged(auth, (nextUser) => {
@@ -53,91 +69,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsub();
   }, []);
 
-  // Lazily initialize the invisible reCAPTCHA verifier.
-  const getRecaptchaVerifier = useCallback(() => {
-    if (!auth) throw new Error("Firebase auth is not configured.");
-    if (recaptchaRef.current) return recaptchaRef.current;
-
-    recaptchaRef.current = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "invisible"
-    });
-    return recaptchaRef.current;
-  }, []);
+  // Firebase writes its emails (password reset, address confirmation) in this
+  // language, so someone using the app in Tamil is not sent a link in English.
+  useEffect(() => {
+    if (auth) auth.languageCode = locale;
+  }, [locale]);
 
   const value = useMemo<AuthContextType>(
     () => ({
       user,
       loading,
-      error,
 
-      // ── Email / Password ──────────────────────────────────
       signIn: async (email, password) => {
-        if (!auth) throw new Error("Firebase auth is not configured.");
-        setError(null);
         try {
-          await signInWithEmailAndPassword(auth, email, password);
+          await signInWithEmailAndPassword(requireAuth(), email, password);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Unable to sign in.");
-          throw err;
+          report("sign-in", err);
         }
       },
 
       signUp: async (email, password) => {
-        if (!auth) throw new Error("Firebase auth is not configured.");
-        setError(null);
         try {
-          await createUserWithEmailAndPassword(auth, email, password);
+          await createUserWithEmailAndPassword(requireAuth(), email, password);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Unable to sign up.");
-          throw err;
+          report("sign-up", err);
         }
       },
 
-      // ── Google ────────────────────────────────────────────
       signInWithGoogle: async () => {
-        if (!auth) throw new Error("Firebase auth is not configured.");
-        setError(null);
         try {
-          await signInWithPopup(auth, googleProvider);
+          await signInWithPopup(requireAuth(), googleProvider);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Google sign-in failed.");
-          throw err;
+          report("google sign-in", err);
         }
       },
 
-      // ── Phone ─────────────────────────────────────────────
-      sendPhoneCode: async (phoneNumber: string) => {
-        if (!auth) throw new Error("Firebase auth is not configured.");
-        setError(null);
+      resetPassword: async (email) => {
         try {
-          const verifier = getRecaptchaVerifier();
-          const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
-          confirmationRef.current = result;
+          await sendPasswordResetEmail(requireAuth(), email);
         } catch (err) {
-          // Reset the reCAPTCHA so the user can retry.
-          recaptchaRef.current = null;
-          setError(err instanceof Error ? err.message : "Could not send verification code.");
-          throw err;
+          report("password reset", err);
         }
       },
 
-      confirmPhoneCode: async (code: string) => {
-        if (!confirmationRef.current) {
-          const msg = "No pending verification. Please request a code first.";
-          setError(msg);
-          throw new Error(msg);
-        }
-        setError(null);
+      sendVerificationEmail: async () => {
         try {
-          await confirmationRef.current.confirm(code);
-          confirmationRef.current = null;
+          const current = requireAuth().currentUser;
+          if (!current) throw new Error("Not signed in.");
+          await sendEmailVerification(current);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Invalid verification code.");
-          throw err;
+          report("email verification", err);
         }
       },
 
-      // ── Common ────────────────────────────────────────────
       signOutUser: async () => {
         if (!auth) return;
         await signOut(auth);
@@ -149,16 +133,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return auth.currentUser.getIdToken();
       }
     }),
-    [error, loading, user, getRecaptchaVerifier]
+    [loading, user]
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-      {/* Invisible reCAPTCHA anchor — must exist in the DOM for phone auth */}
-      <div id="recaptcha-container" />
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuthContext() {

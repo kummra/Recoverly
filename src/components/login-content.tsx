@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { HeartHandshake, ShieldCheck, Lock, Mail, Phone, Chrome } from "lucide-react";
+import { Chrome, Eye, EyeOff, HeartHandshake, Lock, MailCheck, ShieldCheck } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
 import { useAuth } from "@/hooks/use-auth";
@@ -10,95 +10,137 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MIN_NEW_PASSWORD_LENGTH, authErrorKey } from "@/lib/auth-errors";
+import { isFirebaseConfigured } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 
-type AuthTab = "email" | "phone";
+type Mode = "signIn" | "signUp" | "reset";
 
 export function LoginContent() {
   const t = useT();
   const router = useRouter();
-  const { signIn, signUp, signInWithGoogle, sendPhoneCode, confirmPhoneCode, error } = useAuth();
+  const { user, loading: authLoading, signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
 
-  const [tab, setTab] = useState<AuthTab>("email");
-  const [isRegister, setIsRegister] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [localError, setLocalError] = useState("");
+  const [mode, setMode] = useState<Mode>("signIn");
+  const [busy, setBusy] = useState(false);
+  // An i18n key rather than a sentence, so the message follows a language change.
+  const [errorKey, setErrorKey] = useState<string | null>(null);
+  const [resetSentTo, setResetSentTo] = useState<string | null>(null);
 
-  // Email state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Phone state
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [otpCode, setOtpCode] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  // This page is served as ready-made HTML, so the form is on screen — and can
+  // be typed into — before the script that runs it has loaded. On a slow
+  // connection that gap is long. Without the two guards below, pressing
+  // "Sign in" in that gap reloads the page with empty fields and no message,
+  // and whatever was typed or autofilled is thrown away when the script starts.
+  const [ready, setReady] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (emailRef.current?.value) setEmail(emailRef.current.value);
+    if (passwordRef.current?.value) setPassword(passwordRef.current.value);
+    setReady(true);
+  }, []);
 
-  const displayError = localError || error;
+  // "Get started" links arrive as /login?mode=signup. Someone new who was shown
+  // the sign-in form would type an email, invent a password, press Sign in and
+  // be told it was incorrect — the right form has to be the one they land on.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("mode") === "signup") setMode("signUp");
+  }, []);
 
-  // ── Email submit ──────────────────────────────────────────
+  // One place decides when to leave this page: as soon as there is a user,
+  // whether they signed in a moment ago or were already signed in on arrival.
+  useEffect(() => {
+    if (!authLoading && user) router.replace("/dashboard");
+  }, [authLoading, router, user]);
+
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setErrorKey(null);
+    setResetSentTo(null);
+  };
+
+  // On success `busy` is left on: the effect above is about to navigate away,
+  // and re-enabling the button for that instant invites a second submit.
   const submitEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setLocalError("");
+    setBusy(true);
+    setErrorKey(null);
     try {
-      if (isRegister) {
-        await signUp(email, password);
-      } else {
-        await signIn(email, password);
-      }
-      router.replace("/dashboard");
-    } catch {
-      setLocalError(t("login.authFailed"));
-    } finally {
-      setLoading(false);
+      if (mode === "signUp") await signUp(email.trim(), password);
+      else await signIn(email.trim(), password);
+    } catch (err) {
+      setErrorKey(authErrorKey(mode === "signUp" ? "signUp" : "signIn", err));
+      setBusy(false);
     }
   };
 
-  // ── Google submit ─────────────────────────────────────────
   const submitGoogle = async () => {
-    setLoading(true);
-    setLocalError("");
+    setBusy(true);
+    setErrorKey(null);
     try {
       await signInWithGoogle();
-      router.replace("/dashboard");
-    } catch {
-      setLocalError(t("login.googleFailed"));
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setErrorKey(authErrorKey("google", err));
+      setBusy(false);
     }
   };
 
-  // ── Phone: send code ──────────────────────────────────────
-  const submitPhoneSendCode = async (e: React.FormEvent) => {
+  const submitReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phoneNumber.trim()) return;
-    setLoading(true);
-    setLocalError("");
+    const address = email.trim();
+    setBusy(true);
+    setErrorKey(null);
     try {
-      await sendPhoneCode(phoneNumber.trim());
-      setOtpSent(true);
-    } catch {
-      setLocalError(t("login.sendFailed"));
+      await resetPassword(address);
+      setResetSentTo(address);
+    } catch (err) {
+      // A null key means "do not reveal whether this address has an account":
+      // show the same confirmation an existing address would get.
+      const key = authErrorKey("reset", err);
+      if (key) setErrorKey(key);
+      else setResetSentTo(address);
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   };
 
-  // ── Phone: verify code ────────────────────────────────────
-  const submitPhoneVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!otpCode.trim()) return;
-    setLoading(true);
-    setLocalError("");
-    try {
-      await confirmPhoneCode(otpCode.trim());
-      router.replace("/dashboard");
-    } catch {
-      setLocalError(t("login.invalidCode"));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const errorText = !isFirebaseConfigured
+    ? t("login.errUnavailable")
+    : errorKey
+      ? t(errorKey, { min: MIN_NEW_PASSWORD_LENGTH })
+      : null;
+
+  const errorAlert = errorText && (
+    <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm leading-relaxed text-red-700 dark:text-red-300">
+      {errorText}
+    </p>
+  );
+
+  const emailField = (
+    <div className="space-y-2">
+      <Label htmlFor="email">{t("login.tabEmail")}</Label>
+      <Input
+        ref={emailRef}
+        id="email"
+        type="email"
+        required
+        autoComplete="email"
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          // Correcting the address brings the "send" button back, so a link
+          // sent to a mistyped address is not the end of the road.
+          if (resetSentTo) setResetSentTo(null);
+        }}
+        placeholder="you@example.com"
+      />
+    </div>
+  );
 
   return (
     <div className="animate-fade-in-up mx-auto flex max-w-4xl flex-col gap-6 lg:flex-row lg:items-start">
@@ -109,7 +151,7 @@ export function LoginContent() {
             <HeartHandshake className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
             <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Recoverly</span>
           </div>
-          <h2 className="text-2xl font-bold leading-tight sm:text-3xl">
+          <h1 className="text-2xl font-bold leading-tight sm:text-3xl">
             {(() => {
               const [before, after = ""] = t("login.heroTitle").split("{awareness}");
               return (
@@ -122,7 +164,7 @@ export function LoginContent() {
                 </>
               );
             })()}
-          </h2>
+          </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t("login.heroBody")}</p>
         </div>
 
@@ -147,160 +189,118 @@ export function LoginContent() {
       {/* Auth form */}
       <Card className="w-full lg:w-[420px]">
         <CardHeader>
-          <CardTitle>{tab === "email" ? (isRegister ? t("login.createAccount") : t("login.welcomeBack")) : t("login.phoneSignIn")}</CardTitle>
+          <CardTitle>
+            {mode === "reset" ? t("login.resetTitle") : mode === "signUp" ? t("login.createAccount") : t("login.welcomeBack")}
+          </CardTitle>
           <CardDescription>
-            {tab === "email"
-              ? isRegister
-                ? t("login.createDesc")
-                : t("login.welcomeDesc")
-              : otpSent
-                ? t("login.otpDesc")
-                : t("login.smsDesc")}
+            {mode === "reset" ? t("login.resetDesc") : mode === "signUp" ? t("login.createDesc") : t("login.welcomeDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* ── Tab switcher ─────────────────────────────── */}
-          <div className="flex gap-1 rounded-xl bg-surface-muted p-1">
-            <button
-              type="button"
-              onClick={() => { setTab("email"); setLocalError(""); }}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                tab === "email" ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Mail className="h-3.5 w-3.5" />
-              {t("login.tabEmail")}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setTab("phone"); setLocalError(""); setOtpSent(false); setOtpCode(""); }}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                tab === "phone" ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Phone className="h-3.5 w-3.5" />
-              {t("login.tabPhone")}
-            </button>
-          </div>
+          {/* Sign in and Create account sit side by side. Creating an account
+              used to be a small grey link under the Sign in button. */}
+          {mode !== "reset" && (
+            <div className="flex gap-1 rounded-xl bg-surface-muted p-1">
+              {(["signIn", "signUp"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  aria-pressed={mode === option}
+                  onClick={() => switchMode(option)}
+                  className={cn(
+                    "flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    mode === option ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {option === "signIn" ? t("login.signIn") : t("login.createAccount")}
+                </button>
+              ))}
+            </div>
+          )}
 
-          {/* ── Email tab ────────────────────────────────── */}
-          {tab === "email" && (
-            <>
-              <form onSubmit={submitEmail} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t("login.tabEmail")}</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">{t("login.password")}</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    minLength={6}
-                    autoComplete={isRegister ? "new-password" : "current-password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t("login.passwordPlaceholder")}
-                  />
-                </div>
-                {displayError && (
-                  <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
-                    {displayError}
-                  </p>
-                )}
-                <Button className="w-full" type="submit" disabled={loading}>
-                  {loading ? t("login.pleaseWait") : isRegister ? t("login.createAccount") : t("login.signIn")}
+          {/* Both forms say method="post": if the browser ever submits one itself,
+              because the script failed to load, nothing typed here can end up
+              in the address bar. */}
+          {mode === "reset" ? (
+            <form onSubmit={submitReset} method="post" className="space-y-4">
+              {emailField}
+              {errorAlert}
+              {resetSentTo ? (
+                <p role="status" className="flex gap-2 rounded-xl bg-emerald-500/10 px-3 py-2 text-sm leading-relaxed text-emerald-800 dark:text-emerald-300">
+                  <MailCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                  <span>{t("login.resetSent", { email: resetSentTo })}</span>
+                </p>
+              ) : (
+                <Button className="w-full" type="submit" disabled={!ready || busy || !isFirebaseConfigured}>
+                  {busy ? t("login.pleaseWait") : t("login.resetSend")}
                 </Button>
-              </form>
-
+              )}
               <Button
                 variant="ghost"
                 className="w-full text-xs text-muted-foreground"
-                onClick={() => { setIsRegister((prev) => !prev); setLocalError(""); }}
                 type="button"
+                onClick={() => switchMode("signIn")}
               >
-                {isRegister ? t("login.haveAccount") : t("login.newHere")}
+                {t("login.resetBack")}
               </Button>
-            </>
-          )}
-
-          {/* ── Phone tab ────────────────────────────────── */}
-          {tab === "phone" && (
-            <>
-              {!otpSent ? (
-                <form onSubmit={submitPhoneSendCode} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">{t("login.phoneNumber")}</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      required
-                      autoComplete="tel"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="+1 234 567 8900"
-                    />
-                    <p className="text-xs text-subtle">{t("login.countryCodeHint")}</p>
-                  </div>
-                  {displayError && (
-                    <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
-                      {displayError}
-                    </p>
-                  )}
-                  <Button className="w-full" type="submit" disabled={loading}>
-                    {loading ? t("login.sendingCode") : t("login.sendCode")}
-                  </Button>
-                </form>
-              ) : (
-                <form onSubmit={submitPhoneVerifyCode} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="otp">{t("login.verificationCode")}</Label>
-                    <Input
-                      id="otp"
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      required
-                      maxLength={6}
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
-                      placeholder="123456"
-                      className="text-center text-lg tracking-[0.3em]"
-                    />
-                    <p className="text-xs text-subtle">
-                      {t("login.codeSentTo", { phone: phoneNumber })}
-                    </p>
-                  </div>
-                  {displayError && (
-                    <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
-                      {displayError}
-                    </p>
-                  )}
-                  <Button className="w-full" type="submit" disabled={loading || otpCode.length < 6}>
-                    {loading ? t("login.verifying") : t("login.verifyAndSignIn")}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full text-xs text-muted-foreground"
+            </form>
+          ) : (
+            <form onSubmit={submitEmail} method="post" className="space-y-4">
+              {emailField}
+              <div className="space-y-2">
+                <Label htmlFor="password">{t("login.password")}</Label>
+                <div className="relative">
+                  {/* The length rule applies to NEW passwords only. Putting it
+                      on the sign-in form would lock out anyone whose existing
+                      password is shorter. */}
+                  <Input
+                    ref={passwordRef}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={mode === "signUp" ? MIN_NEW_PASSWORD_LENGTH : undefined}
+                    autoComplete={mode === "signUp" ? "new-password" : "current-password"}
+                    aria-describedby={mode === "signUp" ? "password-hint" : undefined}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-11"
+                  />
+                  {/* There is one password box and no "confirm" box, so being
+                      able to look at what was typed is the guard against
+                      creating an account with a typo nobody can reproduce. */}
+                  <button
                     type="button"
-                    onClick={() => { setOtpSent(false); setOtpCode(""); setLocalError(""); }}
+                    aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                    aria-pressed={showPassword}
+                    onClick={() => setShowPassword((shown) => !shown)}
+                    className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-2xl text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {t("login.changePhone")}
-                  </Button>
-                </form>
-              )}
-            </>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {mode === "signUp" && (
+                  <p id="password-hint" className="text-xs text-subtle">
+                    {t("login.passwordHint", { min: MIN_NEW_PASSWORD_LENGTH })}
+                  </p>
+                )}
+                {/* Also offered while creating an account once we know the
+                    address is taken: that message tells the person to use
+                    this link, so it has to be on the screen. */}
+                {(mode === "signIn" || errorKey === "login.errEmailInUse") && (
+                  <button
+                    type="button"
+                    onClick={() => switchMode("reset")}
+                    className="block rounded text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {t("login.forgotPassword")}
+                  </button>
+                )}
+              </div>
+              {errorAlert}
+              <Button className="w-full" type="submit" disabled={!ready || busy || !isFirebaseConfigured}>
+                {busy ? t("login.pleaseWait") : mode === "signUp" ? t("login.createAccount") : t("login.signIn")}
+              </Button>
+            </form>
           )}
 
           {/* ── Divider ──────────────────────────────────── */}
@@ -318,7 +318,7 @@ export function LoginContent() {
             variant="outline"
             className="w-full gap-2"
             type="button"
-            disabled={loading}
+            disabled={!ready || busy || !isFirebaseConfigured}
             onClick={submitGoogle}
           >
             <Chrome className="h-4 w-4" />

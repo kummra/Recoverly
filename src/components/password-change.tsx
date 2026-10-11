@@ -10,8 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
-
-const MIN_LENGTH = 8;
+import { MIN_NEW_PASSWORD_LENGTH } from "@/lib/auth-errors";
 
 /**
  * Change password for email/password accounts.
@@ -20,7 +19,7 @@ const MIN_LENGTH = 8;
  * with the current password first — that also stops someone changing the
  * password on an unattended, already-signed-in session.
  *
- * Hidden for Google/phone users, who have no password to change.
+ * Hidden for Google-only users, who have no password to change.
  */
 export function PasswordChange() {
   const t = useT();
@@ -38,8 +37,8 @@ export function PasswordChange() {
     e.preventDefault();
     setStatus(null);
 
-    if (next.length < MIN_LENGTH) {
-      setStatus({ type: "error", text: `New password must be at least ${MIN_LENGTH} characters.` });
+    if (next.length < MIN_NEW_PASSWORD_LENGTH) {
+      setStatus({ type: "error", text: t("login.errWeakPassword", { min: MIN_NEW_PASSWORD_LENGTH }) });
       return;
     }
     if (next !== confirm) {
@@ -106,7 +105,7 @@ export function PasswordChange() {
               onChange={(e) => setNext(e.target.value)}
               required
             />
-            <p className="text-xs text-subtle">At least {MIN_LENGTH} characters.</p>
+            <p className="text-xs text-subtle">{t("login.passwordHint", { min: MIN_NEW_PASSWORD_LENGTH })}</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPw">{t("account.confirmPw")}</Label>
