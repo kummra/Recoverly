@@ -205,7 +205,7 @@ function AIContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">{t("ai.pageTitle")}</h2>
+        <h1 className="text-xl font-bold">{t("ai.pageTitle")}</h1>
         <p className="text-sm text-muted-foreground">A compassionate, non-judgmental conversation partner.</p>
       </div>
 

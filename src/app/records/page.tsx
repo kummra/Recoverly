@@ -95,7 +95,7 @@ function RecordsContent() {
     <div className="stagger-children space-y-6">
       {/* Page heading */}
       <div>
-        <h2 className="text-xl font-bold">{t("records.title")}</h2>
+        <h1 className="text-xl font-bold">{t("records.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("records.subtitle")}</p>
       </div>
 

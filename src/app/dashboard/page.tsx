@@ -105,7 +105,7 @@ function DashboardContent() {
     return (
       <div className="stagger-children space-y-6">
         <div>
-          <h2 className="text-xl font-bold">{t("dashboard.welcome")}</h2>
+          <h1 className="text-xl font-bold">{t("dashboard.welcome")}</h1>
           <p className="text-sm text-muted-foreground">{t("dashboard.welcomeBody")}</p>
         </div>
         <Onboarding userId={user.uid} onComplete={refresh} onSkip={() => setDismissedOnboarding(true)} />

@@ -33,7 +33,7 @@ export function TopNav() {
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20">
             <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">R</span>
           </div>
-          <h1 className="text-lg font-semibold tracking-tight">Recoverly</h1>
+          <span className="text-lg font-semibold tracking-tight">Recoverly</span>
         </Link>
 
         {/* Desktop nav */}

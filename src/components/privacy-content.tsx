@@ -17,10 +17,10 @@ export function PrivacyContent({ locale }: { locale: Locale }) {
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
-        <h2 className="flex items-center gap-2 text-xl font-bold">
+        <h1 className="flex items-center gap-2 text-xl font-bold">
           <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           {t("privacy.title")}
-        </h2>
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("legal.lastUpdated")}</p>
       </div>
       {SECTIONS.map((section) => (

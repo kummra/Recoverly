@@ -16,10 +16,10 @@ export function TermsContent({ locale }: { locale: Locale }) {
   return (
     <div className="animate-fade-in-up mx-auto max-w-2xl space-y-6">
       <div>
-        <h2 className="flex items-center gap-2 text-xl font-bold">
+        <h1 className="flex items-center gap-2 text-xl font-bold">
           <FileText className="h-5 w-5 text-sky-600 dark:text-sky-400" />
           {t("terms.title")}
-        </h2>
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("legal.lastUpdated")}</p>
       </div>
       {SECTIONS.map((section) => (

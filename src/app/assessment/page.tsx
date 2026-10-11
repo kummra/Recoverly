@@ -83,10 +83,10 @@ function AssessmentContent() {
   return (
     <div className="stagger-children mx-auto max-w-2xl space-y-6">
       <div>
-        <h2 className="flex items-center gap-2 text-xl font-bold">
+        <h1 className="flex items-center gap-2 text-xl font-bold">
           <ClipboardCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           {t("audit.pageTitle")}
-        </h2>
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("audit.pageIntro")}
         </p>

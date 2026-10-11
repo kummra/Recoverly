@@ -3,15 +3,29 @@
 import { AlertTriangle, LifeBuoy, ShieldAlert } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
+import { createTranslator } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/types";
 import { HELPLINES } from "@/lib/safety";
 import { cn } from "@/lib/utils";
+
+/**
+ * The translator for a notice. Inside the signed-in app the stored preference
+ * (the provider) decides the language. On the public pages the URL does, and
+ * the page passes `locale` so the notice is already in that language in the
+ * server-rendered HTML — without it, /ta/support shipped its withdrawal
+ * warning in English and only became Tamil after the browser hydrated.
+ */
+function useNoticeT(locale?: Locale) {
+  const fromProvider = useT();
+  return locale ? createTranslator(locale) : fromProvider;
+}
 
 /**
  * "Not medical advice" + sudden-cessation warning. Shown where users act on
  * their drinking (dashboard) so the medical caveat is visible, not buried.
  */
-export function MedicalDisclaimer({ className }: { className?: string }) {
-  const t = useT();
+export function MedicalDisclaimer({ className, locale }: { className?: string; locale?: Locale }) {
+  const t = useNoticeT(locale);
   return (
     <div
       className={cn(
@@ -32,8 +46,8 @@ export function MedicalDisclaimer({ className }: { className?: string }) {
  * Sudden-cessation warning (firm project rule #3). Translated in every locale —
  * someone reading the app in Tamil must get this warning in Tamil, not English.
  */
-export function WithdrawalWarning({ className }: { className?: string }) {
-  const t = useT();
+export function WithdrawalWarning({ className, locale }: { className?: string; locale?: Locale }) {
+  const t = useNoticeT(locale);
   return (
     <div
       className={cn(
