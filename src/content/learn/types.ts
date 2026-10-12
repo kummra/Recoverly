@@ -22,7 +22,7 @@ import type { Locale } from "@/lib/i18n/types";
  * until then its readers are sent to the English guide rather than to a page
  * that does not exist or has not been checked.
  */
-export const LEARN_LOCALES = ["en", "hi", "mr", "gu"] as const satisfies readonly Locale[];
+export const LEARN_LOCALES = ["en", "hi", "mr", "ta", "gu"] as const satisfies readonly Locale[];
 export type LearnLocale = (typeof LEARN_LOCALES)[number];
 
 export function isLearnLocale(value: unknown): value is LearnLocale {

@@ -4,6 +4,7 @@ import { en } from "./en";
 import { gu } from "./gu";
 import { hi } from "./hi";
 import { mr } from "./mr";
+import { ta } from "./ta";
 import { LEARN_META } from "./meta";
 import {
   LEARN_SLUGS,
@@ -17,7 +18,7 @@ import {
 
 /** One catalog per published language. Adding a language means adding its
  *  file, its entry here and its code in LEARN_LOCALES, together. */
-export const LEARN_CATALOGS: Record<LearnLocale, LearnCatalog> = { en, hi, mr, gu };
+export const LEARN_CATALOGS: Record<LearnLocale, LearnCatalog> = { en, hi, mr, ta, gu };
 
 /** A language the guides are not published in yet gets the English guide. */
 export function getLearnArticle(locale: Locale, slug: LearnSlug): LearnArticle {
