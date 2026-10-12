@@ -2,26 +2,35 @@
 
 import { usePathname } from "next/navigation";
 
-import { useT } from "@/components/i18n-provider";
+import { useI18n } from "@/components/i18n-provider";
 import { LanguageLinks } from "@/components/language-links";
 import { LOCALES, type Locale } from "@/lib/i18n/types";
-import { localisedPath } from "@/lib/seo/alternates";
+import { isTranslatedRoute, learnPath, localisedPath } from "@/lib/seo/alternates";
 
-/** The locale the current URL is in, so footer links keep the reader in it. */
-function useRouteLocale(): Locale {
-  const pathname = usePathname() ?? "/";
-  const first = pathname.split("/").filter(Boolean)[0];
-  return first && (LOCALES as readonly string[]).includes(first) ? (first as Locale) : "en";
+/**
+ * Which language the footer's links should lead to.
+ *
+ * - On a translated page (/ta/faq): its language, so the reader stays in it.
+ * - On an English content page (/faq): English, so the English pages link to
+ *   one another and not at random into other languages.
+ * - Anywhere else (the home page, the signed-in app): the reader's own chosen
+ *   language. Those pages have no language in their URL, and sending someone
+ *   who uses the app in Hindi to an English guide would be a step backwards.
+ */
+function useLinkLocale(preferred: Locale): Locale {
+  const segments = (usePathname() ?? "/").split("/").filter(Boolean);
+  const first = segments[0];
+  if (first && (LOCALES as readonly string[]).includes(first)) return first as Locale;
+  if (isTranslatedRoute(segments.join("/"))) return "en";
+  return preferred;
 }
 
 const LINK =
   "rounded underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function SiteFooter() {
-  const t = useT();
-  // Hardcoding /guide sent a Tamil reader back to English mid-journey, and left
-  // each language's pages linking only into English rather than to each other.
-  const locale = useRouteLocale();
+  const { t, locale: preferred } = useI18n();
+  const locale = useLinkLocale(preferred);
   const href = (route: string) => localisedPath(locale, route);
 
   return (
@@ -34,6 +43,10 @@ export function SiteFooter() {
         <span aria-hidden>&middot;</span>
         <a href={href("faq")} className={LINK}>
           {t("footer.faq")}
+        </a>
+        <span aria-hidden>&middot;</span>
+        <a href={learnPath(locale)} className={LINK}>
+          {t("learn.navLabel")}
         </a>
         <span aria-hidden>&middot;</span>
         <a

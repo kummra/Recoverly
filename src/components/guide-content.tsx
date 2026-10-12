@@ -3,6 +3,7 @@ import { Compass, UserPlus, Target, NotebookPen, LineChart, Bot, LifeBuoy } from
 
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/types";
+import { localisedPath } from "@/lib/seo/alternates";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -55,7 +56,7 @@ export function GuideContent({ locale }: { locale: Locale }) {
           <Link href="/login?mode=signup">{t("guide.getStarted")}</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/support">{t("guide.needHelpNow")}</Link>
+          <Link href={localisedPath(locale, "support")}>{t("guide.needHelpNow")}</Link>
         </Button>
       </div>
     </div>

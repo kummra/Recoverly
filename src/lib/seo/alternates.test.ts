@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest";
 
+import { LEARN_LOCALES } from "@/content/learn/types";
 import { LOCALES } from "@/lib/i18n/types";
-import { BASE_URL, absoluteUrl, alternatesFor, localisedPath } from "@/lib/seo/alternates";
+import {
+  BASE_URL,
+  absoluteUrl,
+  alternatesFor,
+  isTranslatedRoute,
+  learnPath,
+  localesForRoute,
+  localisedPath
+} from "@/lib/seo/alternates";
 
 describe("localised URLs", () => {
   it("leaves English unprefixed so already-indexed URLs never move", () => {
@@ -42,5 +51,34 @@ describe("hreflang annotations", () => {
   it("is reciprocal — English names the translations too", () => {
     const fromEnglish = alternatesFor("en", "faq");
     expect(fromEnglish.languages.hi).toBe(alts.languages.hi);
+  });
+});
+
+describe("the Learn guides, which can be published in fewer languages", () => {
+  it("lists a guide only in the languages it is published in", () => {
+    expect(localesForRoute("learn")).toEqual(LEARN_LOCALES);
+    expect(localesForRoute("learn/stopping-alcohol-safely")).toEqual(LEARN_LOCALES);
+    expect(localesForRoute("faq")).toEqual(LOCALES);
+  });
+
+  it("does not treat an unknown guide or an app page as translated", () => {
+    expect(isTranslatedRoute("learn/not-a-guide")).toBe(false);
+    expect(isTranslatedRoute("learn/stopping-alcohol-safely/extra")).toBe(false);
+    expect(isTranslatedRoute("dashboard")).toBe(false);
+    expect(isTranslatedRoute("")).toBe(false);
+  });
+
+  it("never emits an hreflang for a language a guide does not exist in", () => {
+    const alts = alternatesFor("en", "learn/stopping-alcohol-safely");
+    expect(Object.keys(alts.languages).sort()).toEqual([...LEARN_LOCALES, "x-default"].sort());
+  });
+
+  it("sends a reader of an unpublished language to the English guide, never to a 404", () => {
+    for (const locale of LOCALES) {
+      const published = (LEARN_LOCALES as readonly string[]).includes(locale);
+      const expected = published && locale !== "en" ? `/${locale}/learn` : "/learn";
+      expect(learnPath(locale)).toBe(expected);
+      expect(learnPath(locale, "after-a-drinking-slip")).toBe(`${expected}/after-a-drinking-slip`);
+    }
   });
 });

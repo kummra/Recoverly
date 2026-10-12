@@ -3,14 +3,11 @@
 import { usePathname } from "next/navigation";
 
 import { LOCALES, LOCALE_NAMES, type Locale } from "@/lib/i18n/types";
-import { localisedPath } from "@/lib/seo/alternates";
+import { isTranslatedRoute, localesForRoute, localisedPath } from "@/lib/seo/alternates";
 
-/** Pages that exist in every language. Everything else (the signed-in app,
- *  the sign-in screen) is English-only, so the picker stays hidden there
- *  rather than offering links that would 404. */
-const TRANSLATED_ROUTES = ["guide", "support", "faq", "privacy", "terms"];
-
-/** Split "/hi/faq" into its locale and the route beneath it. */
+/** Split "/hi/faq" into its locale and the route beneath it. Returns null for
+ *  English-only pages, so the picker stays hidden there rather than offering
+ *  links that would 404. */
 function parsePath(pathname: string): { locale: Locale; route: string } | null {
   const segments = pathname.split("/").filter(Boolean);
   const maybeLocale = segments[0] as Locale | undefined;
@@ -19,7 +16,7 @@ function parsePath(pathname: string): { locale: Locale; route: string } | null {
   const locale: Locale = hasPrefix ? (maybeLocale as Locale) : "en";
   const route = (hasPrefix ? segments.slice(1) : segments).join("/");
 
-  return TRANSLATED_ROUTES.includes(route) ? { locale, route } : null;
+  return isTranslatedRoute(route) ? { locale, route } : null;
 }
 
 /**
@@ -36,14 +33,15 @@ function parsePath(pathname: string): { locale: Locale; route: string } | null {
 export function LanguageLinks() {
   const pathname = usePathname();
   const parsed = parsePath(pathname ?? "/");
-  if (!parsed) return null;
+  // One language is not a choice.
+  if (!parsed || localesForRoute(parsed.route).length < 2) return null;
 
   return (
     <nav
       aria-label="Language"
       className="mt-3 flex flex-wrap justify-center gap-x-2 gap-y-1 text-xs"
     >
-      {LOCALES.map((l) =>
+      {localesForRoute(parsed.route).map((l) =>
         l === parsed.locale ? (
           <span key={l} aria-current="true" className="font-medium text-foreground">
             {LOCALE_NAMES[l]}

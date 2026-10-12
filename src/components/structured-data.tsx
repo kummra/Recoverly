@@ -1,8 +1,8 @@
+import { getLearnArticle, getLearnMeta, learnLastModified, listLearnArticles, type LearnSlug } from "@/content/learn";
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import { en } from "@/lib/i18n/en";
 import type { Locale } from "@/lib/i18n/types";
-
-const BASE_URL = "https://recoverly-app.vercel.app";
+import { BASE_URL, absoluteUrl } from "@/lib/seo/alternates";
 
 /**
  * JSON-LD for search engines.
@@ -95,5 +95,98 @@ export function GuideStructuredData({ locale }: { locale: Locale }) {
         }))
       }}
     />
+  );
+}
+
+/** Home > Guides (> one guide), so a result can show where the page sits. */
+function learnBreadcrumb(locale: Locale, slug?: LearnSlug) {
+  const t = createTranslator(locale);
+  const trail = [
+    { name: "Recoverly", url: absoluteUrl(locale, "") },
+    { name: t("learn.hubTitle"), url: absoluteUrl(locale, "learn") }
+  ];
+  if (slug) trail.push({ name: getLearnArticle(locale, slug).title, url: absoluteUrl(locale, `learn/${slug}`) });
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url
+    }))
+  };
+}
+
+/** The Learn index: the list of guides, in the language of the page. */
+export function LearnHubStructuredData({ locale }: { locale: Locale }) {
+  const t = createTranslator(locale);
+  return (
+    <>
+      <Ld
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: t("learn.hubTitle"),
+          description: t("learn.hubIntro"),
+          url: absoluteUrl(locale, "learn"),
+          inLanguage: locale,
+          mainEntity: {
+            "@type": "ItemList",
+            itemListElement: listLearnArticles(locale).map(({ slug, article }, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: article.title,
+              url: absoluteUrl(locale, `learn/${slug}`)
+            }))
+          }
+        }}
+      />
+      <Ld data={learnBreadcrumb(locale)} />
+    </>
+  );
+}
+
+/**
+ * One guide, as a plain `Article`.
+ *
+ * Deliberately not `MedicalWebPage`, and with no `reviewedBy`: nobody with a
+ * medical qualification has reviewed these, and markup must not claim an
+ * authority the page does not have. What is true is stated instead — who
+ * publishes it, when the facts were last checked, and which public-health
+ * pages it was written from (`citation`).
+ */
+export function ArticleStructuredData({ locale, slug }: { locale: Locale; slug: LearnSlug }) {
+  const article = getLearnArticle(locale, slug);
+  const meta = getLearnMeta(slug);
+  const url = absoluteUrl(locale, `learn/${slug}`);
+  const recoverly = { "@type": "Organization", name: "Recoverly", url: BASE_URL };
+  return (
+    <>
+      <Ld
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: article.title,
+          description: article.description,
+          url,
+          mainEntityOfPage: url,
+          inLanguage: locale,
+          datePublished: meta.published,
+          dateModified: learnLastModified(slug),
+          isAccessibleForFree: true,
+          image: `${BASE_URL}/opengraph-image`,
+          author: recoverly,
+          publisher: recoverly,
+          citation: meta.sources.map((source) => ({
+            "@type": "WebPage",
+            name: source.title,
+            url: source.url,
+            publisher: { "@type": "Organization", name: source.publisher }
+          }))
+        }}
+      />
+      <Ld data={learnBreadcrumb(locale, slug)} />
+    </>
   );
 }

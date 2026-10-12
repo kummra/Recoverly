@@ -81,7 +81,7 @@ export const en: Dictionary = {
   "sos.breatheIn": "Breathe in",
   "sos.hold": "Hold",
   "sos.breatheOut": "Breathe out",
-  "sos.easeHint": "most cravings ease within about five minutes",
+  "sos.easeHint": "cravings usually ease within a few minutes",
   "sos.textSomeone": "Text someone you trust",
   // Prefilled SMS body. No recipient is set and nothing is stored — the user
   // picks the person from their own phone, so we never hold a third party's number.
@@ -498,6 +498,7 @@ export const en: Dictionary = {
   "audit.previousResults": "Your previous results",
   "audit.previousResultsDesc": "Scores can move as your drinking changes.",
   "audit.answeredCount": "{n} of {total} answered",
+  "audit.seeResult": "See my result",
   "audit.freqNever": "Never",
   "audit.freqLessMonthly": "Less than monthly",
   "audit.freqMonthly": "Monthly",
@@ -634,6 +635,23 @@ export const en: Dictionary = {
 
   // Login
   // {awareness} is rendered as a gradient span.
+  // Learn: the UI around the long-form guides. The guides themselves live in
+  // src/content/learn so they never ship in the client bundle.
+  "learn.navLabel": "Guides",
+  "learn.hubTitle": "Guides on alcohol and recovery",
+  "learn.hubIntro":
+    "Plain-language guides on cutting down, stopping safely and supporting someone you care about. Each one is written from public health sources, which are listed at the end.",
+  "learn.readGuide": "Read the guide",
+  "learn.allGuides": "All guides",
+  "learn.inShort": "In short",
+  "learn.reviewed": "Facts last checked: {date}",
+  "learn.translatedNote": "This guide is translated from English. If anything is unclear, the English version is the reference.",
+  "learn.sources": "Sources",
+  "learn.sourcesNote": "This guide was written from the public health pages below. They are in English.",
+  "learn.related": "Related guides",
+  "learn.appTitle": "Keep track privately",
+  "learn.appBody":
+    "Recoverly is a free, private tool for logging your drinks, setting a weekly goal and getting through cravings.",
   "login.heroTitle": "Every step toward {awareness} is a step worth taking.",
   "login.heroAwareness": "awareness",
   "login.heroBody":

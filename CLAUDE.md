@@ -50,6 +50,42 @@ in `docs/legacy-port-inventory.md`.
   2026-08-08); pushing to `main` auto-deploys to production — no manual
   `vercel --prod` needed.
 
+## The Learn guides (`/learn`)
+
+Six long-form guides on stopping safely, AUDIT scores, standard drinks, cravings, slips
+and helping a family member (`/learn/<slug>`, `/hi/learn/<slug>`…). They are the site's
+main search content and they are **health information for people who may be in danger**,
+so they are held to a higher bar than UI copy.
+
+- **Published language by language.** `LEARN_LOCALES` in `src/content/learn/types.ts` lists
+  the languages the guides exist in; it is not the app's language list. A translation is
+  added (catalog file + entry in `index.ts` + code in `LEARN_LOCALES`, in one change) only
+  after an independent reviewer has checked its safety-critical passages against the
+  English. Routes, hreflang, the sitemap and the language picker all read that list, and
+  `learnPath()` sends readers of an unpublished language to the English guide.
+
+- The text lives in `src/content/learn/<locale>.ts`, **not** in the i18n dictionaries.
+  The dictionaries ship to every browser in all nine languages; the guides are imported
+  only by server components and reach the browser as HTML. `learn.test.ts` fails if a
+  client component imports them.
+- `meta.ts` holds what does not change with language: the sources each guide was checked
+  against, the date the facts were last checked (shown on the page and in the sitemap),
+  and related guides.
+- Every factual statement was traced to a page from a public-health body (WHO, NHS, NICE,
+  NIH/NIAAA/MedlinePlus, Government of India) by one agent and independently re-checked
+  against the live page by another. **No clinician has reviewed them**, and the pages do
+  not claim one has: the schema is plain `Article`, never `MedicalWebPage`/`reviewedBy`.
+  Do not add a reviewer, an author credential or a statistic that is not in a source.
+- Rules the tests enforce: no medicine names or doses, no shaming labels, a `warning`
+  callout wherever stopping is discussed, helpline numbers present, every translation
+  structurally identical to English with every number preserved in Latin digits.
+- To change a guide: edit the English, re-check the fact against its source, bump
+  `reviewed` in `meta.ts`, and re-translate that guide in every published language.
+  Never edit one language alone.
+- Helplines printed in the guides: 112, Tele-MANAS 14416 / 1-800-891-4416, the national
+  de-addiction helpline 14446, and (family guide) Women Helpline 181 and NCW 14490. KIRAN
+  is deliberately absent (merged into Tele-MANAS in 2024).
+
 ## Sign-in: the behaviour that looks like a bug
 
 Firebase treats an email/password account whose address was never confirmed as

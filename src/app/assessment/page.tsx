@@ -6,7 +6,7 @@ import { AlertCircle, ClipboardCheck, LifeBuoy, RotateCcw, ShieldAlert } from "l
 import { format } from "date-fns";
 
 import { ProtectedRoute } from "@/components/protected-route";
-import { useT } from "@/components/i18n-provider";
+import { useI18n } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -18,6 +18,7 @@ import {
   scoreAudit
 } from "@/lib/audit";
 import { type AuditRecord, addAuditResult, getAuditResults } from "@/lib/firestore";
+import { learnPath } from "@/lib/seo/alternates";
 
 export default function AssessmentPage() {
   return (
@@ -28,7 +29,7 @@ export default function AssessmentPage() {
 }
 
 function AssessmentContent() {
-  const t = useT();
+  const { t, locale } = useI18n();
   const { user } = useAuth();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -115,6 +116,13 @@ function AssessmentContent() {
             <CardContent className="space-y-3">
               <p className="text-sm leading-relaxed text-body">{t(result.meaningKey)}</p>
               <p className="text-sm leading-relaxed text-body">{t(result.guidanceKey)}</p>
+              {/* The longer explanation of what each range means, in the reader's language. */}
+              <a
+                href={learnPath(locale, "understanding-audit-score")}
+                className="inline-block rounded text-sm font-medium underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {t("learn.readGuide")}
+              </a>
             </CardContent>
           </Card>
 
@@ -211,7 +219,7 @@ function AssessmentContent() {
                 {t("audit.answeredCount", { n: answeredCount, total: AUDIT_QUESTIONS.length })}
               </p>
               <Button type="button" onClick={submit} disabled={!complete || saving}>
-                {saving ? "Saving…" : "See my result"}
+                {saving ? t("common.saving") : t("audit.seeResult")}
               </Button>
             </div>
             {!complete && answeredCount > 0 && (

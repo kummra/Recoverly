@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { HeartHandshake, Sparkles, ArrowRight, TrendingDown, Calendar, Quote } from "lucide-react";
+import { HeartHandshake, Sparkles, ArrowRight, BookOpen, TrendingDown, Calendar, Quote } from "lucide-react";
 
-import { useT } from "@/components/i18n-provider";
+import { useI18n } from "@/components/i18n-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { getDrinkRecords } from "@/lib/firestore";
+import { learnPath } from "@/lib/seo/alternates";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,7 +39,7 @@ function getDailyQuoteKey() {
 }
 
 export default function HomePage() {
-  const t = useT();
+  const { t, locale } = useI18n();
   const { user } = useAuth();
   const [monthlyTotal, setMonthlyTotal] = useState<number | null>(null);
   const [recordCount, setRecordCount] = useState(0);
@@ -187,6 +188,25 @@ export default function HomePage() {
           </Card>
         ))}
       </div>
+
+      {/* The guides: useful whether or not someone ever makes an account. */}
+      <Card>
+        <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center">
+          <div className="flex-1">
+            <h3 className="flex items-center gap-2 text-lg font-semibold">
+              <BookOpen className="h-5 w-5 text-emerald-600 dark:text-emerald-400" aria-hidden />
+              {t("learn.hubTitle")}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t("learn.hubIntro")}</p>
+          </div>
+          <Button asChild variant="outline" className="gap-2">
+            <Link href={learnPath(locale)}>
+              {t("learn.allGuides")}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* CTA for non-logged-in */}
       {!user && (

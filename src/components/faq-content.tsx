@@ -2,6 +2,7 @@ import { HelpCircle } from "lucide-react";
 
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/types";
+import { localisedPath } from "@/lib/seo/alternates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 /** Explicit key pairs, not template literals — the orphaned-key test scans for
@@ -45,7 +46,7 @@ export function FaqContent({ locale }: { locale: Locale }) {
 
       <p className="px-1 text-center text-xs text-subtle">
         {t("faq.stillHaveQuestion")}{" "}
-        <a href="/support" className="underline underline-offset-2 hover:text-foreground">
+        <a href={localisedPath(locale, "support")} className="underline underline-offset-2 hover:text-foreground">
           {t("faq.supportPage")}
         </a>
         .
