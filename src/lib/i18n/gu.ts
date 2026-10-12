@@ -70,7 +70,7 @@ export const gu: Dictionary = {
   "sos.breatheIn": "શ્વાસ લો",
   "sos.hold": "રોકો",
   "sos.breatheOut": "શ્વાસ છોડો",
-  "sos.easeHint": "તલપ સામાન્ય રીતે થોડી મિનિટોમાં ઓછી થઈ જાય છે",
+  "sos.easeHint": "તલપ સામાન્ય રીતે થોડી મિનિટમાં ઓછી થઈ જાય છે",
   "sos.textSomeone": "વિશ્વાસુ વ્યક્તિને સંદેશ મોકલો",
   "sos.textBody": "નમસ્તે — અત્યારે દારૂ બાબતે મારો સમય કઠિન છે અને મારે કોઈ સાથે વાત કરવી છે. તમે મોકળા છો?",
   "sos.talkItThrough": "વાત કરો",
