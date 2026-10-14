@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n/types";
 import { en } from "./en";
 import { gu } from "./gu";
 import { hi } from "./hi";
+import { ml } from "./ml";
 import { mr } from "./mr";
 import { ta } from "./ta";
 import { te } from "./te";
@@ -19,7 +20,7 @@ import {
 
 /** One catalog per published language. Adding a language means adding its
  *  file, its entry here and its code in LEARN_LOCALES, together. */
-export const LEARN_CATALOGS: Record<LearnLocale, LearnCatalog> = { en, hi, mr, ta, te, gu };
+export const LEARN_CATALOGS: Record<LearnLocale, LearnCatalog> = { en, hi, mr, ta, te, ml, gu };
 
 /** A language the guides are not published in yet gets the English guide. */
 export function getLearnArticle(locale: Locale, slug: LearnSlug): LearnArticle {
