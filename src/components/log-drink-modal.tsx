@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Pause, Wine } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
+import { LOG_DRINK_BUTTON_ID } from "@/components/slip-moment";
 import { addDrinkRecord } from "@/lib/firestore";
 import { DRINK_TYPES, drinkRecordSchema } from "@/lib/schemas";
 
@@ -131,7 +132,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="h-14 w-full gap-2 text-base font-semibold sm:w-auto sm:px-8">
+        <Button id={LOG_DRINK_BUTTON_ID} className="h-14 w-full gap-2 text-base font-semibold sm:w-auto sm:px-8">
           <Wine className="h-5 w-5" />
           {t("dashboard.logDrink")}
         </Button>
@@ -218,7 +219,7 @@ export function LogDrinkModal({ userId, onSaved }: Props) {
             </span>
           </div>
           <Button onClick={submit} disabled={!canSubmit} aria-describedby="submit-status">
-            {saving ? t("common.saving") : "Submit"}
+            {saving ? t("common.saving") : t("log.submit")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -13,7 +13,9 @@ import {
   buildTriggerInsights,
   dayKey,
   shouldShowReminder,
-  suggestInsight
+  suggestInsight,
+  buildSlipMoment,
+  TOLERANCE_NOTE_MIN_DAYS
 } from "@/lib/analytics";
 import type { DrinkRecord } from "@/lib/firestore";
 
@@ -364,5 +366,57 @@ describe("buildCravingSummary", () => {
       { intensity: 5, outcome: "drank", secondsElapsed: 5 }
     ]);
     expect(s.medianSeconds).toBe(90);
+  });
+});
+
+describe("buildSlipMoment", () => {
+  const now = new Date(2026, 9, 17, 14); // a Saturday afternoon
+  const drank = (...daysAgo: number[]): DrinkRecord[] =>
+    daysAgo.map((d) => ({ id: String(d), quantity: 330, type: "beer", createdAt: addDays(now, -d) }));
+
+  it("speaks only to someone who said they are aiming to stop", () => {
+    // A drink inside a cut-down plan is not a slip, and no stated goal means
+    // no judgement either way.
+    expect(buildSlipMoment(drank(10), "reduce", now)).toBeNull();
+    expect(buildSlipMoment(drank(10), undefined, now)).toBeNull();
+    expect(buildSlipMoment(drank(10), "quit", now)).not.toBeNull();
+  });
+
+  it("counts only WHOLE drink-free days, so it never claims a day that was not one", () => {
+    // Last drink 10 days ago: the days in between are 9 whole days.
+    expect(buildSlipMoment(drank(10), "quit", now)?.runDays).toBe(9);
+    // Last drink 2 days ago: exactly one whole day (yesterday).
+    expect(buildSlipMoment(drank(2), "quit", now)?.runDays).toBe(1);
+  });
+
+  it("stays silent when there was no whole day to speak about", () => {
+    expect(buildSlipMoment(drank(0), "quit", now)).toBeNull(); // already drank today
+    expect(buildSlipMoment(drank(1), "quit", now)).toBeNull(); // drank yesterday
+    // ...so a daily drinker is not shown it every day.
+    expect(buildSlipMoment(drank(1, 2, 3, 4, 5), "quit", now)).toBeNull();
+    expect(buildSlipMoment([], "quit", now)).toBeNull(); // nothing logged yet
+  });
+
+  it("is not fooled by several drinks on the same day", () => {
+    expect(buildSlipMoment(drank(5, 5, 5, 40), "quit", now)?.runDays).toBe(4);
+  });
+
+  it("counts the personal best the same way, and never below the run just ended", () => {
+    // Drinks 40, 30 and 5 days ago: the gaps are 9 whole days and 24; the run just ended is 4.
+    expect(buildSlipMoment(drank(40, 30, 5), "quit", now)).toMatchObject({ runDays: 4, longestDays: 24 });
+    // A first-ever long run is its own best.
+    expect(buildSlipMoment(drank(20), "quit", now)).toMatchObject({ runDays: 19, longestDays: 19 });
+  });
+
+  it("adds the tolerance note only after a run long enough to matter", () => {
+    const wholeDays = (n: number) => buildSlipMoment(drank(n + 1), "quit", now);
+    expect(wholeDays(TOLERANCE_NOTE_MIN_DAYS - 1)?.showTolerance).toBe(false);
+    expect(wholeDays(TOLERANCE_NOTE_MIN_DAYS)?.showTolerance).toBe(true);
+  });
+
+  it("uses the date it is given, so a page left open past midnight is not stale", () => {
+    const records = drank(3);
+    expect(buildSlipMoment(records, "quit", now)?.runDays).toBe(2);
+    expect(buildSlipMoment(records, "quit", addDays(now, 1))?.runDays).toBe(3);
   });
 });

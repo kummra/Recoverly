@@ -162,7 +162,6 @@ export const en: Dictionary = {
   "ahead.title": "{pattern} have been busier for you",
   "ahead.body":
     "That's just your own pattern, not a prediction. Having a plan ready tends to make these stretches easier.",
-  "ahead.planIntention": "Set an intention",
   "ahead.reviewWhy": "Read your why",
   "ahead.dismiss": "Not today, thanks",
 
@@ -424,6 +423,9 @@ export const en: Dictionary = {
   "privacy.s6Title": "Voice input",
   "privacy.s6Body":
     "Speaking to the AI coach is optional and off unless you tap the microphone. The transcription is done by your browser, not by us — depending on your browser and device, the audio may be sent to the browser's provider to be turned into text. We never record, store or receive the audio itself; only the resulting text reaches Recoverly, and only when you choose to speak. Typing is always available and keeps everything on your device.",
+  "privacy.s7Title": "Plans on your device",
+  "privacy.s7Body":
+    "The plans you write for hard moments are saved only in this browser, never on our servers, and are not part of your data export. Deleting your account removes them from the device you delete it on, but not from other browsers you have used. Logging out does not remove them, so remove them in Settings before lending your phone.",
   "privacy.s5Title": "Third parties",
   "privacy.s5Body":
     "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated.",
@@ -718,6 +720,34 @@ export const en: Dictionary = {
 
   // Common actions
   "common.emergency": "Emergency",
+  // The moment after a drink is logged by someone aiming to stop. The five
+  // strings marked (guide) are copied word for word from the "after a drinking
+  // slip" guide, in every language, so they carry text that was fact-checked and
+  // independently reviewed instead of a second, unreviewed version.
+  "slip.title": "Thank you for logging honestly",
+  "slip.body": "A slip is common. It does not cancel the progress you have made.", // (guide)
+  "slip.tolerance": "Do not go back to the amount you used to drink. After a break, alcohol may affect you more strongly.", // (guide)
+  "slip.next": "Tell one person you trust today, and note what led to the slip.", // (guide)
+  "slip.help": "Emergency: call 112. To talk to a counsellor at any hour: Tele-MANAS 14416.", // (guide)
+  "slip.guideTitle": "I drank after trying to stop. What should I do now?", // (guide)
+  // Plans for hard moments (if this happens, I will do that). Kept on the
+  // device only; see src/lib/plans.ts.
+  "plan.title": "Your plans for hard moments",
+  "plan.intro": "Decide now what you will do, so you do not have to decide in the moment. Plans stay on this device only. Logging out does not remove them, so remove them here before you lend your phone.",
+  "plan.whenLabel": "When this happens…",
+  "plan.whenPlaceholder": "I feel stressed after work",
+  "plan.thenLabel": "…I will do this",
+  "plan.thenPlaceholder": "I walk for ten minutes and call my sister",
+  "plan.add": "Save plan",
+  "plan.remove": "Remove plan",
+  "plan.limit": "You have {max} plans, which is the most you can keep. Remove one to make a new one.",
+  "plan.yourPlan": "Your plan",
+  "plan.saveFailed": "Could not save the plan. Your browser may be blocking storage for this site.",
+  "plan.safety": "Choose a small step that is safe for you. If you drink heavily every day, do not make suddenly stopping your plan: speak to a doctor first.",
+  "plan.saved": "Plan saved.",
+  "plan.removed": "Plan removed.",
+  "plan.makeOne": "Make a plan",
+  "log.submit": "Submit",
   "common.save": "Save",
   "common.saving": "Saving…",
   "common.cancel": "Cancel",

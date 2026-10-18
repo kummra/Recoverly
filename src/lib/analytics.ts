@@ -75,6 +75,15 @@ export function buildAnalytics(records: DrinkRecord[]): AnalyticsSummary {
 }
 
 // ─── Progress & streaks (behavioural design: identity + small wins) ─────────
+
+/** The calendar days on which at least one drink was logged, oldest first. */
+function drinkDaysOf(records: DrinkRecord[]): Date[] {
+  const dayKeys = new Set<string>();
+  for (const r of records) dayKeys.add(format(r.createdAt, "yyyy-MM-dd"));
+  return Array.from(dayKeys)
+    .map((k) => parseISO(k))
+    .sort((a, b) => a.getTime() - b.getTime());
+}
 export type ProgressSummary = {
   /** Days since the last logged drink (0 if a drink was logged today). */
   currentStreakDays: number;
@@ -111,12 +120,7 @@ export function buildProgress(records: DrinkRecord[], now: Date = new Date()): P
     };
   }
 
-  // Unique drink days (calendar), ascending.
-  const dayKeys = new Set<string>();
-  for (const r of records) dayKeys.add(format(r.createdAt, "yyyy-MM-dd"));
-  const drinkDays = Array.from(dayKeys)
-    .map((k) => parseISO(k))
-    .sort((a, b) => a.getTime() - b.getTime());
+  const drinkDays = drinkDaysOf(records);
 
   const lastDrinkDay = drinkDays[drinkDays.length - 1];
   const currentStreakDays = Math.max(differenceInCalendarDays(now, lastDrinkDay), 0);
@@ -494,4 +498,62 @@ export function buildCravingSummary(
     Math.round((events.reduce((sum, e) => sum + e.intensity, 0) / total) * 10) / 10;
 
   return { total, passed, passRate: passed / total, medianSeconds, averageIntensity };
+}
+
+// ─── The moment after a slip ────────────────────────────────────────────────
+
+export type SlipMoment = {
+  /** Drink-free days immediately before this drink — progress that survives it. */
+  runDays: number;
+  /** Their best run ever (includes the one just ended). */
+  longestDays: number;
+  /** Whether to add the lowered-tolerance note. */
+  showTolerance: boolean;
+};
+
+/** A run of at least this many days is long enough for the tolerance note to
+ *  be worth saying. This is a product choice to avoid crying wolf after a
+ *  single quiet day, not a medical threshold: the sentence itself stays
+ *  hedged ("may affect you more strongly") and no source gives a number. */
+export const TOLERANCE_NOTE_MIN_DAYS = 7;
+
+/**
+ * Decide whether logging a drink should open the "after a slip" moment, and
+ * with what.
+ *
+ * Only for someone who said they are aiming to stop. A person working to cut
+ * down has a drink inside their plan, and calling it a slip would be both
+ * wrong and patronising; someone with no stated goal gets no judgement either
+ * way.
+ *
+ * It speaks about WHOLE drink-free days only: the days strictly between the
+ * last drink and today. `buildProgress` counts calendar days since the last
+ * drink, which includes today, so its number is one higher, and for someone who
+ * drank yesterday it reads "1 day alcohol-free" when there was no such day. A
+ * dialog that said so, every day, to a daily drinker would be both false and
+ * noise. With no whole day behind them there is nothing to protect, and no
+ * dialog.
+ *
+ * `records` must be the records as they were BEFORE the new drink was saved,
+ * and `now` the moment of logging.
+ */
+export function buildSlipMoment(
+  records: DrinkRecord[],
+  goalType: "reduce" | "quit" | undefined,
+  now: Date = new Date()
+): SlipMoment | null {
+  if (goalType !== "quit" || records.length === 0) return null;
+
+  const drinkDays = drinkDaysOf(records);
+  const runDays = differenceInCalendarDays(now, drinkDays[drinkDays.length - 1]) - 1;
+  if (runDays < 1) return null;
+
+  // Their best run counted the same way: whole days between two drink days,
+  // and the run that has just ended.
+  let longestDays = runDays;
+  for (let i = 1; i < drinkDays.length; i++) {
+    longestDays = Math.max(longestDays, differenceInCalendarDays(drinkDays[i], drinkDays[i - 1]) - 1);
+  }
+
+  return { runDays, longestDays, showTolerance: runDays >= TOLERANCE_NOTE_MIN_DAYS };
 }

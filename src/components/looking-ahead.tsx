@@ -5,8 +5,10 @@ import Link from "next/link";
 import { CalendarClock, Heart, X } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
+import { PlanList } from "@/components/plan-list";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { usePlans } from "@/hooks/use-plans";
 import { buildTriggerInsights, dayKey, findUpcomingRisk } from "@/lib/analytics";
 import type { DrinkRecord } from "@/lib/firestore";
 
@@ -26,12 +28,15 @@ const DISMISS_KEY = "recoverly:aheadDismissed";
  */
 export function LookingAhead({
   records,
-  motivation
+  motivation,
+  userId
 }: {
   records: DrinkRecord[];
   motivation?: string;
+  userId?: string;
 }) {
   const t = useT();
+  const [plans] = usePlans(userId);
   const [dismissed, setDismissed] = useState(true); // assume dismissed until we've checked
 
   const risk = useMemo(() => findUpcomingRisk(buildTriggerInsights(records)), [records]);
@@ -72,10 +77,19 @@ export function LookingAhead({
             </p>
           )}
 
+          {/* The plans they made in a calmer moment, where they will be seen
+              before the hard stretch rather than found afterwards. */}
+          <PlanList plans={plans} />
+
           <div className="flex flex-wrap gap-2 pt-0.5">
             <Button asChild size="sm" variant="outline" className="gap-1.5">
-              <Link href="/ai">{t("ahead.planIntention")}</Link>
+              <Link href="/ai">{t("sos.talkItThrough")}</Link>
             </Button>
+            {plans.length === 0 && (
+              <Button asChild size="sm" variant="outline" className="gap-1.5">
+                <Link href="/settings#plans">{t("plan.makeOne")}</Link>
+              </Button>
+            )}
             {!motivation && (
               <Button asChild size="sm" variant="outline" className="gap-1.5">
                 <Link href="/settings">{t("ahead.reviewWhy")}</Link>

@@ -12,9 +12,10 @@ import { LogDrinkModal } from "@/components/log-drink-modal";
 import { Onboarding } from "@/components/onboarding";
 import { ProtectedRoute } from "@/components/protected-route";
 import { MedicalDisclaimer } from "@/components/safety-notice";
+import { SlipMomentDialog } from "@/components/slip-moment";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { buildProgress } from "@/lib/analytics";
+import { type SlipMoment, buildProgress, buildSlipMoment } from "@/lib/analytics";
 import { type DrinkRecord, getDrinkRecords, getUserProfile } from "@/lib/firestore";
 
 export default function DashboardPage() {
@@ -37,6 +38,7 @@ function DashboardContent() {
   const [loaded, setLoaded] = useState(false);
   const [dismissedOnboarding, setDismissedOnboarding] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [slip, setSlip] = useState<SlipMoment | null>(null);
 
   // Derive month label, filtered records, and total from a single Date so they
   // can never desync across a month boundary. Recomputes whenever records change.
@@ -66,6 +68,15 @@ function DashboardContent() {
   const weeklyProgress = weeklyGoal > 0 ? Math.min((weeklyTotal / weeklyGoal) * 100, 100) : 0;
   const recentRecords = useMemo(() => [...records].reverse().slice(0, 5), [records]);
   const progress = useMemo(() => buildProgress(records), [records]);
+
+  // Runs when a drink has just been saved. `records` has not been re-read yet,
+  // so it still describes the days BEFORE this drink, which is exactly the run
+  // the "after a slip" moment needs to speak about. The date is taken now, not
+  // when the page loaded, so a tab left open overnight is not a day out.
+  const handleSaved = () => {
+    setSlip(buildSlipMoment(records, goalType, new Date()));
+    void refresh();
+  };
 
   const refresh = async () => {
     if (!user) return;
@@ -133,7 +144,7 @@ function DashboardContent() {
 
       {/* Uses the patterns already computed from their own logs to offer help
           before a historically harder stretch, not just describe it after. */}
-      <LookingAhead records={records} motivation={motivation || undefined} />
+      <LookingAhead records={records} motivation={motivation || undefined} userId={user?.uid} />
 
       {/* Identity + streak hero — the motivational anchor (never shaming) */}
       <Card className="relative overflow-hidden border-emerald-500/30 bg-gradient-to-br from-emerald-50 dark:from-emerald-950/30 via-card to-card">
@@ -233,7 +244,7 @@ function DashboardContent() {
         <CardContent>
           {user ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <LogDrinkModal userId={user.uid} onSaved={refresh} />
+              <LogDrinkModal userId={user.uid} onSaved={handleSaved} />
               <CravingSos userId={user.uid} motivation={motivation || undefined} />
             </div>
           ) : null}
@@ -241,6 +252,8 @@ function DashboardContent() {
       </Card>
 
       <MedicalDisclaimer />
+
+      <SlipMomentDialog moment={slip} onClose={() => setSlip(null)} />
 
       {/* Stats grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

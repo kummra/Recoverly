@@ -164,6 +164,24 @@ body {
   to { stroke-dashoffset: 113; }
 }
 
+/* Respect the system "reduce motion" setting (WCAG 2.3.3). Page entrances,
+   staggering and the typing dots simply stop; every other transition collapses
+   to an instant change. Nothing here removes information: the breathing pacer
+   still names each phase and counts it in words, and the 5-second pause before
+   a drink is logged is a delay, not an animation, so it is untouched. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Print: emit only the report sheet — no app chrome, no dark theme, no
    decorative colour. Anything a clinician prints should look like a document. */
 @media print {

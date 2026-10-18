@@ -15,6 +15,8 @@ const CONTENT_UPDATED = "2026-08-11";
 /** The sign-in page and the guide's first step were rewritten when phone
  *  sign-in was removed. */
 const SIGN_IN_UPDATED = "2026-10-11";
+/** The privacy policy gained a section on plans kept on the device. */
+const PRIVACY_UPDATED = "2026-10-18";
 
 type Route = {
   path: string;
@@ -29,7 +31,7 @@ const TRANSLATED: Route[] = [
   { path: "guide", priority: 0.8, changeFrequency: "monthly", lastModified: SIGN_IN_UPDATED },
   { path: "support", priority: 0.8, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
   { path: "faq", priority: 0.7, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
-  { path: "privacy", priority: 0.3, changeFrequency: "yearly", lastModified: CONTENT_UPDATED },
+  { path: "privacy", priority: 0.3, changeFrequency: "yearly", lastModified: PRIVACY_UPDATED },
   { path: "terms", priority: 0.3, changeFrequency: "yearly", lastModified: CONTENT_UPDATED },
   // The Learn guides.
   {

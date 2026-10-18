@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Bot, Heart, LifeBuoy, LifeBuoy as Ring, Waves, X, MessageCircle } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
+import { PlanList } from "@/components/plan-list";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
+import { usePlans } from "@/hooks/use-plans";
 import { breathPhaseAt } from "@/lib/analytics";
 import { addCravingEvent } from "@/lib/firestore";
 import { HELPLINES } from "@/lib/safety";
@@ -48,6 +50,7 @@ const BREATH_LABEL_KEYS: Record<string, string> = {
 
 export function CravingSos({ userId, motivation }: { userId: string; motivation?: string }) {
   const t = useT();
+  const [plans] = usePlans(userId);
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("intro");
   const [intensity, setIntensity] = useState(3);
@@ -189,6 +192,10 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                     <Heart className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {motivation}
                   </p>
                 )}
+
+                {/* What they decided to do, in their own words. The point of a plan
+                    is that nobody has to work out a response mid-craving. */}
+                <PlanList plans={plans} />
 
                 {/* Reaching a real person beats any in-app support, so offer it
                     first. The sms: link carries no recipient — the user chooses

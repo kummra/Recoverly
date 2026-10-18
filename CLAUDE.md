@@ -50,6 +50,37 @@ in `docs/legacy-port-inventory.md`.
   2026-08-08); pushing to `main` auto-deploys to production — no manual
   `vercel --prod` needed.
 
+## After a slip, and plans for hard moments
+
+Two features built around the moments when someone is most likely to give up.
+
+**After a slip** (`SlipMomentDialog`, `buildSlipMoment` in `analytics.ts`). When someone
+whose goal is `quit` logs a drink after at least one whole drink-free day, a dialog says
+what survives (the run, the personal best), repeats the two safety facts that matter at
+that exact moment, and links the slip guide. Rules that must stay true:
+- `quit` goals only. A drink inside a cut-down plan is not a slip; no goal means no judgement.
+- It counts WHOLE days between the last drink and today. `buildProgress` counts calendar
+  days including today, which is one higher; a dialog that said "1 day alcohol-free" to
+  someone who drank yesterday would be false, and would fire daily for a daily drinker.
+- Its safety text is the reviewed wording: `slip.body`, `slip.tolerance`, `slip.next`,
+  `slip.help` and `slip.guideTitle` are copied word for word from the "after a drinking
+  slip" guide in each language, and the withdrawal warning is the standing
+  `WithdrawalWarning`. Do not rewrite these in one language; change the guide and copy.
+- No shaming, and never a counter reset to zero.
+
+**Plans** (`src/lib/plans.ts`, `PlanEditor` in Settings, `PlanList` on the "looking
+ahead" card and the craving screen). "When X happens, I will do Y", up to three. They are
+free text about cravings and family, so they live in `localStorage` only: never on the
+server, never in the export, never in a prompt. Consequences already handled: deleting the
+account clears them from that browser (`clearPlans`); signing out does not (the intro and
+the privacy policy say so); every edit goes through `updatePlans`, which re-reads storage
+so a second tab cannot overwrite the first. They do not follow someone to a new phone.
+
+Found while building these and fixed in the shared pieces: the dialog scrolls within the
+visible screen (a taller-than-screen dialog used to clip its helplines on small phones),
+its close button is announced in the reader's language, titles have room for Indic
+scripts, and `prefers-reduced-motion` is honoured.
+
 ## The Learn guides (`/learn`)
 
 Six long-form guides on stopping safely, AUDIT scores, standard drinks, cravings, slips
