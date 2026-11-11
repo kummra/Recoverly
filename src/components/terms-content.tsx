@@ -1,6 +1,6 @@
 import { FileText } from "lucide-react";
 import { createTranslator } from "@/lib/i18n/dictionaries";
-import type { Locale } from "@/lib/i18n/types";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SECTIONS = [
@@ -32,8 +32,8 @@ export function TermsContent({ locale }: { locale: Locale }) {
           </CardContent>
         </Card>
       ))}
-      {/* A translated legal page must say which version governs. */}
-      <p className="px-1 text-center text-xs text-subtle">{t("legal.englishGoverns")}</p>
+      {/* A translated legal page must say which version governs. The English original is not a translation. */}
+      {locale !== DEFAULT_LOCALE && <p className="px-1 text-center text-xs text-subtle">{t("legal.englishGoverns")}</p>}
     </div>
   );
 }

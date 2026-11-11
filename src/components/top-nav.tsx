@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn, LifeBuoy, ClipboardCheck, Lock } from "lucide-react";
 
 import { useAppLock } from "@/components/app-lock-context";
+import { Logo } from "@/components/logo";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -32,9 +33,7 @@ export function TopNav() {
     <header className="mb-6 rounded-2xl border border-border bg-surface-muted px-4 py-3 backdrop-blur-md">
       <div className="flex items-center justify-between gap-3">
         <Link href="/" className="flex items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20">
-            <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">R</span>
-          </div>
+          <Logo className="h-8 w-8 shrink-0" />
           <span className="text-lg font-semibold tracking-tight">Recoverly</span>
         </Link>
 

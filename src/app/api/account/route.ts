@@ -22,9 +22,12 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
  * Permanently delete the authenticated user's account and ALL of their data.
  *
  * This backs the privacy-policy promise of self-serve deletion (privacy rule #4):
- * `recursiveDelete` removes the `users/{uid}` document and every subcollection
- * (drinkRecords, aiChats and their messages), then the Firebase Auth user is
- * removed so the identity is gone too.
+ * `recursiveDelete` removes the `users/{uid}` document and EVERY subcollection
+ * under it, whatever it is called (drinkRecords, cravingEvents, aiChats and their
+ * messages, and the server-written `feedback` survey answers), then the Firebase
+ * Auth user is removed so the identity is gone too. The privacy text promises
+ * this for anything stored under a person's document, so keep new per-person
+ * data there and it is covered without a change here.
  */
 export async function DELETE(request: NextRequest) {
   try {

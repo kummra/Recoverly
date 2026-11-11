@@ -5,11 +5,13 @@ import { Check, AlertCircle, User, Shield, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 import { DataManagement } from "@/components/data-management";
+import { FeedbackCard } from "@/components/feedback-card";
 import { useT } from "@/components/i18n-provider";
 import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { PlanEditor } from "@/components/plan-editor";
 import { PrivacyLock } from "@/components/privacy-lock";
+import { SupportPersonEditor } from "@/components/support-person-editor";
 import { DeleteAccount } from "@/components/delete-account";
 import { EmailVerification } from "@/components/email-verification";
 import { PasswordChange } from "@/components/password-change";
@@ -214,9 +216,13 @@ function SettingsContent() {
         <div className="space-y-6">
           {user && <PlanEditor userId={user.uid} />}
 
+          {user && <SupportPersonEditor userId={user.uid} />}
+
           <LanguageSettings />
 
           <PrivacyLock />
+
+          <FeedbackCard />
 
           <Card>
             <CardHeader>

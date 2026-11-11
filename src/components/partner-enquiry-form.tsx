@@ -188,8 +188,8 @@ export function PartnerEnquiryForm() {
             aria-describedby={describedBy("consent")}
           />
           <Label htmlFor="pe-consent" className="text-sm font-normal leading-relaxed text-body">
-            I agree that Recoverly may use these details to reply to my enquiry. They are kept only for that, for no more than 12 months, and are
-            never sold or used for advertising. See the{" "}
+            I agree that Recoverly may use these details to reply to my enquiry and to keep a record of our conversation. They are never sold or
+            used for advertising, and I can ask for them to be deleted at any time. See the{" "}
             <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
               privacy policy
             </Link>

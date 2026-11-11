@@ -1,3 +1,6 @@
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { CRISIS_HELP_MESSAGE, HELPLINES, detectCrisis } from "@/lib/safety";
@@ -55,16 +58,44 @@ describe("detectCrisis", () => {
 });
 
 describe("crisis help content", () => {
-  it("exposes the India helplines", () => {
+  it("exposes the India helplines: Tele-MANAS on both its numbers, and 112", () => {
     expect(HELPLINES.india.teleManas).toBe("14416");
-    expect(HELPLINES.india.kiran).toBe("1800-599-0019");
+    expect(HELPLINES.india.teleManasAlt).toBe("1-800-891-4416");
     expect(HELPLINES.india.emergency).toBe("112");
   });
 
   it("the help message actually contains real numbers and a directory", () => {
     expect(CRISIS_HELP_MESSAGE).toContain(HELPLINES.india.teleManas);
-    expect(CRISIS_HELP_MESSAGE).toContain(HELPLINES.india.kiran);
+    expect(CRISIS_HELP_MESSAGE).toContain(HELPLINES.india.teleManasAlt);
     expect(CRISIS_HELP_MESSAGE).toContain(HELPLINES.india.emergency);
     expect(CRISIS_HELP_MESSAGE).toContain(HELPLINES.internationalDirectoryUrl);
+  });
+
+  it("does not offer the retired KIRAN helpline", () => {
+    expect(CRISIS_HELP_MESSAGE).not.toMatch(/kiran|1800-599-0019/i);
+  });
+});
+
+/** Every app source file except tests. */
+function appFiles(dir: string, out: string[] = []): string[] {
+  for (const entry of readdirSync(dir)) {
+    const path = join(dir, entry);
+    if (statSync(path).isDirectory()) appFiles(path, out);
+    else if (/\.(tsx?|css)$/.test(entry) && !entry.includes(".test.")) out.push(path);
+  }
+  return out;
+}
+
+describe("retired helplines", () => {
+  // KIRAN merged into Tele-MANAS in 2024. A number printed in a crisis screen
+  // that no longer connects is worse than no number, and it had survived in
+  // five places (the banner, the support page, the offline page, the coach's
+  // message, the dictionaries) until it was removed on 2026-11-12.
+  it("never appear in what a person can read", () => {
+    const offenders = appFiles(join(process.cwd(), "src"))
+      // safety.ts explains the history in a comment; nothing else may name it.
+      .filter((file) => !file.endsWith(join("lib", "safety.ts")))
+      .filter((file) => /kiran|1800[-\s]?599[-\s]?0019/i.test(readFileSync(file, "utf8")));
+    expect(offenders).toEqual([]);
   });
 });

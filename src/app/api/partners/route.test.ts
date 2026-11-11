@@ -60,7 +60,7 @@ describe("POST /api/partners", () => {
     expect(db.add).toHaveBeenCalledTimes(1);
     const stored = (db.add.mock.calls[0] as unknown[])[0] as Record<string, unknown>;
     expect(stored).toMatchObject({ name: "Asha Rao", email: "asha@example.org", orgType: "clinic", source: "partners-page" });
-    expect(stored.deleteAt).toBeInstanceOf(Date);
+    expect(stored.createdAt).toBeInstanceOf(Date);
   });
 
   it("tells a bot it worked and keeps nothing", async () => {

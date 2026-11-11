@@ -83,7 +83,18 @@ export const metadata: Metadata = {
     follow: true
   },
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Recoverly" },
-  icons: { icon: "/icon-192.png", apple: "/apple-icon.png" }
+  // The SVG is the master and crisp at any size; the .ico is for older browsers,
+  // crawlers and anything that asks for /favicon.ico by default ("any" lets the
+  // SVG win where both are understood); the PNG is for the app-install icon.
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" }
+    ],
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }]
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -137,7 +137,7 @@ export function splitForSpeech(text: string, max = 180): string[] {
 
 /** Helpline numbers are dialled, not counted. Heard as a quantity, "14416"
  *  becomes "fourteen thousand four hundred sixteen", which no one can write down. */
-const DIAL_NUMBERS = ["1-800-891-4416", "1800-599-0019", "14416", "14446", "14490", "112", "181"];
+const DIAL_NUMBERS = ["1-800-891-4416", "14416", "14446", "14490", "112", "181"];
 
 function spellDigits(number: string): string {
   return number.replace(/\D/g, "").split("").join(" ");

@@ -20,11 +20,6 @@ export const ORG_TYPE_LABELS: Record<OrgType, string> = {
   other: "Something else"
 };
 
-/** How long an enquiry is kept. The privacy policy says "no longer than 12
- *  months"; each stored enquiry carries `deleteAt` so a Firestore TTL policy on
- *  that field can enforce it without anyone having to remember. */
-export const ENQUIRY_RETENTION_DAYS = 365;
-
 export const MAX_MESSAGE_LENGTH = 1000;
 
 /** Empty optional inputs arrive from a form as "", which means "not given". */
@@ -64,8 +59,12 @@ export function isHoneypotTripped(input: unknown): boolean {
   return typeof value === "string" && value.trim() !== "";
 }
 
-/** What is stored: only what was typed, a timestamp and the delete-by date. No
- *  address, no browser details, nothing about who the visitor is beyond that. */
+/** What is stored: only what was typed and when it arrived. No address, no
+ *  browser details, nothing about who the visitor is beyond that.
+ *
+ *  There is deliberately no expiry date. The owner wants enquiries kept as a
+ *  record of the conversation, and the privacy policy says so: they are
+ *  deleted whenever the person asks (by email, see lib/contact.ts). */
 export function enquiryToDocument(data: PartnerEnquiry, now: Date) {
   return {
     name: data.name,
@@ -75,7 +74,6 @@ export function enquiryToDocument(data: PartnerEnquiry, now: Date) {
     role: data.role ?? null,
     message: data.message ?? null,
     source: "partners-page",
-    createdAt: now,
-    deleteAt: new Date(now.getTime() + ENQUIRY_RETENTION_DAYS * 24 * 60 * 60 * 1000)
+    createdAt: now
   };
 }

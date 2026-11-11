@@ -24,6 +24,8 @@ Live deployment: https://recoverly.co.in
     alone is ambiguous between "no weekly limit" and "aiming for zero alcohol".
   - `users/{uid}/drinkRecords/{id}` — `quantity` (ml), `type`, `mood?`, `createdAt`
   - `users/{uid}/aiChats/{chatId}/messages/{id}` — chat history
+  - `users/{uid}/feedback/{id}` — answers to the "what would help you" survey. Written only
+    by the server (`/api/feedback`); `firestore.rules` gives browsers no access to it.
 - **AI coach:** a **Qwen** model on **Groq Cloud** (OpenAI-compatible API) in
   `src/app/api/ai/route.ts`. `GROQ_API_KEY` is server-side only and the model is overridable
   via `GROQ_MODEL`. Every request verifies the caller's Firebase ID token and resolves a `uid`.
@@ -203,16 +205,74 @@ a pilot, with an enquiry form (`PartnerEnquiryForm`, `lib/partners.ts`,
   the Admin SDK; Firestore's default deny gives browsers no access, so no rules change was
   needed). The route checks origin, rate-limits (5 an hour per address, 200 an hour overall),
   caps the body at 10 KB, answers a honeypot as if it worked, and stores only what was
-  typed plus `createdAt` and `deleteAt` (365 days). No address or browser details are kept.
-- **Retention is a promise** (privacy section `privacy.s8*`: no more than 12 months). A
-  Firestore TTL policy on `partnerEnquiries.deleteAt` enforces it; without that policy the
-  `deleteAt` field does nothing. Check it exists in the Firebase console (Firestore, Time to
-  live).
+  typed plus `createdAt`. No address or browser details are kept.
+- **Nothing is deleted automatically.** The owner decided against a retention period
+  (12 Nov 2026), and the privacy text (`privacy.s8*`) says enquiries are kept until the person
+  asks for them to be deleted. Do not add a `deleteAt` field or a TTL policy without changing
+  that text first: a policy that contradicts the policy page is worse than none. To honour a
+  request, delete the document in the Firebase console.
 - **Read the enquiries** in the Firebase console, Firestore, `partnerEnquiries`. There is no
   email notification yet, so someone has to look.
 - Anything that shows one person's data to an organisation (a clinician share link,
   programme codes with aggregate dashboards) is **not built**: it relaxes firm rule 4 below
   and needs the owner's decision first. See `docs/feature-roadmap.md`.
+
+## The business contact address
+
+One constant, `CONTACT_EMAIL` in `lib/contact.ts`, used on `/partners`, in the privacy
+policy's Contact section (`/privacy#contact`, linked from the footer in every language) and in
+the Organization markup that search engines read (`components/structured-data.tsx`). The owner
+chose to publish it, so expect spam. Change the address in that one file.
+
+The policy says the address is for questions, not emergencies, and points to the support
+page. **Keep that sentence**: someone in crisis may write to it, and nobody is watching it
+in real time.
+
+## Someone to call, the weekly look-back, and the survey
+
+- **Someone I can call** (`lib/support-person.ts`, `SupportPersonEditor` in Settings, the
+  Call and Text buttons in `craving-sos.tsx`): one name and one number, kept in the browser's
+  `localStorage` under `recoverly:person:{uid}`. Like the plans and the lock it is
+  **device-only**: never sent to the server, never in the data export, never in the coach's
+  prompt. Account deletion clears it on the device it is done on; signing out does not (the
+  Settings text says so, because of shared phones). The number must be 7 to 15 digits with
+  only spaces, `- ( ) .` and a leading `+` besides, and only the digits (and that `+`) are
+  stored, so a stored value can only ever become a plain `tel:` or `sms:` link. A write the browser refuses is reported,
+  not swallowed. With nobody saved, the craving screen keeps its old generic "text someone".
+- **Weekly look-back** (`lib/weekly-review.ts`, `WeeklyReviewCard` on the dashboard): worked
+  out from the records and cravings already loaded; stores nothing. It says nothing until
+  there are three days of history, and days before the person started are never counted as
+  alcohol-free. No score, nothing red: a drink day is an amber ring, the sentence carries the
+  meaning (the dots are `aria-hidden` decoration), and after a hard week the headline goes
+  neutral and the card offers a plan instead of a lecture.
+- **"What would help you" survey** (`lib/feedback.ts`, `app/api/feedback/route.ts`,
+  `FeedbackCard` in Settings): four options (counsellor, group, family, courses) and an
+  optional note of up to 300 characters. The card says none of these exist yet; keep it so, as
+  the organisations page does. The route verifies the caller's ID token, allows 5 answers an
+  hour each and caps the body at 4 KB. Answers sit at `users/{uid}/feedback/{id}`, go with the
+  account (`recursiveDelete`), are not in the data export and never enter a prompt.
+  **To read them:** Firebase console, Firestore, Query builder, scope "Collection group",
+  collection `feedback`.
+- **Testing the survey locally:** with the blank `FIREBASE_PRIVATE_KEY` the route answers 503
+  and the card shows "Could not send just now", which exercises the failure path without
+  writing to the real database. The saving path is covered by mocked tests in
+  `app/api/feedback/route.test.ts`.
+
+## The logo and icons
+
+The mark is a white "R" with a small amber dot on a diagonal green-to-blue gradient. The master
+is `public/icon.svg`; everything else is made from it by **`python3 scripts/build-icons.py`**
+(needs `rsvg-convert`; it rewrites `favicon.ico`, `icon-192.png`, `icon-512.png`,
+`apple-icon.png` and `icon-maskable-512.png`, and its header says what differs between them).
+Elsewhere in the code the mark is drawn inline: `components/logo.tsx` for the header, and
+inside `app/opengraph-image.tsx` for the share card, whose renderer cannot load a file.
+Those two are copies of the master's paths; change all three together.
+
+- After changing the mark, **bump `VERSION` in `public/sw.js`**: installed copies cache the
+  old icons until it changes. Then look at the 16 px favicon, where a mark stops being
+  readable first.
+- Where the icons are declared: `icons` in `app/layout.tsx`, `app/manifest.ts`, and `logo`
+  in `components/structured-data.tsx`.
 
 ## Sign-in: the behaviour that looks like a bug
 
@@ -281,8 +341,11 @@ The app builds and renders without these, but auth and the AI coach are inert un
    diagnose, treat, or cure addiction. It points users to qualified professionals.
 2. **Crisis = real help, not the bot.** On any mention of self-harm, suicide, or being
    in crisis, respond with care and surface a **real helpline** — never try to handle it
-   alone. India defaults: **Tele-MANAS 14416** (or 1-800-891-4416), **KIRAN
-   1800-599-0019**, emergency **112**. (Localise if the user is elsewhere.)
+   alone. India defaults: **Tele-MANAS 14416** (or 1-800-891-4416) and emergency **112**.
+   (Localise if the user is elsewhere.) **KIRAN (1800-599-0019) must not be printed**: it
+   merged into Tele-MANAS in 2024 and the number is retired. `lib/safety.test.ts` fails if
+   it returns to any source file. A retired number on a crisis screen is a safety bug: the
+   person may not get through at the one moment it matters.
 3. **Sudden-stop warning.** Warn that quitting alcohol suddenly can be medically
    dangerous for heavy drinkers (withdrawal seizures / delirium tremens) and advise
    seeing a doctor before stopping. Never cheer someone into cold-turkey quitting.

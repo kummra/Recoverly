@@ -14,11 +14,6 @@ const indiaHelplines = [
     numbers: [HELPLINES.india.teleManas, HELPLINES.india.teleManasAlt]
   },
   {
-    nameKey: "support.kiranName",
-    detailKey: "support.kiranDetail",
-    numbers: [HELPLINES.india.kiran]
-  },
-  {
     nameKey: "support.emergencyName",
     detailKey: "support.emergencyDetail",
     numbers: [HELPLINES.india.emergency]

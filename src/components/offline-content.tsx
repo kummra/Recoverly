@@ -36,11 +36,9 @@ export function OfflineContent() {
             <a href={`tel:${HELPLINES.india.teleManas}`} className="font-semibold text-sky-800 underline underline-offset-2 dark:text-sky-300">
               {HELPLINES.india.teleManas}
             </a>
-          </p>
-          <p>
-            KIRAN{" "}
-            <a href={`tel:${HELPLINES.india.kiran.replace(/[^\d]/g, "")}`} className="font-semibold text-sky-800 underline underline-offset-2 dark:text-sky-300">
-              {HELPLINES.india.kiran}
+            {" / "}
+            <a href={`tel:${HELPLINES.india.teleManasAlt.replace(/[^\d]/g, "")}`} className="font-semibold text-sky-800 underline underline-offset-2 dark:text-sky-300">
+              {HELPLINES.india.teleManasAlt}
             </a>
           </p>
           <p>

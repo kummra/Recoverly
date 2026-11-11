@@ -15,7 +15,8 @@ its rendered `.next` HTML). Those content pages below were therefore **built fre
 ported.
 
 ## ✅ Done (2026-06-26)
-- **/support** — crisis helplines (Tele-MANAS, KIRAN, 112) + withdrawal-safety warning +
+- **/support** — crisis helplines (Tele-MANAS, 112; KIRAN was listed here until it merged into
+  Tele-MANAS in 2024 and was removed on 2026-11-12) + withdrawal-safety warning +
   professional-help guidance. Sources numbers from `src/lib/safety.ts`.
 - **/faq** — safety-forward Q&A (no medical advice).
 - **/guide** — step-by-step "How Recoverly works".

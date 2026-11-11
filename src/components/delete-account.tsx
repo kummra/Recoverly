@@ -6,6 +6,7 @@ import { AlertTriangle, Trash2 } from "lucide-react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { clearPlans } from "@/lib/plans";
+import { clearPerson } from "@/lib/support-person";
 import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,9 +43,12 @@ export function DeleteAccount() {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       if (!res.ok) throw new Error("delete failed");
-      // The server has forgotten them; so must this browser. Plans are the one
-      // thing kept only here.
-      if (user) clearPlans(user.uid);
+      // The server has forgotten them; so must this browser. Plans and the
+      // saved person are the things kept only here.
+      if (user) {
+        clearPlans(user.uid);
+        clearPerson(user.uid);
+      }
       await signOutUser();
       router.replace("/");
     } catch {

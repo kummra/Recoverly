@@ -83,7 +83,7 @@ export function CrisisHelpline({ className }: { className?: string }) {
         {t("safety.crisisTitle")}
       </p>
       <p className="mt-1">
-        {t("safety.crisisIndia")}: Tele-MANAS {HELPLINES.india.teleManas} · KIRAN {HELPLINES.india.kiran} ·
+        {t("safety.crisisIndia")}: Tele-MANAS {HELPLINES.india.teleManas} / {HELPLINES.india.teleManasAlt} ·{" "}
         {t("safety.emergency")} {HELPLINES.india.emergency}. {t("safety.outsideIndia")}:{" "}
         <a
           href={HELPLINES.internationalDirectoryUrl}

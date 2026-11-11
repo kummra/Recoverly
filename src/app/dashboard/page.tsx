@@ -13,10 +13,12 @@ import { Onboarding } from "@/components/onboarding";
 import { ProtectedRoute } from "@/components/protected-route";
 import { MedicalDisclaimer } from "@/components/safety-notice";
 import { SlipMomentDialog } from "@/components/slip-moment";
+import { WeeklyReviewCard } from "@/components/weekly-review-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { type SlipMoment, buildProgress, buildSlipMoment } from "@/lib/analytics";
-import { type DrinkRecord, getDrinkRecords, getUserProfile } from "@/lib/firestore";
+import { type CravingEvent, type DrinkRecord, getCravingEvents, getDrinkRecords, getUserProfile } from "@/lib/firestore";
+import { buildWeeklyReview } from "@/lib/weekly-review";
 
 export default function DashboardPage() {
   return (
@@ -30,6 +32,7 @@ function DashboardContent() {
   const t = useT();
   const { user } = useAuth();
   const [records, setRecords] = useState<DrinkRecord[]>([]);
+  const [cravings, setCravings] = useState<CravingEvent[]>([]);
   const [weeklyGoal, setWeeklyGoal] = useState(0);
   const [goalType, setGoalType] = useState<"reduce" | "quit" | undefined>(undefined);
   const [motivation, setMotivation] = useState("");
@@ -68,6 +71,7 @@ function DashboardContent() {
   const weeklyProgress = weeklyGoal > 0 ? Math.min((weeklyTotal / weeklyGoal) * 100, 100) : 0;
   const recentRecords = useMemo(() => [...records].reverse().slice(0, 5), [records]);
   const progress = useMemo(() => buildProgress(records), [records]);
+  const weeklyReview = useMemo(() => buildWeeklyReview(records, cravings), [records, cravings]);
 
   // Runs when a drink has just been saved. `records` has not been re-read yet,
   // so it still describes the days BEFORE this drink, which is exactly the run
@@ -81,11 +85,15 @@ function DashboardContent() {
   const refresh = async () => {
     if (!user) return;
     try {
-      const [fetchedRecords, profile] = await Promise.all([
+      const [fetchedRecords, profile, fetchedCravings] = await Promise.all([
         getDrinkRecords(user.uid),
-        getUserProfile(user.uid)
+        getUserProfile(user.uid),
+        // The weekly review is a bonus: if this one read fails the rest of the
+        // dashboard must still load, so it falls back to none.
+        getCravingEvents(user.uid).catch(() => [] as CravingEvent[])
       ]);
       setRecords(fetchedRecords);
+      setCravings(fetchedCravings);
       setHasProfile(profile !== null);
       if (profile) {
         setWeeklyGoal(profile.goalWeeklyMl);
@@ -250,6 +258,8 @@ function DashboardContent() {
           ) : null}
         </CardContent>
       </Card>
+
+      {weeklyReview && !loadFailed && <WeeklyReviewCard review={weeklyReview} />}
 
       <MedicalDisclaimer />
 

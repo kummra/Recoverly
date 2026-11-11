@@ -29,6 +29,7 @@ export const en: Dictionary = {
   "footer.privacy": "Privacy",
   "footer.terms": "Terms",
   "footer.organisations": "For organisations",
+  "footer.contact": "Contact",
   "share.button": "Share",
   "share.copied": "Link copied",
   "share.whatsapp": "WhatsApp",
@@ -183,6 +184,13 @@ export const en: Dictionary = {
   "cravings.seconds": "{n} sec",
   "cravings.averageIntensity": "Average intensity {n} of 5",
   "cravings.empty": "When you use the SOS button, what happens will show up here.",
+  "week.title": "Your last 7 days",
+  "week.freeDays": "{n} of {total} days alcohol-free",
+  "week.checkIns": "{n} check-ins logged",
+  "week.msgAll": "A whole week alcohol-free. That took real effort.",
+  "week.msgSome": "Every alcohol-free day is a day you chose awareness.",
+  "week.msgNone":
+    "Hard weeks happen. Looking at the week honestly is part of recovery. A small plan for the next hard moment can help.",
 
   // Log a drink
   "log.quantity": "Quantity (ml)",
@@ -435,10 +443,28 @@ export const en: Dictionary = {
   "privacy.s7Title": "Plans on your device",
   "privacy.s7Body":
     "The plans you write for hard moments are saved only in this browser, never on our servers, and are not part of your data export. Deleting your account removes them from the device you delete it on, but not from other browsers you have used. Logging out does not remove them, so remove them in Settings before lending your phone.",
+  "feedback.title": "Help us decide what to build",
+  "feedback.intro":
+    "None of these exist yet. Tell us which would help you, so we build the right things first. What you choose and write is kept with your account and is deleted if you delete your account.",
+  "feedback.counsellor": "Talking to a trained counsellor",
+  "feedback.group": "A group of people on the same path",
+  "feedback.family": "Help for my family or someone close to me",
+  "feedback.courses": "Short courses on staying alcohol-free",
+  "feedback.messageLabel": "Anything else? (optional)",
+  "feedback.send": "Send",
+  "feedback.thanks": "Thank you. This helps us decide what to build.",
+  "feedback.failed": "Could not send just now. Please try again in a little while.",
+  "feedback.pick": "Please choose at least one, or write something.",
+  "privacy.s11Title": "Feedback you send",
+  "privacy.s11Body":
+    "If you tell us in Settings what would help you, we keep what you choose and write, with your account, to decide what to build. It is deleted if you delete your account, and it is not part of your data export. We never use it for advertising.",
   "privacy.lastUpdated": "Last updated: November 2026",
   "privacy.s8Title": "Enquiries from organisations",
   "privacy.s8Body":
-    "If an organisation contacts us through the form on the For organisations page, we keep the name, work email, organisation, role and message they type, only to reply to them. We do not sell these details or use them for advertising. We keep them for no more than 12 months, and sooner if the person asks.",
+    "If an organisation contacts us through the form on the For organisations page, we keep the name, work email, organisation, role and message they type, to reply to them and to keep a record of our conversation. We do not sell these details or use them for advertising. We keep them for as long as we need them for that, and we delete them whenever the person asks.",
+  "privacy.s9Title": "Contact",
+  "privacy.s9Body":
+    "For a privacy question, to ask us to delete or correct something you sent us, or for a business enquiry, write to {email}. This address is for questions, not emergencies. If you need help right now, please see the Support & helplines page.",
   "privacy.s5Title": "Third parties",
   "privacy.s5Body":
     "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated.",
@@ -466,8 +492,6 @@ export const en: Dictionary = {
   "support.crisisHeading": "In crisis or thinking of self-harm? Call now (India)",
   "support.teleManasName": "Tele-MANAS",
   "support.teleManasDetail": "24/7 national mental-health support",
-  "support.kiranName": "KIRAN Helpline",
-  "support.kiranDetail": "24/7 mental-health rehabilitation",
   "support.emergencyName": "Emergency services",
   "support.emergencyDetail": "If you or someone else is in immediate danger",
   "support.outsideIndia": "Outside India",
@@ -769,6 +793,22 @@ export const en: Dictionary = {
   "plan.saved": "Plan saved.",
   "plan.removed": "Plan removed.",
   "plan.makeOne": "Make a plan",
+  "person.title": "Someone I can call",
+  "person.intro":
+    "Save one person you trust. In a hard moment, when you tap “{sos}”, you will be offered a call or a text to them. The number stays on this device only: we never see it, and it is not part of your data export. Logging out does not remove it, so remove it here before you lend your phone.",
+  "person.nameLabel": "Their name",
+  "person.phoneLabel": "Their phone number",
+  "person.remove": "Remove",
+  "person.saved": "Saved.",
+  "person.removed": "Removed.",
+  "person.errName": "Please enter a name.",
+  "person.errPhone": "Please enter a phone number with 7 to 15 digits.",
+  "person.errStore": "Could not save. Your browser may be blocking storage for this site.",
+  "person.call": "Call {name}",
+  "person.text": "Text {name}",
+  "privacy.s10Title": "Someone I can call",
+  "privacy.s10Body":
+    "The name and number you save under “Someone I can call” are kept only in this browser, never on our servers, and are not part of your data export. Deleting your account removes them from the device you delete it on, but not from other browsers you have used. Logging out does not remove them, so remove them in Settings before lending your phone.",
   "lock.title": "Privacy lock",
   "lock.intro":
     "Ask for a PIN before Recoverly opens on this device, so someone who picks up your phone cannot look through it. This keeps casual onlookers out. It does not encrypt anything, and it protects this device only.",

@@ -73,5 +73,7 @@ export const LIMITS = {
   // Public form with no sign-in: the only handle on a caller is their address,
   // so the per-caller limit is small and there is a ceiling on the whole route.
   partners: { limit: 5, windowMs: 60 * 60_000 },
-  partnersAll: { limit: 200, windowMs: 60 * 60_000 }
+  partnersAll: { limit: 200, windowMs: 60 * 60_000 },
+  // Signed in, so per person: more than a few a day is not feedback.
+  feedback: { limit: 5, windowMs: 60 * 60_000 }
 } as const;

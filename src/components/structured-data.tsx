@@ -1,4 +1,5 @@
 import { getLearnArticle, getLearnMeta, learnLastModified, listLearnArticles, type LearnSlug } from "@/content/learn";
+import { CONTACT_EMAIL } from "@/lib/contact";
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import { en } from "@/lib/i18n/en";
 import type { Locale } from "@/lib/i18n/types";
@@ -34,27 +35,42 @@ function Ld({ data }: { data: Record<string, unknown> }) {
  */
 export function AppStructuredData() {
   return (
-    <Ld
-      data={{
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        name: "Recoverly",
-        url: BASE_URL,
-        applicationCategory: "HealthApplication",
-        operatingSystem: "Any (web browser)",
-        description: en["home.heroBody"],
-        inLanguage: ["en", "hi", "mr", "pa", "ta", "te", "kn", "ml", "gu"],
-        isAccessibleForFree: true,
-        offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
-        audience: {
-          "@type": "Audience",
-          audienceType: "People reducing or quitting alcohol"
-        },
-        // Being explicit that this is not a medical service is both honest and
-        // exactly what Google's health-content guidance looks for.
-        disambiguatingDescription: en["safety.notMedicalBody"]
-      }}
-    />
+    <>
+      <Ld
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Recoverly",
+          url: BASE_URL,
+          // What a search result can show beside the name: the same mark as the
+          // favicon, at the size crawlers ask for.
+          logo: `${BASE_URL}/icon-512.png`,
+          email: CONTACT_EMAIL
+        }}
+      />
+      <Ld
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "Recoverly",
+          url: BASE_URL,
+          image: `${BASE_URL}/icon-512.png`,
+          applicationCategory: "HealthApplication",
+          operatingSystem: "Any (web browser)",
+          description: en["home.heroBody"],
+          inLanguage: ["en", "hi", "mr", "pa", "ta", "te", "kn", "ml", "gu"],
+          isAccessibleForFree: true,
+          offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+          audience: {
+            "@type": "Audience",
+            audienceType: "People reducing or quitting alcohol"
+          },
+          // Being explicit that this is not a medical service is both honest and
+          // exactly what Google's health-content guidance looks for.
+          disambiguatingDescription: en["safety.notMedicalBody"]
+        }}
+      />
+    </>
   );
 }
 

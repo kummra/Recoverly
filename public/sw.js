@@ -8,7 +8,10 @@
  *    the network genuinely fails.
  */
 
-const VERSION = "v1";
+// Bumped to v2 when the logo changed: icon-192/512 are cached cache-first, so
+// without a new version returning visitors would keep the old icon in
+// notifications and on the offline page.
+const VERSION = "v2";
 const SHELL_CACHE = `recoverly-shell-${VERSION}`;
 const OFFLINE_URL = "/offline";
 

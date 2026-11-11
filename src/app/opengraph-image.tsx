@@ -33,22 +33,28 @@ export default function OpengraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 40 }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 20,
-              background: "rgba(16,185,129,0.22)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 34,
-              fontWeight: 700,
-              color: "#6ee7b7"
-            }}
-          >
-            R
-          </div>
+          {/* The same drawing as public/icon.svg. Inline SVG is supported by the
+              image renderer; it needs explicit width and height. */}
+          <svg width="64" height="64" viewBox="0 0 512 512">
+            <defs>
+              <linearGradient id="rv-og" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#10b981" />
+                <stop offset="1" stopColor="#0284c7" />
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="116" fill="url(#rv-og)" />
+            <g transform="translate(256 256) scale(1.08) translate(-256 -256)">
+              <path
+                d="M178 394V134h88a76 76 0 0 1 0 152h-88M254 286l92 108"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="54"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="392" cy="132" r="30" fill="#fde68a" />
+            </g>
+          </svg>
           <div style={{ fontSize: 40, fontWeight: 600, color: "#f8fafc" }}>Recoverly</div>
         </div>
 

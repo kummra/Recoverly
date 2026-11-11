@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Bot, Heart, LifeBuoy, LifeBuoy as Ring, Waves, X, MessageCircle } from "lucide-react";
+import { Bot, Heart, LifeBuoy, LifeBuoy as Ring, Waves, X, MessageCircle, Phone } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
 import { PlanList } from "@/components/plan-list";
@@ -16,10 +16,12 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { usePlans } from "@/hooks/use-plans";
+import { useSupportPerson } from "@/hooks/use-support-person";
 import { breathPhaseAt } from "@/lib/analytics";
 import { addCravingEvent } from "@/lib/firestore";
 import { HELPLINES } from "@/lib/safety";
 import { CRAVING_OUTCOMES } from "@/lib/schemas";
+import { smsHref, telHref } from "@/lib/support-person";
 
 /**
  * Craving SOS — an urge-surfing companion for the hardest moment.
@@ -76,6 +78,7 @@ function OpenFromLink({ onOpen }: { onOpen: () => void }) {
 export function CravingSos({ userId, motivation }: { userId: string; motivation?: string }) {
   const t = useT();
   const [plans] = usePlans(userId);
+  const [person] = useSupportPerson(userId);
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("intro");
   const [intensity, setIntensity] = useState(3);
@@ -226,14 +229,31 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
                 <PlanList plans={plans} />
 
                 {/* Reaching a real person beats any in-app support, so offer it
-                    first. The sms: link carries no recipient — the user chooses
-                    from their own contacts — so we never store, transmit or even
-                    see a third party's number. Nothing touches the server. */}
-                <Button asChild variant="outline" className="w-full gap-1.5">
-                  <a href={`sms:?&body=${encodeURIComponent(t("sos.textBody"))}`}>
-                    <MessageCircle className="h-4 w-4" /> {t("sos.textSomeone")}
-                  </a>
-                </Button>
+                    first. If the user has saved someone (on this device only),
+                    one tap calls or texts them. Otherwise the sms: link carries
+                    no recipient and the user chooses from their own contacts.
+                    Either way these open the phone's own apps: nothing is sent
+                    by Recoverly and nothing touches the server. */}
+                {person ? (
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Button asChild variant="outline" className="gap-1.5">
+                      <a href={telHref(person)}>
+                        <Phone className="h-4 w-4" /> {t("person.call", { name: person.name })}
+                      </a>
+                    </Button>
+                    <Button asChild variant="outline" className="gap-1.5">
+                      <a href={smsHref(person, t("sos.textBody"))}>
+                        <MessageCircle className="h-4 w-4" /> {t("person.text", { name: person.name })}
+                      </a>
+                    </Button>
+                  </div>
+                ) : (
+                  <Button asChild variant="outline" className="w-full gap-1.5">
+                    <a href={`sms:?&body=${encodeURIComponent(t("sos.textBody"))}`}>
+                      <MessageCircle className="h-4 w-4" /> {t("sos.textSomeone")}
+                    </a>
+                  </Button>
+                )}
 
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Button asChild variant="outline" className="gap-1.5">

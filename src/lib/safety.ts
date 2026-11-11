@@ -35,9 +35,11 @@ export function detectCrisis(text: string | null | undefined): boolean {
 /** Helpline data — single source of truth, shared by the server and the UI. */
 export const HELPLINES = {
   india: {
-    teleManas: "14416", // also 1-800-891-4416
+    // KIRAN merged into Tele-MANAS in 2024 and its own number was retired, so
+    // Tele-MANAS (two numbers) and 112 are the national lines. A test fails if
+    // the old number comes back.
+    teleManas: "14416",
     teleManasAlt: "1-800-891-4416",
-    kiran: "1800-599-0019",
     emergency: "112",
   },
   internationalDirectoryUrl: "https://findahelpline.com",
@@ -51,7 +53,6 @@ export const CRISIS_HELP_MESSAGE = `I'm really glad you told me, and I want to m
 
 India:
 • Tele-MANAS (24/7 mental health): ${HELPLINES.india.teleManas} or ${HELPLINES.india.teleManasAlt}
-• KIRAN helpline (24/7): ${HELPLINES.india.kiran}
 • Emergency services: ${HELPLINES.india.emergency}
 
 Outside India:

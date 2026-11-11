@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Briefcase, Building2, GraduationCap, Handshake, Landmark, ShieldCheck, Stethoscope } from "lucide-react";
 
 import { PartnerEnquiryForm } from "@/components/partner-enquiry-form";
+import { CONTACT_EMAIL } from "@/lib/contact";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const TITLE = "Pilot Recoverly with your organisation";
@@ -168,7 +169,13 @@ export default function PartnersPage() {
       <section id="enquire" className="space-y-4 scroll-mt-6">
         <div className="space-y-1">
           <h2 className="text-xl font-semibold">Start a conversation</h2>
-          <p className="text-sm text-muted-foreground">Tell us a little about your organisation. We will reply by email.</p>
+          <p className="text-sm text-muted-foreground">
+            Tell us a little about your organisation and we will reply by email. Or write to us directly at{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className={LINK}>
+              {CONTACT_EMAIL}
+            </a>
+            .
+          </p>
         </div>
         <Card>
           <CardContent className="pt-6">

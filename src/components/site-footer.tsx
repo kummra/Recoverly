@@ -69,6 +69,10 @@ export function SiteFooter() {
         <Link href="/partners" className={LINK}>
           {t("footer.organisations")}
         </Link>
+        <span aria-hidden>&middot;</span>
+        <a href={`${href("privacy")}#contact`} className={LINK}>
+          {t("footer.contact")}
+        </a>
       </nav>
       <LanguageLinks />
       <p className="mt-2">{t("footer.disclaimer")}</p>

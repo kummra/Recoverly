@@ -34,6 +34,21 @@ Smaller fixes found on the way: a failure creating a chat left the page stuck on
 chat list had an uncaught error; the coach page's subtitle was English in every language; the
 privacy policy's date was stale and it now covers organisation enquiries.
 
+### Second round (12 November 2026)
+
+| Feature | Why it earns its place | Where |
+|---|---|---|
+| **Logo and favicon** | The app had a typed letter and a default icon. One mark (a white "R" on the green-to-blue gradient, with a small amber dot) now serves the browser tab, the installed app, the share card and search results. | `public/icon.svg` and the PNG/ICO files beside it, `components/logo.tsx` |
+| **Someone I can call** | In the worst minute the app offered a generic "text someone". Now one saved person gets a Call and a Text button on the craving screen. The number never leaves the device. | `lib/support-person.ts`, `components/support-person-editor.tsx`, `components/craving-sos.tsx` |
+| **Weekly look-back** | A week is the unit that clinics, employers and families talk in. Shows alcohol-free days, drinks logged as check-ins and cravings that passed. Never scored, never red; a short history is counted honestly. | `lib/weekly-review.ts`, `components/weekly-review-card.tsx` |
+| **"What would help you" survey** | The cheapest real evidence of demand for the services line. Says plainly that none of it exists yet. | `lib/feedback.ts`, `app/api/feedback/route.ts`, `components/feedback-card.tsx` |
+| **Business contact address** | A person can now be told where to ask for a deletion. One constant, used on the organisations page, the privacy policy (`/privacy#contact`), the footer and the search-result markup. | `lib/contact.ts` |
+| **KIRAN retired** | Its number was removed everywhere and a test now fails if it comes back. Tele-MANAS and 112 remain. | `lib/safety.ts`, `lib/safety.test.ts` |
+
+**Nothing is deleted automatically.** The owner decided against a retention period. Organisation
+enquiries and survey answers are kept until the person asks for deletion (survey answers also go
+when the account is deleted). The privacy text says exactly that.
+
 ## 3. Capacity: the number to plan around
 
 The coach model on this Groq account allows about 1,000 requests a day and 8,000 tokens a
@@ -52,36 +67,40 @@ data terms first: the conversations are about alcohol and mental health.
    revocably, with an expiry", then build the share link first (it is also the clinic funnel).
    Aggregate-only reporting for employers should have a minimum group size (for example 20)
    so no individual can be picked out.
-2. **A business contact address.** The privacy policy and the enquiry form name none, so a
-   person cannot be told where to ask for deletion except by replying to the founder's own
-   email. Choose one and put it in the policy.
-3. **KIRAN.** It merged into Tele-MANAS in 2024. The app still prints it in `lib/safety.ts`
-   and in the coach's crisis message, while the guides deliberately omit it.
-4. **Translation review.** The strings added this round were written carefully against the
-   app's existing vocabulary but have not had a native-speaker review. The privacy-lock and
-   privacy-policy wording are the ones that matter most.
+2. ~~**A business contact address.**~~ **Decided 12 Nov 2026:** the address in `lib/contact.ts`
+   is public, and the policy says it is for questions, not emergencies. Open follow-up: because
+   nothing is deleted automatically, a deletion request must be answered by a person. Pick a
+   reply time (for example 30 days), say it in the policy, and delete the document in the
+   Firebase console (`partnerEnquiries`, or `users/{uid}/feedback`) when asked.
+3. ~~**KIRAN.**~~ **Decided and done 12 Nov 2026:** removed everywhere. See "Second round".
+4. **Translation review.** The strings added in both rounds were written carefully against the
+   app's existing vocabulary but have not had a native-speaker review. The privacy-lock,
+   privacy-policy and "someone I can call" wording are the ones that matter most.
 
 ## 5. Next, once those are decided
 
 In rough order of benefit for risk:
-1. Enable the Firestore TTL policy on `partnerEnquiries.deleteAt` (privacy promise), and set up
-   an email alert for new enquiries.
-2. A short in-app "what would help you most" survey (counsellor, family group, courses,
-   nothing) stored with the account and deleted with it. It is the cheapest evidence of
-   demand for the services line. Say clearly that none of it exists yet.
+1. An email alert for new organisation enquiries and survey answers. Today someone has to
+   look in the Firebase console, so a clinic that writes in could wait days.
+2. A local script that prints survey totals and anonymous app totals (sign-ups, check-ins)
+   from the Admin SDK, so the pitch quotes real numbers. The survey is already collecting.
 3. Consented clinician share link, if decision 1(b).
 4. Programme codes and an aggregate-only report, if decision 1(b).
 5. Partner attribution (`?ref=`) to count which organisation a sign-up came from.
-6. A weekly review card; plans for a dated event (a wedding, a festival).
+6. Plans for a dated event (a wedding, a festival).
 7. An installable-app prompt.
 8. English-first guides for the organisation audiences (alcohol at work, drink-driving for
    fleets). Translations follow only after an independent review, as the Learn section says.
-9. A local script that prints anonymous totals (sign-ups, check-ins) from the Admin SDK, so
-   the pitch quotes real numbers.
+9. Consider adding the national de-addiction helpline 14446, which the guides already print,
+   to the support page and the crisis message now that KIRAN is gone. Check the number
+   against its official source first.
 
 ## 6. Considered and left out
 
 - **A paid tier for individuals:** the owner decided against it.
+- **Deleting enquiries automatically after a fixed time (a Firestore TTL policy):** the owner
+  decided against it on 12 Nov 2026. Do not add a `deleteAt` field without changing the
+  privacy text, which now says data is kept until the person asks for deletion.
 - **Advertising, affiliate links, selling data:** break the promise the whole model rests on.
 - **Hardware (the breathalyser):** abandoned.
 - **Streak leaderboards and loss-framed streaks:** conflict with the no-shaming rule.

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  ENQUIRY_RETENTION_DAYS,
   MAX_MESSAGE_LENGTH,
   ORG_TYPES,
   ORG_TYPE_LABELS,
@@ -92,7 +91,7 @@ describe("enquiryToDocument", () => {
   const parsed = parseEnquiry(valid);
   if (!parsed.ok) throw new Error("fixture must be valid");
 
-  it("stores what was typed plus when it came and when it goes", () => {
+  it("stores what was typed plus when it came", () => {
     const doc = enquiryToDocument(parsed.data, now);
     expect(doc).toMatchObject({
       name: "Asha Rao",
@@ -101,13 +100,15 @@ describe("enquiryToDocument", () => {
       source: "partners-page",
       createdAt: now
     });
-    const days = (doc.deleteAt.getTime() - doc.createdAt.getTime()) / 86_400_000;
-    expect(days).toBe(ENQUIRY_RETENTION_DAYS);
+  });
+
+  it("sets no expiry: enquiries are kept as a record until the person asks for them to go", () => {
+    expect(enquiryToDocument(parsed.data, now)).not.toHaveProperty("deleteAt");
   });
 
   it("stores nothing that identifies the visitor beyond what they typed", () => {
     const keys = Object.keys(enquiryToDocument(parsed.data, now)).sort();
-    expect(keys).toEqual(["createdAt", "deleteAt", "email", "message", "name", "orgType", "organisation", "role", "source"]);
+    expect(keys).toEqual(["createdAt", "email", "message", "name", "orgType", "organisation", "role", "source"]);
   });
 
   it("writes null, not undefined, for what was left blank (Firestore rejects undefined)", () => {
