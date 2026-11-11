@@ -10,6 +10,7 @@ import {
   Noto_Sans_Telugu
 } from "next/font/google";
 
+import { AppLockProvider } from "@/components/app-lock-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { I18nProvider } from "@/components/i18n-provider";
 import { ServiceWorkerRegistrar } from "@/components/service-worker";
@@ -94,11 +95,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
         <ServiceWorkerRegistrar />
         <AuthProvider>
-          <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6">
-            <TopNav />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
+          {/* The privacy lock: shows a PIN screen in place of the app when it is
+              closed, and nothing at all for anyone who has not turned it on. */}
+          <AppLockProvider>
+            <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6">
+              <TopNav />
+              <main className="flex-1">{children}</main>
+              <SiteFooter />
+            </div>
+          </AppLockProvider>
         </AuthProvider>
         </I18nProvider>
         </ThemeProvider>

@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn, LifeBuoy, ClipboardCheck } from "lucide-react";
+import { Home, LayoutDashboard, BarChart3, Bot, Settings, Menu, X, LogOut, LogIn, LifeBuoy, ClipboardCheck, Lock } from "lucide-react";
 
+import { useAppLock } from "@/components/app-lock-context";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -24,6 +25,7 @@ export function TopNav() {
   const t = useT();
   const pathname = usePathname();
   const { user, signOutUser } = useAuth();
+  const lock = useAppLock();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -59,6 +61,14 @@ export function TopNav() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          {/* Only for someone who has turned the lock on: one tap to cover the
+              app when a phone is about to be handed over. */}
+          {user && lock.enabled && (
+            <Button type="button" variant="ghost" size="icon" className="h-10 w-10" onClick={lock.lockNow}>
+              <Lock className="h-4 w-4" />
+              <span className="sr-only">{t("lock.lockNow")}</span>
+            </Button>
+          )}
           {user ? (
             <>
               <span className="hidden max-w-[140px] truncate text-xs text-muted-foreground lg:block">{user.email}</span>

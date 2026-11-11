@@ -9,6 +9,7 @@ import { useT } from "@/components/i18n-provider";
 import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { PlanEditor } from "@/components/plan-editor";
+import { PrivacyLock } from "@/components/privacy-lock";
 import { DeleteAccount } from "@/components/delete-account";
 import { EmailVerification } from "@/components/email-verification";
 import { PasswordChange } from "@/components/password-change";
@@ -214,6 +215,8 @@ function SettingsContent() {
           {user && <PlanEditor userId={user.uid} />}
 
           <LanguageSettings />
+
+          <PrivacyLock />
 
           <Card>
             <CardHeader>
