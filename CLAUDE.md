@@ -1,8 +1,10 @@
 # Recoverly — Anti-Alcohol Recovery App
 
 A Next.js 16 (App Router) web app that helps people reduce and quit alcohol. It is one
-part of a larger anti-addiction project being submitted for the **Pradhan Mantri
-Rashtriya Bal Puraskar** (national youth award, India). **Deadline: 15 August 2026.**
+part of a larger anti-addiction project submitted for the **Pradhan Mantri
+Rashtriya Bal Puraskar** (national youth award, India; its 15 August 2026 deadline has
+passed). It is now also being presented as a business (Shark Tank India): see
+`docs/feature-roadmap.md` for the business model and what each feature is for.
 
 Users may be vulnerable people in recovery, so **correctness and safety come before
 features**. When in doubt, choose the safer, gentler behaviour.
@@ -25,6 +27,8 @@ Live deployment: https://recoverly.co.in
 - **AI coach:** a **Qwen** model on **Groq Cloud** (OpenAI-compatible API) in
   `src/app/api/ai/route.ts`. `GROQ_API_KEY` is server-side only and the model is overridable
   via `GROQ_MODEL`. Every request verifies the caller's Firebase ID token and resolves a `uid`.
+  Groq withdraws and renames models without notice and the default is a "preview" model: see
+  "The AI coach: limits and failures" below before touching it.
 - **Validation:** shared between Zod (`src/lib/schemas.ts`) and `firestore.rules`.
 - **Deploy:** Vercel (primary); Docker + k8s manifests exist for Oracle Cloud.
 
@@ -116,6 +120,99 @@ so they are held to a higher bar than UI copy.
 - Helplines printed in the guides: 112, Tele-MANAS 14416 / 1-800-891-4416, the national
   de-addiction helpline 14446, and (family guide) Women Helpline 181 and NCW 14490. KIRAN
   is deliberately absent (merged into Tele-MANAS in 2024).
+
+## The AI coach: limits and failures
+
+- **It depends on an outside provider whose limits are small.** On this account the model
+  is limited to roughly 30 requests a minute, **1,000 requests a day, 8,000 tokens a
+  minute and about 200,000 tokens a day** (Groq's page and the `x-ratelimit-*` response
+  headers; check `console.groq.com/settings/limits`). A reply is a few hundred tokens, so
+  the whole app can serve very roughly a hundred or two coach replies a day. That is the
+  ceiling to plan around before any partner pilot: a paid plan or a second provider is a
+  cost line, not an option.
+- **Languages cost very different amounts.** Measured tokens per character on this model:
+  English 0.19, Hindi 0.41, Marathi 0.53, Tamil 0.50, Malayalam 0.58, Telugu 0.61, Kannada
+  0.65, Gujarati 0.69, Punjabi 0.81. A Punjabi conversation uses about four times the shared
+  allowance of an English one.
+- **Long chats are trimmed before they are sent** (`lib/ai-context.ts`, `trimToTokenBudget`).
+  The app used to send the last 50 messages; one request over the per-minute limit is
+  refused every time, so a long-running chat would simply stop working. The saved history
+  is untouched. Do not raise the budget without re-checking the numbers above.
+- **Failures say what happened** (`lib/ai-errors.ts`): the route answers `busy` (provider
+  429) or `unavailable` (anything else, including a withdrawn model), and the page offers
+  Try again, Craving SOS and the helplines, none of which depend on the AI. Never go back to
+  a bare "could not get a response". Crisis language still gets the helpline text even when
+  the model call fails (see the route).
+- **To diagnose:** Vercel keeps runtime logs for one hour on this plan, so ask someone to
+  send a message, then read the log (`[POST /api/ai] status=… code=… message=…`). A
+  `model_not_found` means the model id is gone: list valid ids with
+  `GET https://api.groq.com/openai/v1/models` and set `GROQ_MODEL`.
+- `/dashboard?sos=1` opens Craving SOS. The installed app's shortcut and the coach's
+  failure message both point at it.
+
+## Reading aloud and sharing
+
+- **Listen** (`ListenButton`, `lib/speech.ts`) uses the device's own voices and appears only
+  when the device has a voice for that language: an English voice reading Tamil is worse
+  than no button. Desktop browsers often lack Marathi, Punjabi, Malayalam and Gujarati;
+  phones usually have more.
+- **The coach's replies use local voices only** (`localOnly`): some browsers send text to a
+  server to be spoken, which is fine for a public guide and not for a private conversation.
+  The voice is chosen by the script of the text, not the app's language, because the coach
+  answers in whatever language the person wrote in.
+- **Helplines are read digit by digit** (`prepareForSpeech`), or 14416 is heard as "fourteen
+  thousand four hundred sixteen" and cannot be written down. Add any new helpline number to
+  `DIAL_NUMBERS` in `lib/speech.ts`. Other numbers (a year, 330 ml) are left alone on purpose.
+- **Share** (`ShareButton`) passes the page's address and one line of plain text, through the
+  phone's share sheet (WhatsApp among its choices) or by copying the link. It says what the
+  page is, never who is sending it. It is on every guide and on the support page.
+
+## The privacy lock (`/settings`)
+
+An optional PIN in front of the app on one device, for people who share a phone or do not
+want a recovery app opened by whoever picks theirs up (`lib/app-lock.ts`,
+`AppLockProvider`, `LockScreen`, `PrivacyLock`). Off by default. Rules that must stay true:
+- **It is a screen, not encryption**, and the settings card says so. The PIN is kept only as
+  a salted PBKDF2 hash in `localStorage`; a four-digit PIN has ten thousand possibilities
+  whatever the hash. Do not describe it as secure storage anywhere.
+- **It must never trap anyone.** A damaged or unreadable setting means *no lock*. A browser
+  that cannot keep or check a lock gets none. "Forgot your PIN?" signs the person out,
+  which removes the lock; their records stay in the account. Signing out always removes it.
+- **Help is never behind it.** The lock screen always shows Tele-MANAS and 112 as
+  tap-to-call links.
+- **Locking removes the app from the page** rather than covering it, so nothing is left to
+  read behind the lock screen.
+- Wrong guesses are counted in `localStorage`, so reloading the page does not reset the
+  delay (30 seconds after five wrong tries, doubling to fifteen minutes). Turning the lock
+  off needs the PIN. A new tab or a relaunched installed app starts locked; idle time and
+  time away both count (1, 5 or 15 minutes; a shorter choice would lock while someone is
+  reading a guide).
+- Verified against the Auth emulator: set, wrong PIN, five wrong tries and the wait across a
+  reload, unlock, idle lock, fresh-tab lock, turning off, junk setting, and forgot-PIN.
+
+## For organisations (`/partners`) and enquiries
+
+A public, English-only page for clinics, employers, colleges, insurers and NGOs who might run
+a pilot, with an enquiry form (`PartnerEnquiryForm`, `lib/partners.ts`,
+`app/api/partners/route.ts`). It exists to turn the business model into real conversations.
+- **It claims no customers, no revenue and no product that does not exist.** It says what
+  is free and live today and what "a pilot would explore". Keep it that way: a judge, an
+  investor or a regulator will read it. It also says guides have not been reviewed by a
+  clinician, which is true (see the Learn section).
+- Enquiries go to the **server-only** Firestore collection `partnerEnquiries` (written with
+  the Admin SDK; Firestore's default deny gives browsers no access, so no rules change was
+  needed). The route checks origin, rate-limits (5 an hour per address, 200 an hour overall),
+  caps the body at 10 KB, answers a honeypot as if it worked, and stores only what was
+  typed plus `createdAt` and `deleteAt` (365 days). No address or browser details are kept.
+- **Retention is a promise** (privacy section `privacy.s8*`: no more than 12 months). A
+  Firestore TTL policy on `partnerEnquiries.deleteAt` enforces it; without that policy the
+  `deleteAt` field does nothing. Check it exists in the Firebase console (Firestore, Time to
+  live).
+- **Read the enquiries** in the Firebase console, Firestore, `partnerEnquiries`. There is no
+  email notification yet, so someone has to look.
+- Anything that shows one person's data to an organisation (a clinician share link,
+  programme codes with aggregate dashboards) is **not built**: it relaxes firm rule 4 below
+  and needs the owner's decision first. See `docs/feature-roadmap.md`.
 
 ## Sign-in: the behaviour that looks like a bug
 
