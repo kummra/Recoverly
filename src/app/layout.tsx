@@ -45,7 +45,7 @@ const fontVars = [
 ].join(" ");
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://recoverly-app.vercel.app"),
+  metadataBase: new URL("https://recoverly.co.in"),
   alternates: { canonical: "/" },
   title: {
     default: "Recoverly — Anti-Alcohol Recovery",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     title: "Recoverly — Anti-Alcohol Recovery",
     description:
       "Private alcohol-recovery tracking, gentle insights, and a non-judgmental AI support coach. You don't have to do this alone.",
-    url: "https://recoverly-app.vercel.app",
+    url: "https://recoverly.co.in",
     siteName: "Recoverly",
     locale: "en_IN",
     type: "website"

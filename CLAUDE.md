@@ -7,7 +7,7 @@ Rashtriya Bal Puraskar** (national youth award, India). **Deadline: 15 August 20
 Users may be vulnerable people in recovery, so **correctness and safety come before
 features**. When in doubt, choose the safer, gentler behaviour.
 
-Live deployment: https://recoverly-app.vercel.app
+Live deployment: https://recoverly.co.in
 
 ## Architecture
 

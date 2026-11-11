@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://recoverly-app.vercel.app";
+const BASE_URL = "https://recoverly.co.in";
 
 export default function robots(): MetadataRoute.Robots {
   return {

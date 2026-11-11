@@ -1,7 +1,7 @@
 import { LEARN_LOCALES, isLearnLocale, isLearnSlug } from "@/content/learn/types";
 import { LOCALES, type Locale } from "@/lib/i18n/types";
 
-export const BASE_URL = "https://recoverly-app.vercel.app";
+export const BASE_URL = "https://recoverly.co.in";
 
 /** Locales that carry a URL prefix. English is served unprefixed so the URLs
  *  already indexed by Google keep working and never need a redirect. */
