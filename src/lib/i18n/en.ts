@@ -480,6 +480,12 @@ export const en: Dictionary = {
   "ai.inputPlaceholder": "What's on your mind today?",
   "ai.send": "Send message",
   "ai.requestFailed": "Could not get AI response. Please try again.",
+  "ai.subtitle": "A compassionate, non-judgmental conversation partner.",
+  "ai.errBusy": "The AI is very busy right now. Please wait a minute and try again.",
+  "ai.errUnavailable":
+    "The AI isn't available right now. Your message is still in the box, so you can try again in a little while.",
+  "ai.errMeanwhile": "If you are struggling right now, you don't have to wait for the AI:",
+  "ai.tryAgain": "Try again",
 
   "voice.start": "Speak your message",
   "voice.stop": "Stop recording",

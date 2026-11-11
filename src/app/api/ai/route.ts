@@ -3,6 +3,8 @@ import Groq from "groq-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 
+import { trimToTokenBudget } from "@/lib/ai-context";
+import { AI_FAILURE_STATUS, classifyAiFailure, describeAiError } from "@/lib/ai-errors";
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { aiRequestSchema } from "@/lib/schemas";
 import { CRISIS_HELP_MESSAGE, detectCrisis } from "@/lib/safety";
@@ -97,6 +99,9 @@ export async function POST(request: NextRequest) {
       role: item.role,
       content: item.content
     }));
+    // What is sent to the model is only the recent part of the chat, sized to
+    // fit the provider's per-minute limit. The saved history below is unchanged.
+    const contextMessages = trimToTokenBudget(safeMessages);
 
     // Deterministic safety net: check the latest user message for crisis language.
     const lastUserMessage = [...safeMessages].reverse().find((item) => item.role === "user")?.content ?? "";
@@ -108,8 +113,9 @@ export async function POST(request: NextRequest) {
       temperature: 0.4,
       // Headroom so a reasoning model's <think> phase doesn't crowd out the
       // visible answer (the thinking is stripped below before the user sees it).
-      max_tokens: 2048,
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...safeMessages]
+      // Replies measured at 250 to 500 tokens, so this is about double.
+      max_tokens: 1200,
+      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...contextMessages]
     });
 
     const rawReply = completion.choices?.[0]?.message?.content ?? "";
@@ -165,10 +171,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ chatId, reply });
   } catch (error) {
-    // Log the real error server-side for debugging; return a generic
-    // message to the client to avoid leaking internal details.
+    // Log the real error server-side for debugging (one line: the provider's
+    // full error object includes its response headers and cookies); return a
+    // generic message to the client to avoid leaking internal details.
     // eslint-disable-next-line no-console
-    console.error("[POST /api/ai]", error);
+    console.error("[POST /api/ai]", describeAiError(error));
 
     // Safety override: never leave someone who expressed crisis without help,
     // even if the model call or storage failed.
@@ -176,9 +183,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ chatId: responseChatId ?? "", reply: CRISIS_HELP_MESSAGE }, { status: 200 });
     }
 
+    // Tell the page whether to say "busy, wait a minute" or "not available",
+    // so it can point at help that does not depend on the coach.
+    const kind = classifyAiFailure(error);
     return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 }
+      {
+        error:
+          kind === "busy"
+            ? "The coach is busy right now. Please try again in a minute."
+            : "The coach is not available right now. Please try again later.",
+        code: kind
+      },
+      {
+        status: AI_FAILURE_STATUS[kind],
+        headers: kind === "busy" ? { "Retry-After": "30" } : undefined
+      }
     );
   }
 }

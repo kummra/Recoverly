@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Bot, MessageSquarePlus, Send, User } from "lucide-react";
+import { Bot, LifeBuoy, MessageSquarePlus, Send, User, Waves } from "lucide-react";
+import Link from "next/link";
 
 import { ProtectedRoute } from "@/components/protected-route";
 import { CrisisHelpline } from "@/components/safety-notice";
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
+import { type AiFailureDisplay, failureFromResponse } from "@/lib/ai-errors";
 import { type ChatMessage, type ChatSession, createChatSession, listChatMessages, listChatSessions } from "@/lib/firestore";
 import { AI_CONTEXT_WINDOW } from "@/lib/schemas";
 
@@ -45,7 +47,7 @@ function AIContent() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
+  const [failure, setFailure] = useState<AiFailureDisplay | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const skipNextMessageLoad = useRef(false);
 
@@ -70,7 +72,10 @@ function AIContent() {
 
   useEffect(() => {
     if (!user) return;
-    refreshSessions().finally(() => setLoading(false));
+    // A failed list leaves the sidebar empty; it should not be an uncaught error.
+    refreshSessions()
+      .catch(() => undefined)
+      .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
 
@@ -123,15 +128,7 @@ function AIContent() {
   const send = async () => {
     if (!user || !input.trim() || sending) return;
     setSending(true);
-    setError("");
-
-    // Track the working chat ID locally. For new chats, defer setChatId until
-    // after the API responds so the message-loading effect doesn't fire
-    // prematurely against an empty Firestore session.
-    let workingChatId = chatId;
-    if (!workingChatId) {
-      workingChatId = await createChatSession(user.uid, input.trim().slice(0, 60));
-    }
+    setFailure(null);
 
     const optimisticUserMessage: ChatMessage = {
       id: `temp-user-${Date.now()}`,
@@ -144,7 +141,22 @@ function AIContent() {
     setMessages(nextMessages);
     setInput("");
 
+    // What the page will say if this fails. A refused request sets it from the
+    // server's answer; anything else (no connection, a thrown error) is
+    // "unavailable", which is also the right advice.
+    let failureKind: AiFailureDisplay = "unavailable";
+
     try {
+      // Track the working chat ID locally. For new chats, defer setChatId until
+      // after the API responds so the message-loading effect doesn't fire
+      // prematurely against an empty Firestore session. Inside the try so that
+      // a failure to create the chat shows the message and frees the page,
+      // instead of leaving it showing "typing" for good.
+      let workingChatId = chatId;
+      if (!workingChatId) {
+        workingChatId = await createChatSession(user.uid, optimisticUserMessage.content.slice(0, 60));
+      }
+
       const token = await getIdToken();
       const response = await fetch("/api/ai", {
         method: "POST",
@@ -165,6 +177,13 @@ function AIContent() {
       });
 
       if (!response.ok) {
+        let body: unknown = null;
+        try {
+          body = await response.json();
+        } catch {
+          /* not JSON: the status alone decides */
+        }
+        failureKind = failureFromResponse(response.status, body);
         throw new Error("AI request failed");
       }
 
@@ -195,7 +214,7 @@ function AIContent() {
       // so they can retry without losing their text.
       setMessages(messages);
       setInput(optimisticUserMessage.content);
-      setError(t("ai.requestFailed"));
+      setFailure(failureKind);
     } finally {
       setSending(false);
     }
@@ -206,7 +225,7 @@ function AIContent() {
       {/* Page heading */}
       <div>
         <h1 className="text-xl font-bold">{t("ai.pageTitle")}</h1>
-        <p className="text-sm text-muted-foreground">A compassionate, non-judgmental conversation partner.</p>
+        <p className="text-sm text-muted-foreground">{t("ai.subtitle")}</p>
       </div>
 
       <CrisisHelpline />
@@ -300,10 +319,32 @@ function AIContent() {
               {sending && <TypingIndicator />}
               <div ref={messagesEndRef} />
             </div>
-            {error ? (
-              <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
-                {error}
-              </p>
+            {failure ? (
+              <div role="alert" className="space-y-3 rounded-xl bg-red-500/10 px-3 py-3 text-sm text-red-700 dark:text-red-300">
+                <p>
+                  {t(failure === "busy" ? "ai.errBusy" : failure === "unavailable" ? "ai.errUnavailable" : "ai.requestFailed")}
+                </p>
+                {/* The coach being down must never leave someone with nowhere to
+                    go: the support below does not depend on it. */}
+                <p className="text-body">{t("ai.errMeanwhile")}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" size="sm" onClick={() => void send()} disabled={sending || !input.trim()}>
+                    {t("ai.tryAgain")}
+                  </Button>
+                  <Button asChild size="sm" variant="outline" className="gap-1.5">
+                    <Link href="/dashboard?sos=1">
+                      <Waves className="h-3.5 w-3.5" />
+                      {t("sos.trigger")}
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" variant="outline" className="gap-1.5">
+                    <Link href="/support">
+                      <LifeBuoy className="h-3.5 w-3.5" />
+                      {t("nav.support")}
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             ) : null}
             <div className="flex gap-2">
               <Input

@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Bot, Heart, LifeBuoy, LifeBuoy as Ring, Waves, X, MessageCircle } from "lucide-react";
 
 import { useT } from "@/components/i18n-provider";
@@ -47,6 +48,30 @@ const BREATH_LABEL_KEYS: Record<string, string> = {
   Hold: "sos.hold",
   "Breathe out": "sos.breatheOut"
 };
+
+/**
+ * Opens the SOS flow when the page is reached as /dashboard?sos=1, which is what
+ * the installed app's "I'm struggling right now" shortcut and the coach's error
+ * message point at. It had been opening the plain dashboard. The parameter is
+ * removed afterwards so a refresh does not reopen it.
+ */
+function OpenFromLink({ onOpen }: { onOpen: () => void }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const wanted = searchParams.get("sos") === "1";
+
+  useEffect(() => {
+    if (!wanted) return;
+    onOpen();
+    const rest = new URLSearchParams(searchParams.toString());
+    rest.delete("sos");
+    const query = rest.toString();
+    router.replace(query ? `?${query}` : window.location.pathname, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wanted]);
+
+  return null;
+}
 
 export function CravingSos({ userId, motivation }: { userId: string; motivation?: string }) {
   const t = useT();
@@ -100,6 +125,9 @@ export function CravingSos({ userId, motivation }: { userId: string; motivation?
 
   return (
     <>
+      <Suspense fallback={null}>
+        <OpenFromLink onOpen={() => setOpen(true)} />
+      </Suspense>
       <Button
         type="button"
         variant="outline"
