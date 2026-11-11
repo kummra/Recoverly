@@ -34,6 +34,11 @@ export const hi: Dictionary = {
   "footer.privacy": "गोपनीयता",
   "footer.terms": "शर्तें",
   "footer.organisations": "संगठनों के लिए",
+  "share.button": "साझा करें",
+  "share.copied": "लिंक कॉपी हो गया",
+  "share.whatsapp": "WhatsApp",
+  "share.guideText": "{title}: Recoverly की ओर से एक मुफ़्त गाइड",
+  "share.supportText": "भारत में शराब की समस्याओं और मानसिक स्वास्थ्य के लिए हेल्पलाइन, Recoverly की ओर से।",
   "footer.disclaimer": "यह पेशेवर चिकित्सा सलाह का विकल्प नहीं है।",
 
   // Dashboard
@@ -409,6 +414,9 @@ export const hi: Dictionary = {
   "ai.tryAgain": "दोबारा कोशिश करें",
   "voice.start": "अपना संदेश बोलें",
   "voice.stop": "रिकॉर्डिंग रोकें",
+  "listen.start": "सुनें",
+  "listen.stop": "रोकें",
+  "listen.title": "इसे ज़ोर से पढ़कर सुनाएँ",
   "voice.notice": "टाइप करने के बजाय बोलने के लिए माइक दबाएँ। लिखाई आपका ब्राउज़र करता है और ऑडियो अपने प्रदाता को भेज सकता है — यदि आप चाहते हैं कि यह आपके डिवाइस से बाहर न जाए, तो टाइप करें।",
   "audit.pageTitle": "शराब स्व-जाँच (AUDIT)",
   "audit.pageIntro": "विश्व स्वास्थ्य संगठन के स्क्रीनिंग टूल के दस प्रश्न। ईमानदारी से उत्तर देने पर ही यह कुछ उपयोगी बताता है — इसे कोई और नहीं देखता।",

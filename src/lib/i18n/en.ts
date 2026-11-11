@@ -29,6 +29,11 @@ export const en: Dictionary = {
   "footer.privacy": "Privacy",
   "footer.terms": "Terms",
   "footer.organisations": "For organisations",
+  "share.button": "Share",
+  "share.copied": "Link copied",
+  "share.whatsapp": "WhatsApp",
+  "share.guideText": "{title}: a free guide from Recoverly",
+  "share.supportText": "Helplines in India for alcohol problems and mental health, from Recoverly.",
   "footer.disclaimer": "Not a substitute for professional medical advice.",
 
   // Dashboard
@@ -497,6 +502,9 @@ export const en: Dictionary = {
 
   "voice.start": "Speak your message",
   "voice.stop": "Stop recording",
+  "listen.start": "Listen",
+  "listen.stop": "Stop",
+  "listen.title": "Read this aloud",
   "voice.notice":
     "Tap the mic to speak instead of typing. Your browser does the transcribing and may send the audio to its provider, so type instead if you'd rather it never left your device.",
 

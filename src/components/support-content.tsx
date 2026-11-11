@@ -3,6 +3,7 @@ import { LifeBuoy, Phone, Globe, HeartPulse, Users } from "lucide-react";
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/types";
 import { WithdrawalWarning } from "@/components/safety-notice";
+import { ShareButton } from "@/components/share-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HELPLINES } from "@/lib/safety";
 
@@ -36,6 +37,9 @@ export function SupportContent({ locale }: { locale: Locale }) {
         <p className="mt-1 text-sm text-muted-foreground">
           {t("support.intro")}
         </p>
+        {/* Passing these numbers to someone who needs them is the most useful
+            thing a person can do with this page. */}
+        <ShareButton locale={locale} text={t("share.supportText")} className="mt-3" />
       </div>
 
       {/* Crisis — most important, shown first */}

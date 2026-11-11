@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Bot, LifeBuoy, MessageSquarePlus, Send, User, Waves } from "lucide-react";
 import Link from "next/link";
 
+import { ListenButton } from "@/components/listen-button";
 import { ProtectedRoute } from "@/components/protected-route";
 import { CrisisHelpline } from "@/components/safety-notice";
 import { useT } from "@/components/i18n-provider";
@@ -305,14 +306,19 @@ function AIContent() {
                   }`}>
                     {message.role === "assistant" ? <Bot className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
                   </div>
-                  <div
-                    className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                      message.role === "assistant"
-                        ? "bg-surface text-foreground"
-                        : "bg-emerald-600/15 text-emerald-50"
-                    }`}
-                  >
-                    {message.content}
+                  <div className={`flex max-w-[85%] flex-col gap-1 ${message.role === "user" ? "items-end" : "items-start"}`}>
+                    <div
+                      className={`whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                        message.role === "assistant"
+                          ? "bg-surface text-foreground"
+                          : "bg-emerald-600/15 text-emerald-50"
+                      }`}
+                    >
+                      {message.content}
+                    </div>
+                    {/* Only the device's own voices: what the coach says in a
+                        private conversation is not sent anywhere to be spoken. */}
+                    {message.role === "assistant" && <ListenButton text={message.content} localOnly compact />}
                   </div>
                 </div>
               ))}

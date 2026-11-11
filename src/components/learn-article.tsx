@@ -1,7 +1,9 @@
 import { BookOpen, ChevronLeft, ExternalLink, Info, ListChecks, ShieldAlert } from "lucide-react";
 
 import { getLearnArticle, getLearnMeta, type LearnBlock, type LearnSlug } from "@/content/learn";
+import { ListenButton } from "@/components/listen-button";
 import { MedicalDisclaimer } from "@/components/safety-notice";
+import { ShareButton } from "@/components/share-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/types";
@@ -76,20 +78,27 @@ export function LearnArticleView({ locale, slug }: { locale: Locale; slug: Learn
         {t("learn.allGuides")}
       </a>
 
+      {/* What "Listen" reads: the guide itself, in order. The controls, the
+          dates and the source list are marked data-no-speech or sit outside. */}
+      <div id="learn-readable" className="space-y-6">
       <header className="space-y-3">
         <h1 className="text-2xl font-bold leading-tight sm:text-3xl">{article.title}</h1>
         <p className="text-base leading-relaxed text-muted-foreground">{article.summary}</p>
-        <p className="text-xs text-subtle">
+        <p data-no-speech className="text-xs text-subtle">
           {t("learn.reviewed", { date: formatReviewed(meta.reviewed, locale) })}
         </p>
         {locale !== "en" && (
-          <p className="text-xs text-subtle">
+          <p data-no-speech className="text-xs text-subtle">
             {t("learn.translatedNote")}{" "}
             <a href={localisedPath("en", `learn/${slug}`)} hrefLang="en" lang="en" className={LINK}>
               Read in English
             </a>
           </p>
         )}
+        <div data-no-speech className="flex flex-wrap items-center gap-3 pt-1">
+          <ListenButton locale={locale} targetId="learn-readable" />
+          <ShareButton locale={locale} text={t("share.guideText", { title: article.title })} />
+        </div>
       </header>
 
       <Card>
@@ -116,6 +125,7 @@ export function LearnArticleView({ locale, slug }: { locale: Locale; slug: Learn
       ))}
 
       <MedicalDisclaimer locale={locale} />
+      </div>
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold">{t("learn.sources")}</h2>
