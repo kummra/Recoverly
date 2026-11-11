@@ -11,10 +11,13 @@ import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-// Qwen on Groq Cloud (OpenAI-compatible API). The model id is overridable via
-// env so it can be corrected without a code change — confirm the exact id from
-// the Groq console's Models page, as Groq rejects unknown ids.
-const GROQ_MODEL = process.env.GROQ_MODEL ?? "qwen/qwen3.6-27b";
+// gpt-oss-120b on Groq Cloud (OpenAI-compatible API) — a production-tier model.
+// The previous default, qwen/qwen3.6-27b, was removed from Groq and every
+// request failed with model_not_found. Avoid Groq's "preview" models as a
+// default: they can be withdrawn at short notice. The id is overridable via
+// env so it can be corrected without a code change; check the live list with
+// GET https://api.groq.com/openai/v1/models, as Groq rejects unknown ids.
+const GROQ_MODEL = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
 
 const SYSTEM_PROMPT = `
 You are a compassionate, non-judgmental recovery-support companion for people reducing or quitting alcohol. You are NOT a doctor, nurse, or therapist, and you must never present yourself as one.
@@ -29,7 +32,7 @@ Core rules (do not break these):
 You offer emotional support and motivation only — not medical, legal, or clinical advice.
 `;
 
-// Qwen3 is a reasoning model that can wrap private reasoning in <think>…</think>.
+// Some reasoning models wrap private reasoning in <think>…</think>.
 // Strip it so the user only ever sees the final answer.
 function stripThinking(text: string): string {
   return text
