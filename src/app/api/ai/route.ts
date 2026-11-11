@@ -11,13 +11,13 @@ import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-// gpt-oss-120b on Groq Cloud (OpenAI-compatible API) — a production-tier model.
-// The previous default, qwen/qwen3.6-27b, was removed from Groq and every
-// request failed with model_not_found. Avoid Groq's "preview" models as a
-// default: they can be withdrawn at short notice. The id is overridable via
-// env so it can be corrected without a code change; check the live list with
-// GET https://api.groq.com/openai/v1/models, as Groq rejects unknown ids.
-const GROQ_MODEL = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
+// Qwen on Groq Cloud (OpenAI-compatible API). Groq renames and withdraws models
+// without notice: qwen/qwen3.6-27b was removed and every request failed with
+// model_not_found. Groq lists this one as a "preview" model, so if the coach
+// starts failing, check the live list with
+// GET https://api.groq.com/openai/v1/models and set GROQ_MODEL (no code change
+// needed — Groq rejects unknown ids).
+const GROQ_MODEL = process.env.GROQ_MODEL ?? "qwen/qwen3.8-27b";
 
 const SYSTEM_PROMPT = `
 You are a compassionate, non-judgmental recovery-support companion for people reducing or quitting alcohol. You are NOT a doctor, nurse, or therapist, and you must never present yourself as one.

@@ -22,7 +22,7 @@ Live deployment: https://recoverly.co.in
     alone is ambiguous between "no weekly limit" and "aiming for zero alcohol".
   - `users/{uid}/drinkRecords/{id}` — `quantity` (ml), `type`, `mood?`, `createdAt`
   - `users/{uid}/aiChats/{chatId}/messages/{id}` — chat history
-- **AI coach:** a **gpt-oss-120b** model on **Groq Cloud** (OpenAI-compatible API) in
+- **AI coach:** a **Qwen** model on **Groq Cloud** (OpenAI-compatible API) in
   `src/app/api/ai/route.ts`. `GROQ_API_KEY` is server-side only and the model is overridable
   via `GROQ_MODEL`. Every request verifies the caller's Firebase ID token and resolves a `uid`.
 - **Validation:** shared between Zod (`src/lib/schemas.ts`) and `firestore.rules`.
