@@ -28,6 +28,7 @@ export const en: Dictionary = {
   "footer.faq": "FAQ",
   "footer.privacy": "Privacy",
   "footer.terms": "Terms",
+  "footer.organisations": "For organisations",
   "footer.disclaimer": "Not a substitute for professional medical advice.",
 
   // Dashboard
@@ -137,6 +138,9 @@ export const en: Dictionary = {
   "home.ctaTitle": "Start your recovery journey",
   "home.ctaBody":
     "Create a free account to track consumption, view insights, and talk to our AI guide.",
+  "home.orgTitle": "Running a clinic, workplace or college?",
+  "home.orgBody":
+    "Recoverly is free for individuals. We are opening pilot partnerships with organisations that want to support the people they serve.",
   "home.getStarted": "Get started",
   "home.quote1": "Small steps repeated daily become your strongest identity.",
   "home.quote2": "Recovery is not about perfection; it is about direction.",
@@ -426,6 +430,10 @@ export const en: Dictionary = {
   "privacy.s7Title": "Plans on your device",
   "privacy.s7Body":
     "The plans you write for hard moments are saved only in this browser, never on our servers, and are not part of your data export. Deleting your account removes them from the device you delete it on, but not from other browsers you have used. Logging out does not remove them, so remove them in Settings before lending your phone.",
+  "privacy.lastUpdated": "Last updated: November 2026",
+  "privacy.s8Title": "Enquiries from organisations",
+  "privacy.s8Body":
+    "If an organisation contacts us through the form on the For organisations page, we keep the name, work email, organisation, role and message they type, only to reply to them. We do not sell these details or use them for advertising. We keep them for no more than 12 months, and sooner if the person asks.",
   "privacy.s5Title": "Third parties",
   "privacy.s5Body":
     "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated.",

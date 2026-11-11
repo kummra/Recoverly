@@ -15,8 +15,10 @@ const CONTENT_UPDATED = "2026-08-11";
 /** The sign-in page and the guide's first step were rewritten when phone
  *  sign-in was removed. */
 const SIGN_IN_UPDATED = "2026-10-11";
-/** The privacy policy gained a section on plans kept on the device. */
-const PRIVACY_UPDATED = "2026-10-18";
+/** The privacy policy gained a section on enquiries from organisations. */
+const PRIVACY_UPDATED = "2026-11-12";
+/** The "For organisations" page was added. */
+const PARTNERS_UPDATED = "2026-11-12";
 
 type Route = {
   path: string;
@@ -53,6 +55,7 @@ const TRANSLATED: Route[] = [
 /** English-only routes: the app shell and the sign-in screen. */
 const ENGLISH_ONLY: Route[] = [
   { path: "", priority: 1, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
+  { path: "partners", priority: 0.6, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
   { path: "login", priority: 0.5, changeFrequency: "yearly", lastModified: SIGN_IN_UPDATED }
 ];
 

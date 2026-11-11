@@ -10,7 +10,8 @@ const SECTIONS = [
   { titleKey: "privacy.s4Title", bodyKey: "privacy.s4Body" },
   { titleKey: "privacy.s5Title", bodyKey: "privacy.s5Body" },
   { titleKey: "privacy.s6Title", bodyKey: "privacy.s6Body" },
-  { titleKey: "privacy.s7Title", bodyKey: "privacy.s7Body" }
+  { titleKey: "privacy.s7Title", bodyKey: "privacy.s7Body" },
+  { titleKey: "privacy.s8Title", bodyKey: "privacy.s8Body" }
 ];
 
 export function PrivacyContent({ locale }: { locale: Locale }) {
@@ -22,7 +23,7 @@ export function PrivacyContent({ locale }: { locale: Locale }) {
           <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
           {t("privacy.title")}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t("legal.lastUpdated")}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t("privacy.lastUpdated")}</p>
       </div>
       {SECTIONS.map((section) => (
         <Card key={section.titleKey}>

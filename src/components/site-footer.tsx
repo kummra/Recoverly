@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useI18n } from "@/components/i18n-provider";
@@ -63,6 +64,11 @@ export function SiteFooter() {
         <a href={href("terms")} className={LINK}>
           {t("footer.terms")}
         </a>
+        <span aria-hidden>&middot;</span>
+        {/* English only, like the page itself: for the people who would sign a pilot. */}
+        <Link href="/partners" className={LINK}>
+          {t("footer.organisations")}
+        </Link>
       </nav>
       <LanguageLinks />
       <p className="mt-2">{t("footer.disclaimer")}</p>

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { HeartHandshake, Sparkles, ArrowRight, BookOpen, TrendingDown, Calendar, Quote } from "lucide-react";
+import { HeartHandshake, Sparkles, ArrowRight, BookOpen, Building2, TrendingDown, Calendar, Quote } from "lucide-react";
 
 import { useI18n } from "@/components/i18n-provider";
 import { useAuth } from "@/hooks/use-auth";
@@ -202,6 +202,25 @@ export default function HomePage() {
           <Button asChild variant="outline" className="gap-2">
             <Link href={learnPath(locale)}>
               {t("learn.allGuides")}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Organisations that might run a pilot. Kept below the help, never above it. */}
+      <Card>
+        <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center">
+          <div className="flex-1">
+            <h3 className="flex items-center gap-2 text-lg font-semibold">
+              <Building2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" aria-hidden />
+              {t("home.orgTitle")}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t("home.orgBody")}</p>
+          </div>
+          <Button asChild variant="outline" className="gap-2">
+            <Link href="/partners">
+              {t("footer.organisations")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

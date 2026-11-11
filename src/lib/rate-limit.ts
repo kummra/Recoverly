@@ -69,5 +69,9 @@ export const LIMITS = {
   sobriety: { limit: 60, windowMs: 60_000 },
   deviceRegister: { limit: 10, windowMs: 60 * 60_000 },
   accountDelete: { limit: 5, windowMs: 60 * 60_000 },
-  ociSync: { limit: 200, windowMs: 60_000 }
+  ociSync: { limit: 200, windowMs: 60_000 },
+  // Public form with no sign-in: the only handle on a caller is their address,
+  // so the per-caller limit is small and there is a ceiling on the whole route.
+  partners: { limit: 5, windowMs: 60 * 60_000 },
+  partnersAll: { limit: 200, windowMs: 60 * 60_000 }
 } as const;
