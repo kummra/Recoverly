@@ -458,6 +458,9 @@ export const en: Dictionary = {
   "privacy.s11Title": "Feedback you send",
   "privacy.s11Body":
     "If you tell us in Settings what would help you, we keep what you choose and write, with your account, to decide what to build. It is deleted if you delete your account, and it is not part of your data export. We never use it for advertising.",
+  "privacy.s12Title": "Programme codes",
+  "privacy.s12Body":
+    "If you enter a programme code from an employer, college, clinic or other organisation, our server checks the code and sends back the organisation's name, its welcome message and its support contacts. These are then kept only in this browser, never on our servers, and are not part of your data export. The organisation is not told that you joined, and cannot see anything you log. Leaving the programme in Settings, or deleting your account on this device, removes them from this browser. Logging out does not, so leave the programme before lending your phone.",
   "privacy.lastUpdated": "Last updated: November 2026",
   "privacy.s8Title": "Enquiries from organisations",
   "privacy.s8Body":
@@ -637,6 +640,11 @@ export const en: Dictionary = {
   "report.patternsHeading": "Self-reported patterns",
   "report.clusterLine": "Drinking clusters around {pattern} ({percent}% of logs)",
   "report.motivationHeading": "Stated motivation",
+  "report.prepTitle": "Get ready for your appointment",
+  "report.prepHint": "This is only for this printout. Nothing you type here is saved or sent anywhere.",
+  "report.notesLabel": "What I want to tell or ask",
+  "report.includePlans": "Include my plans for hard moments",
+  "report.plansHeading": "My plans for hard moments (written by me)",
   "report.disclaimer":
     "All figures are self-reported by the user through the Recoverly app and are not clinically verified. Recoverly is a self-management and support tool; it does not diagnose, treat or provide medical advice. This summary is intended to support — not replace — clinical assessment.",
 
@@ -806,6 +814,38 @@ export const en: Dictionary = {
   "person.errStore": "Could not save. Your browser may be blocking storage for this site.",
   "person.call": "Call {name}",
   "person.text": "Text {name}",
+
+  // Programme codes and the poster
+  "programme.title": "Programme code",
+  "programme.intro":
+    "If your employer, college, clinic or another organisation gave you a programme code, enter it here. It adds their name and support contacts to your dashboard, on this device. They are not told that you joined, and they cannot see anything you log.",
+  "programme.join": "Join",
+  "programme.notFound": "We do not recognise that code. Please check it and try again.",
+  "programme.checkFailed": "Could not check the code just now. Please try again in a little while.",
+  "programme.yours": "Your programme",
+  "programme.private":
+    "{name} cannot see that you joined, what you log, or anything else about you. Joining only shows their name and support contacts on this device.",
+  "programme.contacts": "Support from {name}",
+  "programme.leave": "Leave programme",
+  "programme.left": "You have left the programme. Nobody was told.",
+  "programme.sample":
+    "This is a sample programme, so you can see how an organisation's programme looks. No organisation is behind it.",
+  "programme.invited": "{name} has invited you to Recoverly",
+  "programme.invitedBody":
+    "Recoverly is a free, private companion for people who want to cut down or stop drinking. It works in nine languages.",
+  "programme.joinPrompt": "Join the {name} programme?",
+  "programme.notNow": "Not now",
+  "programme.errStore": "Could not save on this device. Your browser may be blocking storage for this site.",
+  "programme.already": "You are already part of this programme.",
+  "programme.joinedOk": "You have joined. The support contacts from {name} are now on your dashboard.",
+  "programme.toDashboard": "Go to your dashboard",
+  "programme.accountNote":
+    "You need a free account to join. Your code will be waiting for you after you sign in.",
+  "programme.gone": "This programme is no longer available. You can remove it in Settings.",
+  "poster.headline": "Thinking about drinking less, or stopping?",
+  "poster.sub": "Recoverly is free, private and available in your language.",
+  "poster.scan": "Scan to start",
+  "poster.orgLine": "Shared by {org}",
   "privacy.s10Title": "Someone I can call",
   "privacy.s10Body":
     "The name and number you save under “Someone I can call” are kept only in this browser, never on our servers, and are not part of your data export. Deleting your account removes them from the device you delete it on, but not from other browsers you have used. Logging out does not remove them, so remove them in Settings before lending your phone.",

@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const db = vi.hoisted(() => ({
   add: vi.fn(async () => ({ id: "new-doc" })),
@@ -122,5 +122,49 @@ describe("POST /api/partners", () => {
     const res = await post(valid);
     expect(res.status).toBe(500);
     expect(JSON.stringify(await res.json())).not.toContain("secret");
+  });
+});
+
+describe("the heads-up to the team", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("is sent when a webhook is set, and carries nothing the visitor typed", async () => {
+    vi.stubEnv("ENQUIRY_WEBHOOK_URL", "https://hooks.example.test/services/SECRET-TOKEN-123");
+    const fetchMock = vi.fn(async () => new Response("ok", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const res = await post({ ...valid, message: "Please call 98765 43210 about our clinic." });
+    expect(res.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("https://hooks.example.test/services/SECRET-TOKEN-123");
+    const sent = String(init.body);
+    for (const typed of ["Asha", "asha@example.org", "Sunrise", "98765"]) expect(sent).not.toContain(typed);
+    expect(sent).toContain("partnerEnquiries");
+  });
+
+  it("is not sent for a bot, a bad request or a failed save", async () => {
+    vi.stubEnv("ENQUIRY_WEBHOOK_URL", "https://hooks.example.test/x");
+    const fetchMock = vi.fn(async () => new Response("ok", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await post({ ...valid, website: "http://spam.example" });
+    await post({ ...valid, email: "nope" });
+    db.add.mockRejectedValueOnce(new Error("down"));
+    await post(valid);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("never fails the enquiry, however the alert service behaves", async () => {
+    vi.stubEnv("ENQUIRY_WEBHOOK_URL", "https://hooks.example.test/x");
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    vi.stubGlobal("fetch", vi.fn(async () => Promise.reject(new Error("offline"))));
+    const res = await post(valid);
+    expect(res.status).toBe(200);
+    expect(db.add).toHaveBeenCalledTimes(1);
   });
 });

@@ -8,6 +8,16 @@ import { DEFAULT_LOCALE, type Locale, isLocale } from "@/lib/i18n/types";
 
 const STORAGE_KEY = "recoverly:locale";
 
+/** Whether this browser has a saved language choice (so a programme's default
+ *  language is offered only to someone who has never chosen). */
+export function hasSavedLocale(): boolean {
+  try {
+    return isLocale(window.localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return false;
+  }
+}
+
 type I18nValue = {
   locale: Locale;
   setLocale: (l: Locale) => void;

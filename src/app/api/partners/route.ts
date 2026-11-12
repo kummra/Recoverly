@@ -1,38 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
+import { notifyTeam, enquiryNotice } from "@/lib/notify";
 import { enquiryToDocument, isHoneypotTripped, parseEnquiry } from "@/lib/partners";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+import { callerKey, fromOurOwnPages } from "@/lib/request-guards";
 
 export const runtime = "nodejs";
 
 /** A genuine enquiry is a few hundred bytes. */
 const MAX_BODY_BYTES = 10_000;
-
-/** The only handle on an anonymous caller. Used in memory for the rate limit
- *  and never stored or logged. */
-function callerKey(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return forwarded || request.headers.get("x-real-ip") || "unknown";
-}
-
-/**
- * Browsers attach the page's origin to a cross-site request, so a page on
- * another site cannot post here on someone's behalf. Clients that send no
- * origin (curl, scripts) are held back by the rate limit instead.
- */
-function fromOurOwnPages(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true;
-  let originHost: string;
-  try {
-    originHost = new URL(origin).host;
-  } catch {
-    return false;
-  }
-  const hosts = [request.headers.get("host"), request.headers.get("x-forwarded-host")];
-  return hosts.includes(originHost);
-}
 
 /**
  * Receive an enquiry from an organisation on the "For organisations" page and
@@ -81,6 +58,9 @@ export async function POST(request: NextRequest) {
     }
 
     await adminDb.collection("partnerEnquiries").add(enquiryToDocument(parsed.data, new Date()));
+    // A heads-up for the team (no personal details in it; see lib/notify.ts). It can
+    // never fail the enquiry: it has been saved, and notifyTeam does not throw.
+    await notifyTeam(enquiryNotice(parsed.data.orgType));
     return NextResponse.json({ ok: true });
   } catch (error) {
     // The message only: it never contains what the visitor typed.

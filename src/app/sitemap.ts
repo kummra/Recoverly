@@ -17,8 +17,9 @@ const CONTENT_UPDATED = "2026-08-11";
 const SIGN_IN_UPDATED = "2026-10-11";
 /** The privacy policy gained a section on enquiries from organisations. */
 const PRIVACY_UPDATED = "2026-11-12";
-/** The "For organisations" page was added. */
+/** The "For organisations" page was added, and then the toolkit beneath it. */
 const PARTNERS_UPDATED = "2026-11-12";
+const TOOLKIT_UPDATED = "2026-11-12";
 
 type Route = {
   path: string;
@@ -56,6 +57,7 @@ const TRANSLATED: Route[] = [
 const ENGLISH_ONLY: Route[] = [
   { path: "", priority: 1, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
   { path: "partners", priority: 0.6, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
+  { path: "partners/toolkit", priority: 0.5, changeFrequency: "monthly", lastModified: TOOLKIT_UPDATED },
   { path: "login", priority: 0.5, changeFrequency: "yearly", lastModified: SIGN_IN_UPDATED }
 ];
 

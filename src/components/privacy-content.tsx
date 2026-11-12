@@ -14,6 +14,7 @@ const SECTIONS: Array<{ titleKey: string; bodyKey: string; id?: string }> = [
   { titleKey: "privacy.s7Title", bodyKey: "privacy.s7Body" },
   { titleKey: "privacy.s10Title", bodyKey: "privacy.s10Body" },
   { titleKey: "privacy.s11Title", bodyKey: "privacy.s11Body" },
+  { titleKey: "privacy.s12Title", bodyKey: "privacy.s12Body" },
   { titleKey: "privacy.s8Title", bodyKey: "privacy.s8Body" },
   // The footer's Contact link lands here.
   { titleKey: "privacy.s9Title", bodyKey: "privacy.s9Body", id: "contact" }

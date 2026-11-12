@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import { Printer } from "lucide-react";
 
+import { PlanItem } from "@/components/plan-list";
 import { ProtectedRoute } from "@/components/protected-route";
 import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,10 @@ import {
   getDrinkRecords,
   getUserProfile
 } from "@/lib/firestore";
+import { type Plan, loadPlans } from "@/lib/plans";
+
+/** What someone may write for their appointment. A page of notes is not a summary. */
+const MAX_NOTES = 1000;
 
 /**
  * A one-page summary to take to a doctor or counsellor.
@@ -34,6 +39,12 @@ import {
  *
  * This reports what the user logged. It draws no clinical conclusions — that is
  * the clinician's job, and the footer says so.
+ *
+ * "Get ready for your appointment" lets the person add what they want to say or
+ * ask, and (if they choose) the plans they wrote for hard moments. Both exist
+ * only on this page and in the printout: the notes are never saved or sent, and
+ * the plans stay where they always were (this device) unless the person chooses to
+ * put them on a sheet of paper they hand over. Plans are off by default.
  */
 export default function ReportPage() {
   return (
@@ -54,6 +65,14 @@ function ReportContent() {
   const [audits, setAudits] = useState<AuditRecord[]>([]);
   const [cravings, setCravings] = useState<CravingEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState("");
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [includePlans, setIncludePlans] = useState(false);
+
+  // Plans live only in this browser; read them after mount.
+  useEffect(() => {
+    setPlans(user ? loadPlans(user.uid) : []);
+  }, [user?.uid]);
 
   useEffect(() => {
     if (!user) return;
@@ -114,6 +133,34 @@ function ReportContent() {
           <Printer className="h-4 w-4" /> {t("report.print")}
         </Button>
       </div>
+
+      <section className="space-y-3 rounded-2xl border border-border p-5 print:hidden" aria-labelledby="report-prep">
+        <div>
+          <h3 id="report-prep" className="text-base font-semibold">
+            {t("report.prepTitle")}
+          </h3>
+          <p className="mt-1 text-xs text-subtle">{t("report.prepHint")}</p>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="report-notes" className="text-sm font-medium">
+            {t("report.notesLabel")}
+          </label>
+          <textarea
+            id="report-notes"
+            value={notes}
+            onChange={(event) => setNotes(event.target.value.slice(0, MAX_NOTES))}
+            rows={3}
+            maxLength={MAX_NOTES}
+            className="w-full rounded-xl border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-subtle focus:border-emerald-500/50 focus:outline-none"
+          />
+        </div>
+        {plans.length > 0 && (
+          <label className="flex min-h-11 items-center gap-2 text-sm">
+            <input type="checkbox" checked={includePlans} onChange={(event) => setIncludePlans(event.target.checked)} className="h-4 w-4 accent-emerald-600" />
+            {t("report.includePlans")}
+          </label>
+        )}
+      </section>
 
       <article className="space-y-6 rounded-2xl border border-border bg-card p-6 print:border-0 print:p-0">
         <header className="border-b border-border pb-4">
@@ -198,6 +245,26 @@ function ReportContent() {
               {t("report.motivationHeading")}
             </h2>
             <p className="text-sm italic text-body">&ldquo;{profile.motivation}&rdquo;</p>
+          </section>
+        )}
+
+        {notes.trim() !== "" && (
+          <section>
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t("report.notesLabel")}</h2>
+            <p className="whitespace-pre-wrap break-words text-sm text-body">{notes.trim()}</p>
+          </section>
+        )}
+
+        {includePlans && plans.length > 0 && (
+          <section>
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t("report.plansHeading")}</h2>
+            <ul className="space-y-3">
+              {plans.map((plan) => (
+                <li key={plan.id}>
+                  <PlanItem plan={plan} />
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 

@@ -11,6 +11,7 @@ import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { PlanEditor } from "@/components/plan-editor";
 import { PrivacyLock } from "@/components/privacy-lock";
+import { ProgrammeEditor } from "@/components/programme-editor";
 import { SupportPersonEditor } from "@/components/support-person-editor";
 import { DeleteAccount } from "@/components/delete-account";
 import { EmailVerification } from "@/components/email-verification";
@@ -217,6 +218,8 @@ function SettingsContent() {
           {user && <PlanEditor userId={user.uid} />}
 
           {user && <SupportPersonEditor userId={user.uid} />}
+
+          {user && <ProgrammeEditor userId={user.uid} />}
 
           <LanguageSettings />
 

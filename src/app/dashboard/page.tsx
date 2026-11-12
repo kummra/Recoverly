@@ -10,6 +10,7 @@ import { LookingAhead } from "@/components/looking-ahead";
 import { useT } from "@/components/i18n-provider";
 import { LogDrinkModal } from "@/components/log-drink-modal";
 import { Onboarding } from "@/components/onboarding";
+import { ProgrammeCard, ProgrammePrompt } from "@/components/programme-card";
 import { ProtectedRoute } from "@/components/protected-route";
 import { MedicalDisclaimer } from "@/components/safety-notice";
 import { SlipMomentDialog } from "@/components/slip-moment";
@@ -148,6 +149,9 @@ function DashboardContent() {
         </Card>
       )}
 
+      {/* Only for someone who scanned a programme's poster before signing up: asks once. */}
+      {user && <ProgrammePrompt userId={user.uid} />}
+
       <DailyNudge reminderTime={reminderTime} />
 
       {/* Uses the patterns already computed from their own logs to offer help
@@ -260,6 +264,9 @@ function DashboardContent() {
       </Card>
 
       {weeklyReview && !loadFailed && <WeeklyReviewCard review={weeklyReview} />}
+
+      {/* The organisation's name and support contacts, for someone who joined its programme. */}
+      {user && <ProgrammeCard userId={user.uid} />}
 
       <MedicalDisclaimer />
 

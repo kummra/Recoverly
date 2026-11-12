@@ -75,5 +75,14 @@ export const LIMITS = {
   partners: { limit: 5, windowMs: 60 * 60_000 },
   partnersAll: { limit: 200, windowMs: 60 * 60_000 },
   // Signed in, so per person: more than a few a day is not feedback.
-  feedback: { limit: 5, windowMs: 60 * 60_000 }
+  feedback: { limit: 5, windowMs: 60 * 60_000 },
+  // Looking up a programme code. Generous per address on purpose: a whole office
+  // scans the same poster in the same hour from one shared connection, and a limit
+  // that turned colleagues away would fail exactly the workshop it was made for.
+  // Guessing is made pointless by the codes (6+ letters and digits), not by this.
+  programme: { limit: 600, windowMs: 60 * 60_000 },
+  programmeAll: { limit: 6000, windowMs: 60 * 60_000 },
+  // The public helplines feed and the embeddable card: small, cacheable, no personal data.
+  // Per address, and generous, because a partner's office or app can share one.
+  helplines: { limit: 600, windowMs: 60 * 60_000 }
 } as const;

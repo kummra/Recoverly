@@ -41,6 +41,13 @@ Server-only (never `NEXT_PUBLIC_`):
 - [ ] `FIREBASE_PRIVATE_KEY` (paste with literal `\n` newlines, or wrapped in quotes — the
       admin init in `src/lib/firebase-admin.ts` handles both)
 
+- [ ] *(optional)* `ENQUIRY_WEBHOOK_URL` — a Slack or Discord incoming-webhook address (https).
+      When an organisation sends an enquiry, the team gets one line in that channel ("New
+      organisation enquiry (Clinic…). Read and reply in the Firebase console…"). The line never
+      contains the name, email, organisation or message. It is a secret (anyone with it can post to
+      the channel), so set it here and nowhere else. If it is unset, nothing is sent and nothing
+      breaks. To try it: submit the form on `/partners` once and look in the channel.
+
 > Future (Block 4 — breathalyser): you'll also add `NEXT_PUBLIC_FIREBASE_DATABASE_URL`.
 
 ## 4. Smoke test the live site
@@ -56,6 +63,25 @@ Server-only (never `NEXT_PUBLIC_`):
       account's records (different `uid`, blocked by Firestore rules).
 - [ ] **Deletion check:** Settings → Delete account → confirm the account + data are gone
       and you're signed out.
+
+## 5. After a deploy that touches organisation pages, headers or the help card
+Only the help card (`/embed/help`) may be put in a frame by other sites; every other page must
+still refuse. Check both, from any terminal:
+```bash
+# the help card: no X-Frame-Options trouble because its own policy says who may frame it
+curl -sI "https://recoverly.co.in/embed/help?lang=hi" | grep -i -E "^(HTTP|content-security-policy)"
+#   expect:  HTTP/2 200   and   content-security-policy: … frame-ancestors *
+# an ordinary page: must still refuse framing
+curl -sI "https://recoverly.co.in/" | grep -i -E "^(HTTP|x-frame-options)"
+#   expect:  HTTP/2 200   and   x-frame-options: DENY
+curl -s "https://recoverly.co.in/api/helplines?lang=en" | head -c 300     # the numbers, as JSON
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/api/programme?code=SAMPLE"   # 200
+```
+- [ ] Open `https://recoverly.co.in/join/SAMPLE` on a phone: it shows the sample organisation and
+      the privacy line. Create an account from it, and the dashboard asks once whether to join.
+- [ ] Open `https://recoverly.co.in/partners/toolkit`, make a poster with the code `SAMPLE`, and
+      scan the QR code on the printable page with a phone: it must open `/join/SAMPLE`.
+      (`node scripts/verify-qr.mjs` proves the encoder on a Mac; this proves the whole chain.)
 
 ## Notes
 - This local repo has **no git remote**. Confirm how Vercel builds (connected GitHub repo

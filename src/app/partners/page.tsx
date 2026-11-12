@@ -121,6 +121,21 @@ export default function PartnersPage() {
         </p>
       </section>
 
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold">What you can use today</h2>
+        <p className="leading-relaxed text-body">
+          Some tools for organisations already work, with no contract needed. In the{" "}
+          <Link href="/partners/toolkit" className={LINK}>
+            organisation toolkit
+          </Link>{" "}
+          you can make posters and pocket cards with a QR code in nine languages, read a 45-minute session outline and a conversation guide for managers, and see how a{" "}
+          <Link href="/join/SAMPLE" className={LINK}>
+            programme code
+          </Link>{" "}
+          puts your name and support contacts on your people&rsquo;s dashboard. Your organisation cannot see who joins or what anyone logs.
+        </p>
+      </section>
+
       <section className="space-y-4">
         <div className="space-y-1">
           <h2 className="text-xl font-semibold">What a pilot would explore</h2>

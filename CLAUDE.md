@@ -213,9 +213,11 @@ a pilot, with an enquiry form (`PartnerEnquiryForm`, `lib/partners.ts`,
   request, delete the document in the Firebase console.
 - **Read the enquiries** in the Firebase console, Firestore, `partnerEnquiries`. There is no
   email notification yet, so someone has to look.
-- Anything that shows one person's data to an organisation (a clinician share link,
-  programme codes with aggregate dashboards) is **not built**: it relaxes firm rule 4 below
-  and needs the owner's decision first. See `docs/feature-roadmap.md`.
+- Anything that shows one person's data to an organisation is **not built**: a clinician share
+  link, or any report, count or dashboard an organisation could read about its people. It
+  relaxes firm rule 4 below and needs the owner's decision first. See `docs/feature-roadmap.md`.
+  (Programme codes exist, but they are device-only and tell the organisation nothing: see
+  "Organisation tools" below.)
 
 ## The business contact address
 
@@ -257,6 +259,81 @@ in real time.
   and the card shows "Could not send just now", which exercises the failure path without
   writing to the real database. The saving path is covered by mocked tests in
   `app/api/feedback/route.test.ts`.
+
+## Organisation tools: programme codes, the toolkit, the help card
+
+Built for the organisations in the business model (employers, colleges, clinics, NGOs) **without
+relaxing firm rule 4**: nothing here shows an organisation anything about a person.
+
+**Programme codes** (`lib/programme.ts`, `lib/programme-register.ts`, `lib/programme-membership.ts`,
+`app/api/programme`, `/join/{code}`, `ProgrammeCard` / `ProgrammePrompt` / `ProgrammeEditor`).
+An organisation gets a code; a person types it in Settings or scans a poster's QR code; the
+organisation's name, a welcome and up to four support contacts appear on their dashboard. Rules that
+must stay true:
+- **The organisation is told nothing**: not who joined, not how many, not what anyone logs. That
+  sentence is shown to the person in nine languages (`programme.private`) and in the privacy policy
+  (`privacy.s12*`), so it must remain true. Nothing counts, lists or reports members, and no request
+  about a programme carries an account. **Do not add a counter, a log of lookups or a dashboard
+  without the owner's decision on rule 4 and without changing that text and the policy first.**
+- **The register is server-only** (`programme-register.ts`; `programme.test.ts` fails if a client file
+  imports it) and `GET /api/programme?code=` answers one code at a time. It is code, not a database:
+  to add an organisation edit the register (its header says how), and the tests run
+  `validateProgramme` over every entry (code 6 to 16 letters and digits, https links only, phone
+  digits only, at most four contacts). Real codes are not guessable words.
+- **Device-only**, like plans and the saved person: `recoverly:programme:{uid}` and a pending code
+  `recoverly:programme-pending` in `localStorage`. Account deletion clears both. Signing out does not
+  (the privacy text says so). Everything read back goes through `sanitiseProgramme`, so a hand-edited
+  stored link can never be a script.
+- The dashboard card **re-reads the programme from the server** each time it appears, so a number that
+  changed or was withdrawn does not stay on a screen; a code that no longer exists shows "no longer
+  available" and hides its old contacts.
+- The organisation's contacts **never replace** Tele-MANAS and 112, which are shown to everyone and are
+  not behind a code. The craving screen does not show them.
+- A programme's `locale` is offered only to a first-time visitor (nobody with a saved language choice).
+- `SAMPLE` is the demonstration programme: it has no organisation behind it and says so.
+
+**The organisation toolkit** (`/partners/toolkit`): `KitGenerator`, `PosterSheet`, `lib/toolkit.ts`,
+the printable `/partners/toolkit/poster`, the 45-minute session outline and the manager guide.
+- A poster or sheet of pocket cards in any of the nine languages with a QR code. The poster carries the
+  crisis line and the sudden-stop message (firm rules 2 and 3) in its language; the cards carry the
+  helplines and "not a substitute for medical advice". A poster that invites people to cut down or stop
+  must not be the only thing they read before stopping abruptly.
+- **A code is checked before it goes on paper** (the form asks the server; the printable page drops a code
+  that is not in the register). A QR code to "we do not recognise that code" would hang on a wall for months.
+- **The QR encoder is ours** (`lib/qr.ts`, byte mode, level M, versions 1 to 10, no dependency; adding
+  packages was not wanted). A printed code that does not scan is worse than none, so after ANY change to
+  `lib/qr.ts` or how a code is drawn, run **`node scripts/verify-qr.mjs`**: it encodes a spread of texts
+  (every version, every mask, non-English), turns them into pictures and has macOS's own decoder read
+  them back. It needs a Mac, `rsvg-convert` and `swift`. `lib/qr.test.ts` covers the arithmetic (a
+  published Reed-Solomon example) and the fixed patterns, not scannability.
+- The eight non-English poster strings (`poster.*`) and the programme strings were written for this app and
+  have **not** had a native-speaker review; the toolkit page says so to organisations.
+- The session outline and manager guide add **no health facts of their own**: the one safety message is the
+  app's own (`safety.withdrawalBody`, read from the dictionary), the emergency signs are a subset of the
+  stopping-safely guide's list, and both link to the guides. Keep it that way: facts belong in the Learn
+  guides, where they are sourced.
+
+**The help card and feed** (`/embed/help`, `/api/helplines`, `lib/helplines.ts`, `lib/helplines-embed.ts`):
+the national lines as a small iframe card and as JSON, for the "licensing and the safety layer" line of the
+model. Only what the app itself treats as national lines (Tele-MANAS and 112), built from `lib/safety.ts`
+and the reviewed dictionary text, so a change made there reaches every site that embeds it.
+- Update `HELPLINES_CHECKED` whenever the numbers are re-checked against official pages.
+- **Framing**: the blanket `X-Frame-Options: DENY` in `vercel.json` stays. `/embed/help` alone sends
+  `Content-Security-Policy: … frame-ancestors *`, which modern browsers obey in preference to the old
+  header, so only that page can be framed. After any change near headers, run the two `curl` checks in
+  `docs/deploy-checklist.md` section 5. The card has no script, no form, no cookie and makes no request.
+- Never add a number that has not been checked against an official source. (The national de-addiction
+  helpline 14446 is the candidate; see the roadmap.)
+
+**Enquiry alert** (`lib/notify.ts`): with `ENQUIRY_WEBHOOK_URL` set (a Slack or Discord webhook, https), a
+saved enquiry sends one line to the team's channel. The line says only the kind of organisation and where to
+read it, **never** the name, email, organisation or message, because a chat service must not receive them.
+It cannot fail an enquiry (it has already been saved). With no variable set, nothing happens.
+
+**Preparing for an appointment** (`/report`): the clinician summary now lets the person type what they want
+to tell or ask, and tick "include my plans for hard moments" (off by default). The notes exist only on that
+page and in the printout, never saved or sent; the plans stay on the device unless the person puts them on
+the sheet they hand over.
 
 ## The logo and icons
 
