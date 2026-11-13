@@ -132,6 +132,42 @@ export function SiteFooter() {
           <Link href="/partners/workspace/example" className={LINK}>
             Example team workspace
           </Link>
+          <Link href="/partners/toolkit/campaigns" className={LINK}>
+            Campaign kit
+          </Link>
+          <Link href="/partners/toolkit/disclosure-protocol" className={LINK}>
+            Disclosure protocol
+          </Link>
+          <Link href="/partners/toolkit/help-a-friend" className={LINK}>
+            Help-a-friend guide
+          </Link>
+          <Link href="/partners/toolkit/orientation" className={LINK}>
+            Orientation pack
+          </Link>
+          <Link href="/partners/toolkit/clinic-handout" className={LINK}>
+            Clinic handout
+          </Link>
+          <Link href="/partners/pilot" className={LINK}>
+            Pilot kit
+          </Link>
+          <Link href="/partners/faq" className={LINK}>
+            Organisation FAQ
+          </Link>
+          <Link href="/partners/compliance" className={LINK}>
+            Compliance checklist
+          </Link>
+          <Link href="/partners/regional" className={LINK}>
+            Regional partners
+          </Link>
+          <Link href="/trust" className={LINK}>
+            Trust and security
+          </Link>
+          <Link href="/press" className={LINK}>
+            Fact sheet
+          </Link>
+          <Link href="/accessibility" className={LINK}>
+            Accessibility
+          </Link>
           <Link href="/embed/help" className={LINK}>
             Help card for websites
           </Link>

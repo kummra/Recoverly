@@ -212,9 +212,42 @@ export default function ToolkitPage() {
           A patient can print a one-page summary of what they have logged (consumption, streaks, cravings, patterns, their own words and their AUDIT score) from the app&rsquo;s
           report page and bring it to an appointment. They can also make a link to a read-only copy and send it to you before a visit. It holds only what they tick, never their
           email or account, and it is encrypted on their own device, so Recoverly cannot read it either; it stops working after 1, 7 or 30 days, or sooner if they stop it. It is
-          theirs to share. Pocket cards with your programme code are a simple way to hand the app to a patient between visits. We have not built a way for a clinic to see a
-          patient&rsquo;s progress without the patient sending it: we would design anything more with a clinic first.
+          theirs to share. Pocket cards with your programme code are a simple way to hand the app to a patient between visits. A clinic or community service can also ask for a private{" "}
+          <Link href="/partners/workspace/example" className={LINK}>
+            team workspace
+          </Link>
+          , where a patient who chooses to can share their progress with your team by name. A clinic never sees a patient&rsquo;s progress unless the patient sends it. Print the{" "}
+          <Link href="/partners/toolkit/clinic-handout" className={LINK}>
+            patient handout
+          </Link>{" "}
+          to explain it.
         </p>
+      </section>
+
+      <section className="space-y-3 rounded-2xl border border-border p-5" aria-labelledby="more-documents">
+        <h2 id="more-documents" className="text-xl font-semibold">
+          More documents and pages
+        </h2>
+        <ul className="grid gap-2 text-sm sm:grid-cols-2">
+          {[
+            ["/partners/toolkit/campaigns", "Awareness campaign kit: calendar and ready WhatsApp messages"],
+            ["/partners/toolkit/disclosure-protocol", "If someone tells you they have a drinking problem"],
+            ["/partners/toolkit/help-a-friend", "Helping a friend who drinks too much (for students)"],
+            ["/partners/toolkit/orientation", "College orientation outline and peer-ambassador pack"],
+            ["/partners/toolkit/clinic-handout", "Patient handout for clinics"],
+            ["/partners/pilot", "Pilot kit: proposal, success measures, case study"],
+            ["/partners/faq", "Questions organisations ask"],
+            ["/partners/compliance", "Compliance checklist"],
+            ["/trust", "Trust and security"],
+            ["/partners/regional", "Regional partners"]
+          ].map(([href, label]) => (
+            <li key={href}>
+              <Link href={href} className={LINK}>
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   );

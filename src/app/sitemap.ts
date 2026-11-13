@@ -58,7 +58,11 @@ const ENGLISH_ONLY: Route[] = [
   { path: "", priority: 1, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
   { path: "partners", priority: 0.6, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
   { path: "partners/toolkit", priority: 0.5, changeFrequency: "monthly", lastModified: TOOLKIT_UPDATED },
-  { path: "login", priority: 0.5, changeFrequency: "yearly", lastModified: SIGN_IN_UPDATED }
+  { path: "login", priority: 0.5, changeFrequency: "yearly", lastModified: SIGN_IN_UPDATED },
+  { path: "trust", priority: 0.5, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
+  { path: "press", priority: 0.3, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
+  { path: "accessibility", priority: 0.3, changeFrequency: "yearly", lastModified: PARTNERS_UPDATED },
+  { path: "partners/faq", priority: 0.4, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED }
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
