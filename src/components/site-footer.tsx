@@ -74,6 +74,74 @@ export function SiteFooter() {
           {t("footer.contact")}
         </a>
       </nav>
+      <div className="mx-auto mt-4 max-w-3xl space-y-2 border-t border-border pt-4 text-left sm:text-center">
+        <p className="font-medium text-muted-foreground">All pages</p>
+        <nav aria-label="App pages" className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+          <Link href="/" className={LINK}>
+            {t("nav.home")}
+          </Link>
+          <Link href="/login" className={LINK}>
+            {t("nav.login")}
+          </Link>
+          <Link href="/dashboard" className={LINK}>
+            {t("nav.dashboard")}
+          </Link>
+          <Link href="/records" className={LINK}>
+            {t("nav.records")}
+          </Link>
+          <Link href="/assessment" className={LINK}>
+            {t("nav.assessment")}
+          </Link>
+          <Link href="/ai" className={LINK}>
+            {t("nav.ai")}
+          </Link>
+          <Link href="/report" className={LINK}>
+            {t("report.title")}
+          </Link>
+          <Link href="/settings" className={LINK}>
+            {t("nav.settings")}
+          </Link>
+          <a href={learnPath(locale)} className={LINK}>
+            {t("learn.navLabel")}
+          </a>
+        </nav>
+        {/* The organisation pages are English only, like the rest of that part of the site. */}
+        <nav aria-label="Organisation pages" lang="en" className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+          <span className="font-medium text-muted-foreground">Organisations:</span>
+          <Link href="/partners" className={LINK}>
+            Overview and enquiry
+          </Link>
+          <Link href="/partners/toolkit" className={LINK}>
+            Toolkit
+          </Link>
+          <Link href="/partners/toolkit/poster" className={LINK}>
+            Poster maker
+          </Link>
+          <Link href="/partners/toolkit/session-outline" className={LINK}>
+            Session outline
+          </Link>
+          <Link href="/partners/toolkit/manager-guide" className={LINK}>
+            Manager guide
+          </Link>
+          <Link href="/join/SAMPLE" className={LINK}>
+            Try a programme code (SAMPLE)
+          </Link>
+          <Link href="/partners/report/example" className={LINK}>
+            Example monthly report
+          </Link>
+          <Link href="/partners/workspace/example" className={LINK}>
+            Example team workspace
+          </Link>
+          <Link href="/embed/help" className={LINK}>
+            Help card for websites
+          </Link>
+          {/* A data file, not a page: a plain link so the browser opens it directly. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/api/helplines" className={LINK}>
+            Helplines data (JSON)
+          </a>
+        </nav>
+      </div>
       <LanguageLinks />
       <p className="mt-2">{t("footer.disclaimer")}</p>
     </footer>
