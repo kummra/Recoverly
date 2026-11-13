@@ -64,7 +64,7 @@ export function ProgrammeReport({ name, rows, example = false }: { name: string;
         </h2>
         <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-body">
           <li>Each person chooses to be counted, with a box that stays off until they tick it. People who do not tick it are not counted, so the real number of people using Recoverly is likely higher.</li>
-          <li>A person is counted once a month, the first time they open Recoverly that month. Someone using two devices can be counted twice, so read the figures as approximate.</li>
+          <li>A person is counted once a month, the first time they open Recoverly that month. Someone who joined on two devices can be counted twice, so the true number of people may be a little lower.</li>
           <li>
             A figure is shown only when at least {MIN_GROUP} people are counted, and it is rounded to the nearest {ROUND_TO}. A smaller group is never shown, so that no one can be picked out.
           </li>

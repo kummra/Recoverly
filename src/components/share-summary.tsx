@@ -222,7 +222,7 @@ export function ShareSummary({ facts }: { facts: ShareFacts }) {
             )}
             <p className="text-xs leading-relaxed text-subtle">{t("share.wholeLink")}</p>
             <div className="flex items-center gap-3">
-              <QrCode text={created.link} label={t("share.qrLabel")} className="h-32 w-32 shrink-0 rounded-lg border border-border" />
+              <QrCode text={created.link} label={t("share.qrLabel")} className="h-40 w-40 shrink-0 rounded-lg border border-border" />
               <p className="text-xs leading-relaxed text-subtle">{t("share.qrHint")}</p>
             </div>
           </div>

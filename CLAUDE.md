@@ -363,8 +363,14 @@ translated policy to the constants in code.** Change a number in code and in the
   or was stopped answers the same 404, so an address reveals nothing about itself.
 - Optional belt-and-braces: a Firestore TTL policy on `shares.expiresAt` (a real Timestamp). Not required.
 - If the snapshot's shape changes, bump `v` and keep the viewer reading old versions: links already sent must open.
-- Not tested against live Firestore before launch (no Java 21 for the emulator). The first real create and stop, done by
-  the owner on their own account, is the live test: see `docs/deploy-checklist.md` section 6.
+- **Verified end to end on the Firestore emulator with the repo's real rules** (Java 21 is at `/opt/homebrew/opt/openjdk@21`;
+  setup in `docs/testing-sign-in.md`): create through the real route and the real Report page, the stored document
+  has exactly `uid, iv, ct, createdAt, expiresAt` and no plaintext, a recipient opens it with no sign-in, stop and
+  "stop all" delete the documents, a stopped link says so, deleting an account removes its links and leaves other
+  people's, and as a signed-in user the browser is refused (403) on `shares`, `programmeCounts`, `partnerEnquiries`
+  and other people's documents. On production only the read path was exercised (a missing address answers 404 from a
+  real Firestore read, and every write route answers 401 without a sign-in). A live create is a good final check
+  (`docs/deploy-checklist.md` section 6) but no longer the first time this code has met a real database.
 
 **Anonymous monthly headcount** (`lib/programme-count*.ts`, `app/api/programme/count`, `headcount-choice.tsx`,
 `/partners/report/{key}`):
@@ -378,8 +384,11 @@ translated policy to the constants in code.** Change a number in code and in the
   `node scripts/make-report-key.mjs` makes the pair). It shows six months: a figure only when at least `MIN_GROUP`
   (20) people are counted, rounded to the nearest `ROUND_TO` (5), otherwise "fewer than 20". Monthly, never live.
   `/partners/report/example` is the same page with invented figures and a notice that says so.
-- Double counting (one person on two devices) and undercounting (people who do not tick) are accepted and said so on
-  the report. A person who unticks, leaves, or whose organisation stops offering it sends nothing further; counts
+- Double counting (one person who joined on two devices) and undercounting (people who do not tick) are accepted and
+  said so on the report. Simulated: the figure is too high by about the share of people on two devices (1% of people
+  on two devices is about 1% too high). Removing it would need a per-person record, which the promise forbids, so it
+  stays. Also accepted: an organisation that made many accounts could pad a small total past 20; the threshold
+  protects people from casual identification, not from a determined insider. A person who unticks, leaves, or whose organisation stops offering it sends nothing further; counts
   already added cannot be taken back and identify nobody.
 
 **Never, whatever the consent:** a list of who was counted or who joined; per-person figures; a count shown below 20;

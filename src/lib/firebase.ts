@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { GoogleAuthProvider, connectAuthEmulator, getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
+import { connectFirestoreEmulator, getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -34,5 +34,20 @@ if (auth && authEmulatorUrl && process.env.NODE_ENV !== "production" && !auth.em
   connectAuthEmulator(auth, authEmulatorUrl, { disableWarnings: true });
 }
 export const firestore: Firestore | null = app ? getFirestore(app) : null;
+
+// Local testing only, like the Auth emulator above: with
+// NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 the browser reads and writes a
+// Firestore emulator (started with the repo's real firestore.rules) instead of the real
+// database, so signed-in pages can be tested end to end with throwaway data. A production
+// build ignores it, so it can never redirect a deploy.
+const firestoreEmulatorHost = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST;
+if (firestore && firestoreEmulatorHost && process.env.NODE_ENV !== "production") {
+  const [host, port] = firestoreEmulatorHost.split(":");
+  try {
+    connectFirestoreEmulator(firestore, host, Number(port));
+  } catch {
+    /* already connected: a hot reload ran this module again */
+  }
+}
 export const googleProvider = new GoogleAuthProvider();
 export const isFirebaseConfigured = hasFirebaseClientConfig;

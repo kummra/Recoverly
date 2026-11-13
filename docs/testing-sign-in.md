@@ -79,3 +79,40 @@ curl http://127.0.0.1:9099/emulator/v1/projects/demo-recoverly/oobCodes
 New passwords must be at least 8 characters (`MIN_NEW_PASSWORD_LENGTH`). The sign-in
 form deliberately has no minimum: an account created earlier with a 6-character
 password must still be able to sign in.
+
+## Testing the database side too (Firestore emulator and the real rules)
+
+The Auth emulator alone leaves signed-in pages unable to read anything (the real Firestore refuses its
+tokens). To test the whole thing locally, with the repo's real `firestore.rules`, add the Firestore
+emulator. It needs **Java 21 or newer** (firebase-tools refuses older ones); on this Mac Homebrew's
+`/opt/homebrew/opt/openjdk@21` is installed but not on the path.
+
+```json
+{ "emulators": { "auth": { "host": "127.0.0.1", "port": 9099 },
+                 "firestore": { "host": "127.0.0.1", "port": 8080, "rules": "/ABSOLUTE/PATH/TO/firestore.rules" },
+                 "ui": { "enabled": false } } }
+```
+```bash
+JAVA_HOME=/opt/homebrew/opt/openjdk@21 PATH=/opt/homebrew/opt/openjdk@21/bin:$PATH \
+  npx firebase-tools emulators:start --only auth,firestore --project demo-recoverly
+```
+
+Then a temporary, gitignored `.env.development.local` points the browser **and** the server routes at the
+emulators and keeps every other service away from production:
+
+```
+NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_URL=http://127.0.0.1:9099
+NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+FIREBASE_PROJECT_ID=demo-recoverly
+FIREBASE_CLIENT_EMAIL=emulator@demo-recoverly.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nZW11bGF0b3I=\n-----END PRIVATE KEY-----\n"
+ORACLE_CONNECT_STRING=
+ORACLE_USER=
+ORACLE_PASSWORD=
+```
+
+The Admin SDK honours the two `*_EMULATOR_HOST` variables, so `/api/share`, `/api/programme/count`
+and `/api/account` run their real code against a real Firestore engine and verify emulator tokens.
+Delete the file afterwards. Data seeded for a test lives only in the emulator's memory.

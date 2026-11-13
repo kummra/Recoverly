@@ -93,7 +93,9 @@ curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/partners/repor
 curl -s "https://recoverly.co.in/partners/report/not-a-real-key-not-a-real-key" | grep -c "People counted"      # 0: the site's own not-found page (its status is 200 only because pages stream; it is noindex and shows nothing)
 curl -sI "https://recoverly.co.in/share/AAAAAAAAAAAAAAAAAAAAAA" | grep -i -E "^(HTTP|x-frame-options|x-robots-tag)"      # 200, DENY
 ```
-The first real create and stop have not been run against live Firestore (the emulator needs Java 21), so
+The create, open and stop flow, the stored document, deleting an account and the security rules were run end to end on
+the Firestore emulator with the repo's real rules (`docs/testing-sign-in.md`). Production's read path is checked above.
+A live create has not been run (it would write to the real database), so as a final confirmation
 **do this once, as the owner, on your own account**:
 - [ ] Sign in, open **Report**, tick a few things, **Create link**, copy it, open it in a private window
       (no sign-in): the summary shows, in the language you chose there, with no email or account name.
