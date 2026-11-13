@@ -83,6 +83,31 @@ curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/api/programme?
       scan the QR code on the printable page with a phone: it must open `/join/SAMPLE`.
       (`node scripts/verify-qr.mjs` proves the encoder on a Mac; this proves the whole chain.)
 
+## 6. After a deploy that touches summary links or the monthly headcount
+Read-only checks from any terminal (these write nothing):
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/api/share/AAAAAAAAAAAAAAAAAAAAAA"      # 404 (an address that never existed)
+curl -s -o /dev/null -w "%{http_code}\n" -X POST "https://recoverly.co.in/api/share"                      # 401 (needs a signed-in person)
+curl -s -o /dev/null -w "%{http_code}\n" -X POST "https://recoverly.co.in/api/programme/count"            # 401
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/partners/report/example"                 # 200
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/partners/report/not-a-real-key-not-a-real-key"   # 404
+curl -sI "https://recoverly.co.in/share/AAAAAAAAAAAAAAAAAAAAAA" | grep -i -E "^(HTTP|x-frame-options|x-robots-tag)"      # 200, DENY
+```
+The first real create and stop have not been run against live Firestore (the emulator needs Java 21), so
+**do this once, as the owner, on your own account**:
+- [ ] Sign in, open **Report**, tick a few things, **Create link**, copy it, open it in a private window
+      (no sign-in): the summary shows, in the language you chose there, with no email or account name.
+- [ ] Take the part after `#` off the address and reload: it says the link looks incomplete.
+- [ ] Back in the app, **Stop sharing**, then reload the private window: it says the link has stopped.
+- [ ] In the Firebase console, Firestore, `shares`: while a link is live you see one document with only
+      `uid`, `iv`, `ct`, `createdAt`, `expiresAt` (nothing readable); after stopping it is gone.
+- [ ] Optional: Firestore, Time to live, add a policy on collection `shares`, field `expiresAt`, so an
+      expired copy is removed even if nobody asks for it.
+- [ ] Settings, Programme code, `SAMPLE`: you are offered the unticked "count me" box; tick it, open
+      the dashboard, and confirm nothing was written (Firestore `programmeCounts` stays empty: the sample stores nothing).
+- To give a real organisation the monthly headcount: `node scripts/make-report-key.mjs`, paste the
+  `report` line into its register entry, push, and send them the link it printed.
+
 ## Notes
 - This local repo has **no git remote**. Confirm how Vercel builds (connected GitHub repo
   vs. CLI) and point it at this consolidated codebase before relying on the live site.

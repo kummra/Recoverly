@@ -213,11 +213,11 @@ a pilot, with an enquiry form (`PartnerEnquiryForm`, `lib/partners.ts`,
   request, delete the document in the Firebase console.
 - **Read the enquiries** in the Firebase console, Firestore, `partnerEnquiries`. There is no
   email notification yet, so someone has to look.
-- Anything that shows one person's data to an organisation is **not built**: a clinician share
-  link, or any report, count or dashboard an organisation could read about its people. It
-  relaxes firm rule 4 below and needs the owner's decision first. See `docs/feature-roadmap.md`.
-  (Programme codes exist, but they are device-only and tell the organisation nothing: see
-  "Organisation tools" below.)
+- **No organisation ever receives individual-level data**, with or without consent (firm rule 4 below).
+  What exists is the person's own summary link and the optional anonymous monthly headcount: see
+  "Summary links and the monthly headcount" below. A clinic dashboard of its patients, an employer
+  dashboard, or any list, per-person figure or live counter is **not built and not to be built** without
+  the owner's explicit decision and a rewritten policy.
 
 ## The business contact address
 
@@ -262,19 +262,21 @@ in real time.
 
 ## Organisation tools: programme codes, the toolkit, the help card
 
-Built for the organisations in the business model (employers, colleges, clinics, NGOs) **without
-relaxing firm rule 4**: nothing here shows an organisation anything about a person.
+Built for the organisations in the business model (employers, colleges, clinics, NGOs). Nothing here
+shows an organisation anything about a person; the one number it can receive is the opt-in anonymous
+monthly headcount (see "Summary links and the monthly headcount").
 
 **Programme codes** (`lib/programme.ts`, `lib/programme-register.ts`, `lib/programme-membership.ts`,
 `app/api/programme`, `/join/{code}`, `ProgrammeCard` / `ProgrammePrompt` / `ProgrammeEditor`).
 An organisation gets a code; a person types it in Settings or scans a poster's QR code; the
 organisation's name, a welcome and up to four support contacts appear on their dashboard. Rules that
 must stay true:
-- **The organisation is told nothing**: not who joined, not how many, not what anyone logs. That
-  sentence is shown to the person in nine languages (`programme.private`) and in the privacy policy
-  (`privacy.s12*`), so it must remain true. Nothing counts, lists or reports members, and no request
-  about a programme carries an account. **Do not add a counter, a log of lookups or a dashboard
-  without the owner's decision on rule 4 and without changing that text and the policy first.**
+- **The organisation is told nothing about who joined or what anyone logs.** That sentence is shown to
+  the person in nine languages (`programme.private`, or `programme.privateCounted` for a programme that
+  offers the headcount) and in the privacy policy (`privacy.s12*`), so it must remain true. Joining itself
+  sends nothing about the person; the lookup carries no account. The only count is the opt-in monthly
+  headcount below. **Do not add a list, a log of lookups, a per-person figure or a dashboard without the
+  owner's decision on rule 4 and without changing that text and the policy first.**
 - **The register is server-only** (`programme-register.ts`; `programme.test.ts` fails if a client file
   imports it) and `GET /api/programme?code=` answers one code at a time. It is code, not a database:
   to add an organisation edit the register (its header says how), and the tests run
@@ -330,10 +332,60 @@ saved enquiry sends one line to the team's channel. The line says only the kind 
 read it, **never** the name, email, organisation or message, because a chat service must not receive them.
 It cannot fail an enquiry (it has already been saved). With no variable set, nothing happens.
 
-**Preparing for an appointment** (`/report`): the clinician summary now lets the person type what they want
+**Preparing for an appointment** (`/report`): the clinician summary lets the person type what they want
 to tell or ask, and tick "include my plans for hard moments" (off by default). The notes exist only on that
 page and in the printout, never saved or sent; the plans stay on the device unless the person puts them on
-the sheet they hand over.
+the sheet they hand over. Below it, the **Share a summary** card can make an encrypted link instead of
+paper (next section): the notes and plans reach a link only if the person ticks them there.
+
+## Summary links and the monthly headcount: the two exceptions to firm rule 4
+
+On 13 Nov 2026 the owner said: where a feature is really worth it and only the privacy statement stands
+in the way, amend the statement and build it. Two features cleared that bar. **They are the only ways a
+person's data can leave their account**, and each is the person's own act, visible, reversible and
+self-ending. The policy states both (`privacy.s12Body`, `privacy.s13Body`, with `s1`, `s5`, the FAQ answer
+and the login line pointing at them) and **`lib/privacy-policy.test.ts` ties the numbers in the English and
+translated policy to the constants in code.** Change a number in code and in the policy together, or it fails.
+
+**Summary link** (the `ShareSummary` card on `/report`; `lib/share*.ts`; `app/api/share`; viewer at `/share/{id}#{key}`):
+- **Encrypted in the browser** (AES-256-GCM through Web Crypto, a new key and nonce every time:
+  `lib/share-crypto.ts`). The server stores only the nonce, the ciphertext, the maker's uid and two times, in the
+  server-only Firestore collection `shares` (`lib/share-firestore.ts`, Admin SDK; default-deny rules, so no rules
+  change). The **key is the part after `#`**, which browsers never send to a server, so Recoverly, link previews,
+  mail scanners and proxies cannot read it. **Never put the key in a path, query, request body, log, cookie or
+  storage.** Nothing about a link is kept on the device: it is shown once and cannot be shown again.
+- **Only what the person ticks** goes in (`buildSnapshot`); the account is not an input, so email and display name
+  cannot leak. The two starting points never include their own words, notes or plans. The viewer re-cleans everything
+  it opens (`sanitiseSnapshot`) and renders plain text, so a link made by someone else can add nothing to the page.
+- 1, 7 or 30 days; at most 5 at once; ciphertext capped at 24,000 characters; stop one or all from the card. Expired
+  copies are removed when asked for, when their maker lists links, and 20 at a time whenever any link is made, and **all
+  of a person's links go with their account** (`/api/account` calls `stopAllShares`). A link that never existed, ended
+  or was stopped answers the same 404, so an address reveals nothing about itself.
+- Optional belt-and-braces: a Firestore TTL policy on `shares.expiresAt` (a real Timestamp). Not required.
+- If the snapshot's shape changes, bump `v` and keep the viewer reading old versions: links already sent must open.
+- Not tested against live Firestore before launch (no Java 21 for the emulator). The first real create and stop, done by
+  the owner on their own account, is the live test: see `docs/deploy-checklist.md` section 6.
+
+**Anonymous monthly headcount** (`lib/programme-count*.ts`, `app/api/programme/count`, `headcount-choice.tsx`,
+`/partners/report/{key}`):
+- Offered only for a programme whose register entry has `report: { keyHash }` (and the sample, which stores nothing).
+  The person sees an **unticked** box with its meaning written out, when joining and in Settings. If ticked, once a
+  month when the dashboard opens, the device sends the programme code, signed in only so a script cannot fake
+  counts; the server adds one to `programmeCounts/{code}.active.{yyyy-mm}` (month in IST, chosen by the server).
+  **No uid, no timestamp and no list is ever stored or logged with it.** The store has two methods,
+  `increment(code, month)` and `read(code)`, and `programme-count-service.test.ts` fails if that changes.
+- The organisation reads a private page (`/partners/report/{key}`; the register keeps only the key's SHA-256;
+  `node scripts/make-report-key.mjs` makes the pair). It shows six months: a figure only when at least `MIN_GROUP`
+  (20) people are counted, rounded to the nearest `ROUND_TO` (5), otherwise "fewer than 20". Monthly, never live.
+  `/partners/report/example` is the same page with invented figures and a notice that says so.
+- Double counting (one person on two devices) and undercounting (people who do not tick) are accepted and said so on
+  the report. A person who unticks, leaves, or whose organisation stops offering it sends nothing further; counts
+  already added cannot be taken back and identify nobody.
+
+**Never, whatever the consent:** a list of who was counted or who joined; per-person figures; a count shown below 20;
+a live counter; **any individual-level data to an employer, college, insurer, TPA or government body** (consent
+given to an employer or insurer is not freely given); a view a clinician has that the patient did not send; the key
+of a link stored anywhere. Each would need the owner's explicit decision and a rewritten policy first.
 
 ## The logo and icons
 
@@ -426,7 +478,18 @@ The app builds and renders without these, but auth and the AI coach are inert un
 3. **Sudden-stop warning.** Warn that quitting alcohol suddenly can be medically
    dangerous for heavy drinkers (withdrawal seizures / delirium tremens) and advise
    seeing a doctor before stopping. Never cheer someone into cold-turkey quitting.
-4. **Privacy first.** One user's personal data must never be visible to anyone else.
+4. **Privacy first.** One user's personal data must never be visible to anyone else, **except what that
+   person chooses to share, in exactly two ways, each of which they can see, undo, and which ends by
+   itself** (owner's decision, 13 Nov 2026): (a) a **summary link** they make for their own clinician,
+   counsellor or someone they trust: encrypted on their own device so Recoverly cannot read it, only
+   what they tick, never their email or account, 1, 7 or 30 days, stoppable at any time, deleted with
+   their account; and (b) an **anonymous monthly headcount** for their programme, only if the
+   organisation offers it and the person ticks a box that is off by default: a number, never a list,
+   shown to the organisation only when at least 20 people are counted, rounded to the nearest 5.
+   **No organisation (employer, college, insurer, TPA, government) ever receives individual-level
+   data, with or without consent.** Nothing else may make a person's data visible to anyone, and any
+   change to these two needs the owner's decision and the privacy policy (`privacy.s12*`, `s13*`)
+   changed first. See "Summary links and the monthly headcount" above.
    Enforce via Firebase Auth + Firestore `isOwner` rules; keep the OpenAI key server-side;
    apply the same per-user isolation to any ported breathalyser / Realtime-DB data.
 

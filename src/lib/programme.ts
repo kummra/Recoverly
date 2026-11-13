@@ -5,11 +5,19 @@
  *
  * A programme is a code. Entering it adds the organisation's name, a welcome and
  * its own support contacts to the person's dashboard, on that device only.
- * Nothing flows back: the organisation is not told who joined, how many joined,
- * or anything anyone logs. That is the promise `programme.private` makes in every
- * language, and it is why nothing here counts, lists or reports members, and why
- * no request about a programme carries an account. Do not add any of that
- * without changing that text and the privacy policy first (CLAUDE.md, firm rule 4).
+ * Nothing flows back to the organisation: not who joined, not what anyone logs.
+ * That is the promise `programme.private` makes in every language.
+ *
+ * The one exception is the optional **anonymous monthly headcount**
+ * (`lib/programme-count.ts`, `programme.privateCounted`, `privacy.s12*`). It exists
+ * only for a programme whose organisation has agreed to it (`headcount: true`), only
+ * for a person who ticked the box (off by default) and can untick it at any time, and
+ * it is a number: once a month the device adds one to a total for the programme.
+ * No name, no account and no list of who was counted is ever stored, and the
+ * organisation sees the total only once at least 20 people are in it. Anything
+ * beyond that, such as a list, a per-person figure or a count shown below that
+ * threshold, would break the promise: change CLAUDE.md, this text and the policy
+ * first (firm rule 4), and never give an organisation individual-level data.
  *
  * This file is safe for browsers: types, cleaning and checking. The register of
  * real programmes is in `programme-register.ts` and never reaches a browser.
@@ -41,6 +49,12 @@ export type Programme = {
   contacts: ProgrammeContact[];
   /** The language a first-time visitor sees, when they have not chosen one. */
   locale?: Locale;
+  /**
+   * This organisation receives the anonymous monthly headcount, so the person is
+   * offered the (unticked) choice to be counted. Absent or false: nothing about this
+   * programme is ever counted and the choice is not shown.
+   */
+  headcount?: boolean;
 };
 
 export const PROGRAMME_LIMITS = {
@@ -155,6 +169,7 @@ export function sanitiseProgramme(input: unknown): Programme | null {
 
   const programme: Programme = { code, name, kind, welcome: welcome as Programme["welcome"], contacts };
   if (isLocale(raw.locale)) programme.locale = raw.locale;
+  if (raw.headcount === true) programme.headcount = true;
   return programme;
 }
 
@@ -193,6 +208,7 @@ export function validateProgramme(programme: Programme): string[] {
   }
 
   if (programme.locale !== undefined && !isLocale(programme.locale)) problems.push(at("locale is not one we support"));
+  if (programme.headcount !== undefined && typeof programme.headcount !== "boolean") problems.push(at("headcount must be true or false"));
 
   if (programme.contacts.length > L.contactsMax) problems.push(at(`at most ${L.contactsMax} contacts`));
   programme.contacts.forEach((contact, i) => {

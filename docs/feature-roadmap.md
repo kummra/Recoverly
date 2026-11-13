@@ -10,10 +10,10 @@ plan, not to this file.
 
 | Revenue line (business model) | What the app needs | Today |
 |---|---|---|
-| Clinics and hospitals (follow-up workspace) | A way for a patient to share progress with a named clinician, with consent | **Share link not built:** needs an owner decision (section 4). Built: the printable clinician summary, now with the patient's own notes and (if they choose) their plans; pocket cards with a programme code to hand a patient the app. |
-| Employers, fleets, colleges (anonymous programme) | Programme codes; reports of anonymous totals only | **Programme codes built** (the organisation's name and support contacts on its people's dashboards; it is told nothing). **Totals not built:** same decision. Also built: posters and pocket cards with a QR code in nine languages, a 45-minute session outline, a manager conversation guide. |
-| Insurers, TPAs | Measured outcomes with consent | Not built; needs pilots first |
-| Government, NGOs, CSR | Reach in many languages; evidence | The nine-language app and guides are the product here. Read aloud widens reach. Posters and cards in all nine languages put it in front of field workers' audiences. Evidence needs the decision in section 4. |
+| Clinics and hospitals (follow-up workspace) | A way for a patient to share progress with a named clinician, with consent | **Built (13 Nov 2026): the summary link.** The patient makes an encrypted, read-only link (only what they tick, 1, 7 or 30 days, stoppable) and sends it to their clinician. Also built: the printable clinician summary with the patient's own notes and plans; pocket cards with a programme code. **Not built, on purpose:** a clinic dashboard of its patients (see section 6). |
+| Employers, fleets, colleges (anonymous programme) | Programme codes; reports of anonymous totals only | **Built:** programme codes (the organisation's name and support contacts on its people's dashboards; it is told nothing about who joins), posters and pocket cards in nine languages, a session outline, a manager guide, and (13 Nov 2026) the **optional anonymous monthly headcount**: one number a month from people who chose to be counted, shown only for 20 or more, with a private report page. |
+| Insurers, TPAs | Measured outcomes with consent | Not built; needs pilots first. **Individual-level data will not be offered to an insurer with or without consent** (section 6); anonymous engagement totals are what the headcount can give. |
+| Government, NGOs, CSR | Reach in many languages; evidence | The nine-language app and guides are the product here. Read aloud widens reach. Posters and cards in all nine languages put it in front of field workers' audiences. The monthly headcount is the reach evidence; outcome figures need a separate decision and a privacy review (section 6). |
 | Licensing and the safety layer | Crisis detection and safety rules usable by others | **The helplines are packaged:** an embeddable help card and a JSON feed, in nine languages, always as current as the app (`/embed/help`, `/api/helplines`). Crisis-text detection (`detectCrisis`) is not offered as a service: a keyword net should not be sold as a clinical tool. |
 | Peer circles, counselling, courses, coaching | People, moderation, payments | Not software work yet. A demand signal comes first. |
 | Care connection, diagnostics listings | Verified professionals; a legal check on fee structure | Not built |
@@ -60,6 +60,17 @@ the decision in section 4.
 | **Enquiry alert** | A clinic that writes in should not wait days because nobody opened the Firebase console. One line to Slack or Discord, with no personal details in it. Needs `ENQUIRY_WEBHOOK_URL`. | `lib/notify.ts` |
 | **Preparing for an appointment** | A patient who brings their own questions, and (if they choose) their plans, gives a clinician more than a table of numbers. Never saved or sent. | `app/report/page.tsx` |
 
+### Fourth round (13 November 2026): the two things that were held back for rule 4
+
+The owner said to amend the privacy statement for any feature really worth it. Two were, and they are
+now the only exceptions to firm rule 4 (CLAUDE.md, "Summary links and the monthly headcount").
+
+| Feature | Why it earns its place | Where |
+|---|---|---|
+| **Summary link** | The clinic funnel, and a person's own way to show a doctor or someone who supports them how they are doing. Encrypted on their own device (we cannot read it; the key is after `#` and is never sent), only what they tick, 1, 7 or 30 days, up to 5 at once, stoppable, deleted with the account. A "someone who supports me" starting point shares only progress. | `components/share-summary.tsx`, `components/share-view.tsx`, `lib/share*.ts`, `app/api/share`, `/share/{id}` |
+| **Optional anonymous monthly headcount** | The first question every employer, college and funder asks is "is it being used?". Answered with one number a month, from people who ticked an off-by-default box, shown only for 20 or more and rounded to 5. No list, no names, no per-person figure. | `lib/programme-count*.ts`, `app/api/programme/count`, `components/headcount-choice.tsx`, `/partners/report/{key}`, `/partners/report/example`, `scripts/make-report-key.mjs` |
+| **Privacy statement amended** | Sections 1, 5, 12 and a new 13, the FAQ answer, the login line and the self-check intro now say what is true, in all nine languages, and a test ties the numbers in the text to the code. | `privacy.*`, `lib/privacy-policy.test.ts` |
+
 **Nothing is deleted automatically.** The owner decided against a retention period. Organisation
 enquiries and survey answers are kept until the person asks for deletion (survey answers also go
 when the account is deleted). The privacy text says exactly that.
@@ -75,24 +86,12 @@ data terms first: the conversations are about alcohol and mental health.
 
 ## 4. Decisions only the owner can make
 
-1. **Consented sharing.** Firm rule 4 says one person's data is never visible to anyone else.
-   A clinician share link, or programme codes with aggregate dashboards, would make data
-   visible by the person's choice. Options: (a) keep rule 4 absolute and sell only education,
-   workshops and licensing; (b) amend it to "never, unless the person explicitly shares it,
-   revocably, with an expiry", then build the share link first (it is also the clinic funnel).
-   Aggregate-only reporting for employers should have a minimum group size (for example 20)
-   so no individual can be picked out.
-
-   **What exists now, so the decision is smaller than it was:** programme codes are built and the
-   organisation is told nothing. What stays unbuilt until you decide is only the two things that make
-   data visible: (i) a **clinician share link**, which I would build as a read-only snapshot the
-   patient creates, with an unguessable address, an expiry (for example seven days) and a revoke button,
-   stored apart from the account and never containing free text such as plans; and (ii) an
-   **aggregate programme report**, which I would build as a count of people who chose to take part and
-   nothing else, shown only above a group size of 20, joined by an explicit opt-in sentence at the moment
-   of joining and disclosed in the privacy policy. Neither would carry a name, an email or a log. Saying
-   "yes, amend rule 4 to 'unless the person explicitly shares it, revocably, with an expiry'" is enough
-   for me to build both.
+1. ~~**Consented sharing.**~~ **Decided 13 Nov 2026:** the owner said to amend the privacy statement for any
+   feature that is really worth it. Rule 4 now allows exactly two things a person may choose, both
+   built: the summary link and the optional anonymous monthly headcount (group size 20, rounded to 5).
+   Both are in the policy (`privacy.s12*`, `s13*`) and in CLAUDE.md. Considered and refused, even with
+   consent: individual-level data to an employer, college, insurer or government body, and a clinic
+   dashboard of patients (section 6).
 2. ~~**A business contact address.**~~ **Decided 12 Nov 2026:** the address in `lib/contact.ts`
    is public, and the policy says it is for questions, not emergencies. Open follow-up: because
    nothing is deleted automatically, a deletion request must be answered by a person. Pick a
@@ -111,9 +110,12 @@ In rough order of benefit for risk:
    someone to look in the Firebase console.
 2. A local script that prints survey totals and anonymous app totals (sign-ups, check-ins)
    from the Admin SDK, so the pitch quotes real numbers. The survey is already collecting.
-3. Consented clinician share link, if decision 1(b).
-4. An aggregate-only programme report (counts of people who opted in, group size of at least 20),
-   if decision 1(b). Programme codes themselves are built.
+3. ~~Consented clinician share link.~~ **Built (13 Nov 2026).** First live use: the owner makes one on
+   their own account and stops it (`docs/deploy-checklist.md` section 6). Optional: a Firestore TTL policy
+   on `shares.expiresAt` so an expired copy is removed even if nobody asks for it.
+4. ~~An aggregate-only programme report.~~ **Built (13 Nov 2026)** as the optional monthly headcount.
+   Next for it: give a first real organisation a report key; and decide whether a clinic that has a
+   programme code should be told "n of your patients' devices used it", which it probably should not.
 5. Partner attribution (`?ref=`) to count which organisation a sign-up came from.
 6. Plans for a dated event (a wedding, a festival).
 7. An installable-app prompt.
@@ -133,6 +135,17 @@ In rough order of benefit for risk:
 ## 6. Considered and left out
 
 - **A paid tier for individuals:** the owner decided against it.
+- **Any individual-level data to an employer, college, insurer, TPA or government body, even with the
+  person's consent:** a person's "yes" to their own employer or insurer is not freely given, and a
+  leaked or subpoenaed list would cost them their job or cover. The headcount gives them a number;
+  nothing gives them a person. (13 Nov 2026, with the amended rule 4.)
+- **A clinic dashboard of its patients' progress:** it would be the same thing one step removed.
+  The patient sends their clinician a summary link; the clinician does not watch them.
+- **Outcome figures (average reduction in drinking, and so on) for funders:** needs per-person data to
+  leave the account, small cohorts can identify people, and self-reported logs are weak evidence. If a
+  funder needs outcomes, design it with them, with a privacy review and group-size rules, not before.
+- **A live headcount, a "who joined" list, or a count shown below 20:** each lets one person be picked
+  out (a count that ticks from 20 to 21 the day after a colleague was seen scanning the poster).
 - **Deleting enquiries automatically after a fixed time (a Firestore TTL policy):** the owner
   decided against it on 12 Nov 2026. Do not add a `deleteAt` field without changing the
   privacy text, which now says data is kept until the person asks for deletion.

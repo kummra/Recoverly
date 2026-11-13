@@ -5,13 +5,17 @@ import {
   PENDING_CODE_KEY,
   clearPendingCode,
   clearProgramme,
+  loadMembership,
   loadPendingCode,
   loadProgramme,
   lookupProgramme,
+  markCountedMonth,
+  parseStoredMembership,
   parseStoredProgramme,
   programmeStorageKey,
   saveProgramme,
-  savePendingCode
+  savePendingCode,
+  setCounted
 } from "@/lib/programme-membership";
 
 const PROGRAMME: Programme = {
@@ -148,5 +152,86 @@ describe("lookupProgramme", () => {
     const dirty = { ...PROGRAMME, contacts: [{ label: "Line", url: "javascript:alert(1)", phone: "112" }], extra: "x" };
     const result = await lookupProgramme("ACMELOGI26", { fetchImpl: respond(200, { programme: dirty }) });
     expect(result.ok && result.programme.contacts).toEqual([{ label: "Line", phone: "112" }]);
+  });
+});
+
+
+describe("the choice to be counted in an organisation's monthly total", () => {
+  const OFFERS: Programme = { ...PROGRAMME, headcount: true };
+
+  beforeEach(() => {
+    vi.stubGlobal("window", { localStorage: fakeStorage() });
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("is off unless the person turns it on, however they join", () => {
+    saveProgramme("u1", OFFERS);
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, countedMonth: null });
+    saveProgramme("u2", OFFERS, { counted: false });
+    expect(loadMembership("u2")?.counted).toBe(false);
+  });
+
+  it("is only ever on for a programme that offers it", () => {
+    saveProgramme("u1", PROGRAMME, { counted: true });
+    expect(loadMembership("u1")?.counted).toBe(false);
+    const stored = JSON.stringify({ programme: PROGRAMME, counted: true });
+    expect(parseStoredMembership(stored)?.counted).toBe(false);
+  });
+
+  it("is kept when the programme's details are refreshed from the server, but not carried to a different programme", () => {
+    saveProgramme("u1", OFFERS, { counted: true });
+    markCountedMonth("u1", "2026-11");
+    saveProgramme("u1", { ...OFFERS, name: "Acme Logistics Ltd" });
+    expect(loadMembership("u1")).toMatchObject({ counted: true, countedMonth: "2026-11" });
+    saveProgramme("u1", { ...OFFERS, code: "OTHERORG26" });
+    expect(loadMembership("u1")).toMatchObject({ counted: false, countedMonth: null });
+  });
+
+  it("can be turned on and off, and turning it on starts afresh", () => {
+    saveProgramme("u1", OFFERS);
+    expect(setCounted("u1", true)).toBe(true);
+    expect(loadMembership("u1")?.counted).toBe(true);
+    markCountedMonth("u1", "2026-11");
+    expect(loadMembership("u1")?.countedMonth).toBe("2026-11");
+    expect(setCounted("u1", false)).toBe(true);
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, countedMonth: null });
+    setCounted("u1", true);
+    expect(loadMembership("u1")?.countedMonth).toBeNull();
+  });
+
+  it("has nothing to turn on when there is no programme, or the browser refuses", () => {
+    expect(setCounted("nobody", true)).toBe(false);
+    saveProgramme("u1", OFFERS);
+    vi.stubGlobal("window", { localStorage: fakeStorage({ refuseWrites: true }) });
+    expect(setCounted("u1", true)).toBe(false);
+    expect(markCountedMonth("u1", "2026-11")).toBe(false);
+  });
+
+  it("only remembers a month for someone who is counted", () => {
+    saveProgramme("u1", OFFERS);
+    expect(markCountedMonth("u1", "2026-11")).toBe(false);
+    expect(loadMembership("u1")?.countedMonth).toBeNull();
+  });
+
+  it("does not trust a hand-edited stored value", () => {
+    const edited = (extra: object) => JSON.stringify({ programme: OFFERS, ...extra });
+    expect(parseStoredMembership(edited({ counted: "yes" }))?.counted).toBe(false);
+    expect(parseStoredMembership(edited({ counted: true, countedMonth: "soon" }))?.countedMonth).toBeNull();
+    expect(parseStoredMembership(edited({ counted: true, countedMonth: "2026-11" }))).toMatchObject({ counted: true, countedMonth: "2026-11" });
+    expect(parseStoredMembership(edited({ counted: false, countedMonth: "2026-11" }))?.countedMonth).toBeNull();
+  });
+
+  it("is removed with the programme", () => {
+    saveProgramme("u1", OFFERS, { counted: true });
+    clearProgramme("u1");
+    expect(loadMembership("u1")).toBeNull();
+  });
+
+  it("stores the choice on this device only, as plain flags beside the programme", () => {
+    saveProgramme("u1", OFFERS, { counted: true });
+    const raw = (window.localStorage as unknown as ReturnType<typeof fakeStorage>).data.get("recoverly:programme:u1") as string;
+    expect(Object.keys(JSON.parse(raw)).sort()).toEqual(["counted", "programme"]);
   });
 });

@@ -38,12 +38,12 @@ const AUDIENCES = [
   {
     icon: Stethoscope,
     title: "Clinics, hospitals and de-addiction centres",
-    body: "Help patients stay on track between visits. With a patient's consent, a progress summary could reach their care team. We would design a follow-up workspace with you."
+    body: "Help patients stay on track between visits. A patient can already send you a read-only summary of their own progress by link, if they choose to, and can stop it at any time. We would design a follow-up workspace around that with you."
   },
   {
     icon: Briefcase,
     title: "Employers and fleets",
-    body: "An anonymous support benefit for staff and drivers, with awareness sessions for HR and managers. You would see anonymous totals only, never individuals."
+    body: "An anonymous support benefit for staff and drivers, with awareness sessions for HR and managers. You would see one anonymous monthly total only (shown once at least 20 people are counted), never individuals."
   },
   {
     icon: GraduationCap,
@@ -53,7 +53,7 @@ const AUDIENCES = [
   {
     icon: ShieldCheck,
     title: "Insurers and TPAs",
-    body: "Engagement and outcomes for members who choose to take part, measured with their consent."
+    body: "Anonymous engagement totals for members who choose to be counted. We would not give an insurer any individual member's information, with or without consent."
   },
   {
     icon: Landmark,
@@ -65,7 +65,7 @@ const AUDIENCES = [
 const PROMISES = [
   "Free for individuals, always. The core app, the safety guidance and the support never sit behind a payment.",
   "No advertising and no selling of personal data.",
-  "You never see an individual's information unless that person chooses to share it.",
+  "An employer, college or insurer never sees an individual's information. A person can choose to share a summary with their own doctor or someone they trust, and that is theirs to decide.",
   "Recoverly gives support and information, not medical advice. Helplines are always one tap away.",
   "Our guides are checked against WHO, NHS and Government of India sources. A clinician has not yet reviewed them, and we are looking for clinical advisers to do so."
 ];
@@ -132,7 +132,11 @@ export default function PartnersPage() {
           <Link href="/join/SAMPLE" className={LINK}>
             programme code
           </Link>{" "}
-          puts your name and support contacts on your people&rsquo;s dashboard. Your organisation cannot see who joins or what anyone logs.
+          puts your name and support contacts on your people&rsquo;s dashboard. Your organisation cannot see who joins or what anyone logs. If you ask for it, you can also receive one anonymous number a month, from people who choose to be counted: see an{" "}
+          <Link href="/partners/report/example" className={LINK}>
+            example report
+          </Link>
+          .
         </p>
       </section>
 

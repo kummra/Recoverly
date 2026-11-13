@@ -31,8 +31,9 @@ const LINK =
 const EMBED_SNIPPET = `<iframe src="https://recoverly.co.in/embed/help?lang=en" title="Helplines for alcohol and mental health" width="100%" height="440" style="border:0;max-width:30rem" loading="lazy"></iframe>`;
 
 const PROMISES = [
-  "Your organisation cannot see who joins your programme, how many join, or anything anyone logs. People use a support tool that their employer or college cannot watch.",
-  "Joining adds your name, a welcome in your words and the support contacts you choose to the person’s own screen, on their own device. Nothing about them is sent back.",
+  "Your organisation cannot see who joins your programme, or anything anyone logs. People use a support tool that their employer or college cannot watch.",
+  "If you ask for it, your organisation can also receive one anonymous number a month: how many people used Recoverly, out of those who chose to be counted. Each person ticks a box that stays off until they choose, and can untick it at any time. A figure is shown only when at least 20 people are counted, rounded to the nearest 5, and it is a number, never a list: we keep no names and cannot tell you who.",
+  "Joining adds your name, a welcome in your words and the support contacts you choose to the person’s own screen, on their own device. Joining itself sends nothing about them back.",
   "Free for individuals, always. No advertising, no selling of data.",
   "Help is never behind a code: Tele-MANAS and emergency numbers are shown to everyone, and your contacts never replace them."
 ];
@@ -90,8 +91,12 @@ export default function ToolkitPage() {
           <a href={`mailto:${CONTACT_EMAIL}`} className={LINK}>
             {CONTACT_EMAIL}
           </a>{" "}
-          or use the <Link href="/partners#enquire" className={LINK}>enquiry form</Link>. If you need numbers for a pilot, we would agree with your people, first, exactly which anonymous
-          count they are comfortable with. Nothing is counted today.
+          or use the <Link href="/partners#enquire" className={LINK}>enquiry form</Link>. Say if you want the monthly headcount: it is off unless you ask, and nothing is counted for a
+          programme without it. See an{" "}
+          <Link href="/partners/report/example" className={LINK}>
+            example of the monthly report
+          </Link>{" "}
+          (with invented figures). We never give an organisation anything about an individual, with or without their consent.
         </p>
       </section>
 
@@ -201,9 +206,10 @@ export default function ToolkitPage() {
         </h2>
         <p className="max-w-3xl leading-relaxed text-body">
           A patient can print a one-page summary of what they have logged (consumption, streaks, cravings, patterns, their own words and their AUDIT score) from the app&rsquo;s
-          report page and bring it to an appointment: it is theirs to share. Pocket cards with your programme code are a simple way to hand the app to a patient between visits. We
-          have not built a way for a clinic to see a patient&rsquo;s progress directly: that needs a patient&rsquo;s explicit, revocable consent and we would design it with a clinic
-          first.
+          report page and bring it to an appointment. They can also make a link to a read-only copy and send it to you before a visit. It holds only what they tick, never their
+          email or account, and it is encrypted on their own device, so Recoverly cannot read it either; it stops working after 1, 7 or 30 days, or sooner if they stop it. It is
+          theirs to share. Pocket cards with your programme code are a simple way to hand the app to a patient between visits. We have not built a way for a clinic to see a
+          patient&rsquo;s progress without the patient sending it: we would design anything more with a clinic first.
         </p>
       </section>
     </div>

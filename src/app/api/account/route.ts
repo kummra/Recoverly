@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminAuth, adminDb, isAdminConfigured } from "@/lib/firebase-admin";
 import { deleteAllUserData } from "@/lib/oracle-storage";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
+import { firestoreShareStore } from "@/lib/share-firestore";
+import { stopAllShares } from "@/lib/share-service";
 
 export const runtime = "nodejs";
 
@@ -28,6 +30,11 @@ async function getUserIdFromRequest(request: NextRequest): Promise<string | null
  * Auth user is removed so the identity is gone too. The privacy text promises
  * this for anything stored under a person's document, so keep new per-person
  * data there and it is covered without a change here.
+ *
+ * The one thing that is NOT under the person's document is a summary link they
+ * made (`shares`, see `lib/share.ts`): it is stored by itself so that anyone with
+ * the link can open it without an account. It is removed here, explicitly, so
+ * that "delete everything" ends every link too (`privacy.s13*` promises this).
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -49,6 +56,7 @@ export async function DELETE(request: NextRequest) {
     // Delete all Firestore data under this user, plus the Oracle Cloud mirror,
     // then the auth account itself — so "delete everything" holds in BOTH stores.
     await adminDb.recursiveDelete(adminDb.collection("users").doc(uid));
+    await stopAllShares(firestoreShareStore(adminDb), uid);
     await deleteAllUserData(uid);
     await adminAuth.deleteUser(uid);
 

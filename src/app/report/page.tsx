@@ -7,6 +7,7 @@ import { Printer } from "lucide-react";
 import { PlanItem } from "@/components/plan-list";
 import { ProtectedRoute } from "@/components/protected-route";
 import { useT } from "@/components/i18n-provider";
+import { ShareSummary } from "@/components/share-summary";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -26,6 +27,7 @@ import {
   getUserProfile
 } from "@/lib/firestore";
 import { type Plan, loadPlans } from "@/lib/plans";
+import type { ShareFacts } from "@/lib/share";
 
 /** What someone may write for their appointment. A page of notes is not a summary. */
 const MAX_NOTES = 1000;
@@ -102,6 +104,36 @@ function ReportContent() {
   const triggers = useMemo(() => buildTriggerInsights(records), [records]);
   const latestAudit = audits.length ? audits[audits.length - 1] : null;
 
+  // What the "Share a summary" card may put in a link, as plain values. It takes only what
+  // the person ticks, and never the account (no email, no display name): see lib/share.ts.
+  const facts = useMemo<ShareFacts>(
+    () => ({
+      recordsSince: records.length ? records[0].createdAt : null,
+      totalLogged: records.length,
+      monthMl: summary.currentMonthTotal,
+      previousMonthMl: summary.previousMonthTotal,
+      dailyAverageMl: summary.dailyAverage,
+      currentStreakDays: progress.currentStreakDays,
+      longestStreakDays: progress.longestStreakDays,
+      freeDaysThisMonth: progress.alcoholFreeDaysThisMonth,
+      daysThisMonth: progress.daysElapsedThisMonth,
+      weeklyGoalMl: profile?.goalWeeklyMl ? profile.goalWeeklyMl : null,
+      audit: latestAudit ? { score: latestAudit.score, date: latestAudit.createdAt, assessments: audits.length } : null,
+      cravings: cravings.length
+        ? {
+            total: cravings.length,
+            passed: cravings.filter((c) => c.outcome === "passed").length,
+            avgIntensity: cravings.reduce((sum, c) => sum + c.intensity, 0) / cravings.length
+          }
+        : null,
+      patterns: triggers.map((insight) => ({ labelKey: insight.labelKey, mood: insight.mood, share: insight.share })),
+      motivation: profile?.motivation?.trim() ? profile.motivation.trim() : null,
+      note: notes,
+      plans: plans.map((plan) => ({ when: plan.when, then: plan.then }))
+    }),
+    [records, summary, progress, profile, latestAudit, audits.length, cravings, triggers, notes, plans]
+  );
+
   if (loading) return <p className="text-sm text-muted-foreground">{t("report.preparing")}</p>;
 
   const rows: Array<[string, string]> = [
@@ -161,6 +193,8 @@ function ReportContent() {
           </label>
         )}
       </section>
+
+      <ShareSummary facts={facts} />
 
       <article className="space-y-6 rounded-2xl border border-border bg-card p-6 print:border-0 print:p-0">
         <header className="border-b border-border pb-4">

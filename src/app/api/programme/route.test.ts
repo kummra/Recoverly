@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
 
 import { GET } from "@/app/api/programme/route";
-import { PROGRAMMES } from "@/lib/programme-register";
+import { PROGRAMMES, publicProgramme } from "@/lib/programme-register";
 import { LIMITS } from "@/lib/rate-limit";
 
 let counter = 0;
@@ -15,7 +15,11 @@ describe("GET /api/programme", () => {
   it("answers a known code with the programme, and only that one", async () => {
     const response = await get("?code=SAMPLE");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ programme: PROGRAMMES.find((p) => p.code === "SAMPLE") });
+    const body = await response.json();
+    expect(body).toEqual({ programme: publicProgramme(PROGRAMMES.find((p) => p.code === "SAMPLE")!) });
+    // A browser may learn that the headcount choice is on offer, and nothing about how a report is read.
+    expect(body.programme.headcount).toBe(true);
+    expect(JSON.stringify(body)).not.toMatch(/report|keyHash/i);
   });
 
   it("accepts the code however it was typed", async () => {

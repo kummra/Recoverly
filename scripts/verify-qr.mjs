@@ -34,12 +34,16 @@ const cases = [
   "y".repeat(110),
   "Recoverly ".repeat(15) + "end",
   "z".repeat(150),
-  "w".repeat(213)
+  "w".repeat(213),
+  // A summary link (src/lib/share.ts): an address, then the key after a #, in URL-safe base64.
+  // The longest real ones are about 95 characters, so these cover what a person will actually show a clinician.
+  "https://recoverly.co.in/share/mmygF3QggXRA_nMiyBcv5w#yPFBvBXqDbZWvZkI8qFiIg5KqlT6ycFEBNEwT9qj5Dk",
+  "https://recoverly.co.in/share/-_-_-_-_-_-_-_-_-_-_-_#-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_"
 ];
 
 const jobs = [];
 for (const text of cases) jobs.push({ text, mask: undefined });
-for (const text of [`${BASE}SAMPLE`, "w".repeat(150), "A"]) for (let mask = 0; mask < 8; mask++) jobs.push({ text, mask });
+for (const text of [`${BASE}SAMPLE`, "w".repeat(150), "A", "https://recoverly.co.in/share/mmygF3QggXRA_nMiyBcv5w#yPFBvBXqDbZWvZkI8qFiIg5KqlT6ycFEBNEwT9qj5Dk"]) for (let mask = 0; mask < 8; mask++) jobs.push({ text, mask });
 
 const files = [];
 jobs.forEach((job, i) => {

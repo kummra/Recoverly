@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import { Building2, ExternalLink, Mail, Phone } from "lucide-react";
 
+import { HeadcountChoice, useProgrammePrivacy } from "@/components/headcount-choice";
 import { useI18n } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
 import { useProgramme } from "@/hooks/use-programme";
 import { type Programme, isSample, welcomeFor } from "@/lib/programme";
+import { tickIfDue } from "@/lib/programme-headcount";
 import {
   clearPendingCode,
   loadPendingCode,
@@ -80,7 +83,9 @@ export function ProgrammeContacts({ programme }: { programme: Programme }) {
  */
 export function ProgrammeCard({ userId }: { userId: string }) {
   const { t, locale } = useI18n();
-  const [programme, setProgramme] = useProgramme(userId);
+  const { getIdToken } = useAuth();
+  const privacy = useProgrammePrivacy();
+  const [programme, setProgramme, counted] = useProgramme(userId);
   const [gone, setGone] = useState(false);
 
   const code = programme?.code;
@@ -103,6 +108,14 @@ export function ProgrammeCard({ userId }: { userId: string }) {
     return () => controller.abort();
   }, [code, userId, setProgramme]);
 
+  // The monthly tick, only for someone who ticked "count me" for a programme that offers it.
+  // It sends the code and nothing else, at most once a month (lib/programme-headcount.ts).
+  const offersHeadcount = programme?.headcount === true;
+  useEffect(() => {
+    if (!offersHeadcount || !counted || gone) return;
+    void tickIfDue(userId, getIdToken);
+  }, [offersHeadcount, counted, gone, userId, getIdToken]);
+
   if (!programme) return null;
 
   return (
@@ -122,7 +135,7 @@ export function ProgrammeCard({ userId }: { userId: string }) {
             <p className="text-sm leading-relaxed text-body">{welcomeFor(programme, locale)}</p>
             {isSample(programme) && <p className="text-xs leading-relaxed text-subtle">{t("programme.sample")}</p>}
             <ProgrammeContacts programme={programme} />
-            <p className="text-xs leading-relaxed text-subtle">{t("programme.private", { name: programme.name })}</p>
+            <p className="text-xs leading-relaxed text-subtle">{privacy(programme)}</p>
           </>
         )}
       </CardContent>
@@ -137,8 +150,10 @@ export function ProgrammeCard({ userId }: { userId: string }) {
  */
 export function ProgrammePrompt({ userId }: { userId: string }) {
   const { t } = useI18n();
+  const privacy = useProgrammePrivacy();
   const [pending, setPending] = useState<Programme | null>(null);
   const [failed, setFailed] = useState(false);
+  const [counted, setCounted] = useState(false);
 
   useEffect(() => {
     const code = loadPendingCode();
@@ -160,7 +175,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   if (!pending) return null;
 
   const join = () => {
-    if (saveProgramme(userId, pending)) {
+    if (saveProgramme(userId, pending, { counted })) {
       clearPendingCode();
       setPending(null);
     } else {
@@ -181,7 +196,8 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-sm leading-relaxed text-body">{t("programme.private", { name: pending.name })}</p>
+        <p className="text-sm leading-relaxed text-body">{privacy(pending)}</p>
+        <HeadcountChoice programme={pending} checked={counted} onChange={setCounted} />
         {failed && (
           <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">
             {t("programme.errStore")}

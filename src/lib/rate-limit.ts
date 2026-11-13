@@ -84,5 +84,17 @@ export const LIMITS = {
   programmeAll: { limit: 6000, windowMs: 60 * 60_000 },
   // The public helplines feed and the embeddable card: small, cacheable, no personal data.
   // Per address, and generous, because a partner's office or app can share one.
-  helplines: { limit: 600, windowMs: 60 * 60_000 }
+  helplines: { limit: 600, windowMs: 60 * 60_000 },
+  // Summary links. Making one is rare; the list is read when the page opens.
+  shareCreate: { limit: 10, windowMs: 60 * 60_000 },
+  shareManage: { limit: 120, windowMs: 60 * 60_000 },
+  // Opening one. A clinic's front desk may share an address, so this is generous;
+  // guessing is pointless (the address is 128 random bits and the key is not here).
+  shareRead: { limit: 120, windowMs: 60 * 60_000 },
+  shareReadAll: { limit: 6000, windowMs: 60 * 60_000 },
+  // The once-a-month "I used it" tick for an organisation's anonymous total. A
+  // device sends one a month, so a dozen an hour per person is already generous.
+  programmeCount: { limit: 12, windowMs: 60 * 60_000 },
+  // An organisation's private report page.
+  reportView: { limit: 60, windowMs: 60 * 60_000 }
 } as const;

@@ -12,7 +12,7 @@ import {
   validateProgramme,
   welcomeFor
 } from "@/lib/programme";
-import { PROGRAMMES, findProgramme } from "@/lib/programme-register";
+import { PROGRAMMES, findProgramme, publicProgramme } from "@/lib/programme-register";
 
 const GOOD: Programme = {
   code: "ACMELOGI26",
@@ -189,7 +189,10 @@ describe("the register", () => {
   });
 
   it("survives sanitising unchanged, so what is shown is what was written", () => {
-    for (const programme of PROGRAMMES) expect(sanitiseProgramme(JSON.parse(JSON.stringify(programme))), programme.code).toEqual(programme);
+    for (const entry of PROGRAMMES) {
+      const shown = publicProgramme(entry);
+      expect(sanitiseProgramme(JSON.parse(JSON.stringify(shown))), entry.code).toEqual(shown);
+    }
   });
 
   it("has exactly one sample, and it is the only one that says so", () => {
@@ -221,7 +224,14 @@ describe("the register stays on the server", () => {
       }
     };
     walk(join(process.cwd(), "src"));
-    // The route and one server-rendered page (which drops a code that is not in the register).
-    expect(importers.sort()).toEqual(["src/app/api/programme/route.ts", "src/app/partners/toolkit/poster/page.tsx"]);
+    // The lookup route, the monthly-tick route (which only counts a programme that offers it), the organisation's
+    // report page (which finds an organisation by its private key) and the poster page (which drops a code that
+    // is not in the register).
+    expect(importers.sort()).toEqual([
+      "src/app/api/programme/count/route.ts",
+      "src/app/api/programme/route.ts",
+      "src/app/partners/report/[token]/page.tsx",
+      "src/app/partners/toolkit/poster/page.tsx"
+    ]);
   });
 });

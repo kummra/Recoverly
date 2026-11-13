@@ -5,7 +5,7 @@
 
 /** The only handle on an anonymous caller. Used in memory for the rate limit
  *  and never stored or logged. */
-export function callerKey(request: Request): string {
+export function callerKey(request: { headers: { get(name: string): string | null } }): string {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   return forwarded || request.headers.get("x-real-ip") || "unknown";
 }

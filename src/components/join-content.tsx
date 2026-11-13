@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Building2, Check } from "lucide-react";
 
+import { HeadcountChoice, useProgrammePrivacy } from "@/components/headcount-choice";
 import { hasSavedLocale, useI18n } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,12 +37,14 @@ function readCode(raw: string): string | null {
 export function JoinContent({ rawCode }: { rawCode: string }) {
   const { t, locale, setLocale } = useI18n();
   const { user, loading: authLoading } = useAuth();
+  const privacy = useProgrammePrivacy();
   const code = readCode(rawCode);
 
   const [state, setState] = useState<State>({ status: "loading" });
   const [joinedNow, setJoinedNow] = useState(false);
   const [alreadyIn, setAlreadyIn] = useState(false);
   const [storeFailed, setStoreFailed] = useState(false);
+  const [counted, setCounted] = useState(false);
 
   const load = useCallback(() => {
     if (!code) {
@@ -113,7 +116,7 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
 
   const join = () => {
     if (!user) return;
-    if (saveProgramme(user.uid, programme)) {
+    if (saveProgramme(user.uid, programme, { counted })) {
       setJoinedNow(true);
       setStoreFailed(false);
     } else {
@@ -142,7 +145,7 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
           <p className="text-sm leading-relaxed text-body">{welcomeFor(programme, locale)}</p>
           {sample && <p className="text-xs leading-relaxed text-subtle">{t("programme.sample")}</p>}
           <p className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5 text-sm leading-relaxed text-body">
-            {t("programme.private", { name: programme.name })}
+            {privacy(programme)}
           </p>
 
           {authLoading ? null : user ? (
@@ -158,6 +161,7 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
               </div>
             ) : (
               <div className="space-y-3">
+                <HeadcountChoice programme={programme} checked={counted} onChange={setCounted} />
                 {storeFailed && (
                   <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">
                     {t("programme.errStore")}

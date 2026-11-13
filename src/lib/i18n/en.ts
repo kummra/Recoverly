@@ -372,7 +372,7 @@ export const en: Dictionary = {
     "If you drink heavily or every day, stopping suddenly can be medically dangerous — withdrawal can cause seizures or delirium tremens. Please see a doctor before you quit and only reduce or stop under medical supervision. Recoverly will never push you to quit cold turkey.",
   "faq.q3": "Is my data private?",
   "faq.a3":
-    "Yes. Your records, goals, and chats are tied to your own account and are not visible to anyone else. Data is encrypted in transit and at rest, and we never sell or share your personal information. You can permanently delete everything from Settings → Delete account at any time.",
+    "Yes. Your records, goals, and chats are tied to your own account and are not visible to anyone else, unless you choose to share a summary or to be counted in an organisation's anonymous total (both are optional and off until you turn them on). Data is encrypted in transit and at rest, and we never sell or share your personal information. You can permanently delete everything from Settings → Delete account at any time.",
   "faq.q4": "How does the AI coach work?",
   "faq.a4":
     "When you chat, your message is sent through a secure server to an AI model that replies with non-judgmental support. It is designed to avoid medical advice and to point you to real help when needed. It is a companion for motivation and reflection — not a clinician.",
@@ -427,7 +427,7 @@ export const en: Dictionary = {
   "privacy.title": "Privacy Policy",
   "privacy.s1Title": "What we collect",
   "privacy.s1Body":
-    "We only collect data needed to provide recovery tracking and guidance features: your email, drink records, weekly goals, and AI chat history.",
+    "We only collect data needed to provide recovery tracking and guidance features: your email, drink records, weekly goals, and AI chat history. If you choose to share a summary or to be counted in an organisation's anonymous total, what that involves is described in the sections below.",
   "privacy.s2Title": "Where data is stored",
   "privacy.s2Body":
     "Your account data is stored in Firebase and scoped to your authenticated identity. Records are encrypted in transit and at rest.",
@@ -460,7 +460,10 @@ export const en: Dictionary = {
     "If you tell us in Settings what would help you, we keep what you choose and write, with your account, to decide what to build. It is deleted if you delete your account, and it is not part of your data export. We never use it for advertising.",
   "privacy.s12Title": "Programme codes",
   "privacy.s12Body":
-    "If you enter a programme code from an employer, college, clinic or other organisation, our server checks the code and sends back the organisation's name, its welcome message and its support contacts. These are then kept only in this browser, never on our servers, and are not part of your data export. The organisation is not told that you joined, and cannot see anything you log. Leaving the programme in Settings, or deleting your account on this device, removes them from this browser. Logging out does not, so leave the programme before lending your phone.",
+    "If you enter a programme code from an employer, college, clinic or other organisation, our server checks the code and sends back the organisation's name, its welcome message and its support contacts. These are then kept only in this browser, never on our servers, and are not part of your data export. The organisation is not told that you joined, and cannot see anything you log. Some organisations also receive an anonymous monthly total of how many people used Recoverly. This happens only if the programme offers it and you tick the box to be counted, and you can untick it at any time in Settings. If you are counted, then once a month, when you open Recoverly, your device sends the programme's code, signed in only so the count cannot be faked, and we add one to that programme's total for the month without keeping who sent it. We store no name, no account and no list of who was counted, and nothing you log is sent. The organisation sees the total only when at least 20 people are counted, rounded to the nearest 5, and never who they were. Counts already added cannot be taken back, but they identify nobody. Leaving the programme in Settings, or deleting your account on this device, removes the programme from this browser. Logging out does not, so leave the programme before lending your phone.",
+  "privacy.s13Title": "Sharing a summary",
+  "privacy.s13Body":
+    "On the clinician summary page you can choose to make a link to a read-only copy of that summary, for a doctor, counsellor or someone who supports you. Nothing is included unless you tick it, and your email address and account details are never part of it. The summary is scrambled (encrypted) on your device before it is sent to us, and the key to unscramble it is only in the link, which we never receive. We store only the scrambled copy and cannot read it. Anyone who has the whole link can read the summary until it stops working: after the 1, 7 or 30 days you choose, or sooner if you stop sharing on that page, which deletes our copy straight away. Deleting your account deletes the stored copy of every link you made. You can have up to 5 links at a time. Please send a link only to the person you mean. The email or messaging service you use carries the link, and anyone who has already opened, saved or printed the summary keeps what they saw.",
   "privacy.lastUpdated": "Last updated: November 2026",
   "privacy.s8Title": "Enquiries from organisations",
   "privacy.s8Body":
@@ -470,7 +473,7 @@ export const en: Dictionary = {
     "For a privacy question, to ask us to delete or correct something you sent us, or for a business enquiry, write to {email}. This address is for questions, not emergencies. If you need help right now, please see the Support & helplines page.",
   "privacy.s5Title": "Third parties",
   "privacy.s5Body":
-    "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated.",
+    "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated. The only ways information about you reaches anyone else are ones you start yourself: sending a summary link to someone you trust, or choosing to be counted in an organisation's anonymous total. Both are described below.",
   "terms.title": "Terms of Use",
   "terms.s1Title": "Purpose",
   "terms.s1Body":
@@ -538,7 +541,7 @@ export const en: Dictionary = {
   // AUDIT questionnaire
   "audit.pageTitle": "Alcohol self-check (AUDIT)",
   "audit.pageIntro":
-    "Ten questions from the World Health Organization's screening tool. Answering honestly is the only way it tells you anything useful — nobody else sees this.",
+    "Ten questions from the World Health Organization's screening tool. Answering honestly is the only way it tells you anything useful — nobody else sees your answers.",
   "audit.notDiagnosisLead": "This is a screening questionnaire, not a diagnosis.",
   "audit.translationNote":
     "The questions are translated for readability. Scoring follows the WHO's English original, so please go through your result with a doctor.",
@@ -645,6 +648,51 @@ export const en: Dictionary = {
   "report.notesLabel": "What I want to tell or ask",
   "report.includePlans": "Include my plans for hard moments",
   "report.plansHeading": "My plans for hard moments (written by me)",
+
+  // Summary links: the creator on the report page, and the page a recipient sees
+  "share.title": "Share a summary",
+  "share.intro":
+    "Make a link to a read-only copy of this summary, for a doctor, counsellor or someone who supports you. You choose what goes in. It is scrambled (encrypted) on your device before it is stored, so Recoverly cannot read it. Only people who have the whole link can.",
+  "share.presetClinician": "For a clinician or counsellor",
+  "share.presetSupporter": "For someone who supports me",
+  "share.includeLabel": "What to include",
+  "share.nameLabel": "Name to show (optional)",
+  "share.nameHint": "Whatever you type here. Your email and account details are never included.",
+  "share.expiryLabel": "How long the link works",
+  "share.expiry1": "1 day",
+  "share.expiry7": "7 days",
+  "share.expiry30": "30 days",
+  "share.create": "Create link",
+  "share.pick": "Choose at least one thing to include.",
+  "share.ready": "Your link is ready",
+  "share.readyBody":
+    "Anyone who has this whole link can read this summary until {date}, or until you stop sharing. We cannot show the link again, so copy it now.",
+  "share.copy": "Copy link",
+  "share.copyFailed": "Could not copy. Select the link and copy it yourself.",
+  "share.qrLabel": "QR code for the link",
+  "share.qrHint": "Or let them scan this with their phone.",
+  "share.wholeLink":
+    "Send the whole link, including the part after #. That part is the key. Without it the summary cannot be opened.",
+  "share.active": "Your links",
+  "share.activeLine": "Made {created}. Stops working {expires}.",
+  "share.stop": "Stop sharing",
+  "share.stopAll": "Stop all",
+  "share.stopped": "Sharing stopped. Nobody can open the link any more.",
+  "share.limit": "You already have {max} links. Stop one to make another.",
+  "share.failed": "Could not do that just now. Please try again in a little while.",
+  "share.noCrypto":
+    "This browser cannot scramble (encrypt) the summary, so no link was made. Please use an up-to-date browser.",
+  "shareView.title": "A summary shared with you",
+  "shareView.by": "Shared by {name}",
+  "shareView.byAnon": "Shared by a person using Recoverly",
+  "shareView.explain":
+    "They chose to share this with you. It shows only what they chose to include, and none of their account details. They can stop sharing at any time.",
+  "shareView.loading": "Opening the summary…",
+  "shareView.gone": "This link has stopped working, or never did. Please ask the person to send a new one.",
+  "shareView.incomplete":
+    "This link looks incomplete. Please open the whole link exactly as it was sent, including the part after #.",
+  "shareView.cannot":
+    "This summary could not be opened. The link may have been changed or cut short, or this browser may be too old.",
   "report.disclaimer":
     "All figures are self-reported by the user through the Recoverly app and are not clinically verified. Recoverly is a self-management and support tool; it does not diagnose, treat or provide medical advice. This summary is intended to support — not replace — clinical assessment.",
 
@@ -713,7 +761,8 @@ export const en: Dictionary = {
   "login.heroBody":
     "You are making a meaningful choice by being here. This platform tracks your journey, provides honest insights, and supports you with compassionate AI guidance.",
   "login.privateTitle": "Private & secure",
-  "login.privateBody": "Your data is encrypted and only visible to you.",
+  "login.privateBody":
+    "Your data is encrypted and only visible to you, unless you choose to share a summary.",
   "login.noJudgmentTitle": "No judgment, ever",
   "login.noJudgmentBody": "Built on identity-reinforcement, not shame.",
   "login.createAccount": "Create account",
@@ -842,6 +891,12 @@ export const en: Dictionary = {
   "programme.accountNote":
     "You need a free account to join. Your code will be waiting for you after you sign in.",
   "programme.gone": "This programme is no longer available. You can remove it in Settings.",
+  "programme.privateCounted":
+    "{name} cannot see who joined, what anyone logs, or anything else about you. If you choose to be counted, they only ever see a total number of people, and only when at least 20 are counted.",
+  "programme.countLabel": "Count me in {name}'s monthly total",
+  "programme.countHelp":
+    "Once a month, when you open Recoverly, your device adds one to a number for {name}. Nothing else is sent: no name, no account, nothing you log. {name} sees the total only when at least 20 people are counted, rounded to the nearest 5. You can turn this off any time in Settings.",
+  "programme.countSample": "This is only a sample, so nothing is counted.",
   "poster.headline": "Thinking about drinking less, or stopping?",
   "poster.sub": "Recoverly is free, private and available in your language.",
   "poster.scan": "Scan to start",
