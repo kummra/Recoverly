@@ -90,7 +90,7 @@ curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/api/share/AAAA
 curl -s -o /dev/null -w "%{http_code}\n" -X POST "https://recoverly.co.in/api/share"                      # 401 (needs a signed-in person)
 curl -s -o /dev/null -w "%{http_code}\n" -X POST "https://recoverly.co.in/api/programme/count"            # 401
 curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/partners/report/example"                 # 200
-curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/partners/report/not-a-real-key-not-a-real-key"   # 404
+curl -s "https://recoverly.co.in/partners/report/not-a-real-key-not-a-real-key" | grep -c "People counted"      # 0: the site's own not-found page (its status is 200 only because pages stream; it is noindex and shows nothing)
 curl -sI "https://recoverly.co.in/share/AAAAAAAAAAAAAAAAAAAAAA" | grep -i -E "^(HTTP|x-frame-options|x-robots-tag)"      # 200, DENY
 ```
 The first real create and stop have not been run against live Firestore (the emulator needs Java 21), so
