@@ -27,6 +27,12 @@ vi.mock("@/lib/programme-count-firestore", () => ({
     },
     async read() {
       return {};
+    },
+    async addFigures(code, month) {
+      env.increments.push([`figures:${code}`, month]);
+    },
+    async readFigures() {
+      return {};
     }
   })
 }));
@@ -105,7 +111,7 @@ describe("POST /api/programme/count", () => {
     expect((await tick("null")).status).toBe(404);
     expect((await tick({})).status).toBe(404);
     expect((await tick({ code: 5 })).status).toBe(404);
-    expect((await tick({ code: "A".repeat(600) })).status).toBe(413);
+    expect((await tick({ code: "A".repeat(900) })).status).toBe(413);
     expect(env.increments).toEqual([]);
   });
 

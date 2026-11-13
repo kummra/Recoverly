@@ -13,6 +13,8 @@ const OFFERS: Programme = {
   headcount: true
 };
 const SILENT: Programme = { ...OFFERS, headcount: undefined };
+const WITH_FIGURES: Programme = { ...OFFERS, figures: true };
+const FIGURES = { month: "2026-10", freeDayPct: 72, lessThanBefore: true };
 
 function fakeStorage() {
   const data = new Map<string, string>();
@@ -139,5 +141,38 @@ describe("sendTick", () => {
     expect(await sendTick("ACMELOGI26", "t", async () => new Response("{}", { status: 429 }))).toBe(false);
     expect(await sendTick("ACMELOGI26", "t", async () => new Response("{}", { status: 401 }))).toBe(false);
     expect(await sendTick("ACMELOGI26", "t", async () => Promise.reject(new Error("offline")))).toBe(false);
+  });
+
+  describe("with progress figures", () => {
+    it("sends them with the tick, and only if the person chose to share them", async () => {
+      saveProgramme(USER, WITH_FIGURES, { counted: true, figures: true });
+      const fetchImpl = vi.fn(async () => ok());
+      const loadFigures = vi.fn(async () => FIGURES);
+      expect(await tickIfDue(USER, async () => "t", { now: NOW, fetchImpl, loadFigures })).toBe("sent");
+      expect(loadFigures).toHaveBeenCalledTimes(1);
+      const [, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
+      expect(JSON.parse(init.body as string)).toEqual({ code: "ACMELOGI26", figures: FIGURES });
+    });
+
+    it("never reads the records, or sends anything extra, when figures are not chosen", async () => {
+      saveProgramme(USER, WITH_FIGURES, { counted: true });
+      const fetchImpl = vi.fn(async () => ok());
+      const loadFigures = vi.fn(async () => FIGURES);
+      await tickIfDue(USER, async () => "t", { now: NOW, fetchImpl, loadFigures });
+      expect(loadFigures).not.toHaveBeenCalled();
+      expect(JSON.parse(((fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1].body) as string)).toEqual({ code: "ACMELOGI26" });
+    });
+
+    it("still counts the person if the figures cannot be worked out, and sends none when there is too little history", async () => {
+      saveProgramme(USER, WITH_FIGURES, { counted: true, figures: true });
+      const fetchImpl = vi.fn(async () => ok());
+      expect(await tickIfDue(USER, async () => "t", { now: NOW, fetchImpl, loadFigures: async () => Promise.reject(new Error("database down")) })).toBe("sent");
+      expect(JSON.parse(((fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1].body) as string)).toEqual({ code: "ACMELOGI26" });
+
+      saveProgramme("u-new", WITH_FIGURES, { counted: true, figures: true });
+      const second = vi.fn(async () => ok());
+      await tickIfDue("u-new", async () => "t", { now: NOW, fetchImpl: second, loadFigures: async () => null });
+      expect(JSON.parse(((second.mock.calls[0] as unknown as [string, RequestInit])[1].body) as string)).toEqual({ code: "ACMELOGI26" });
+    });
   });
 });

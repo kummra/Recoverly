@@ -7,8 +7,10 @@
  *
  * It prints two things:
  *   1. the link to send to the organisation. It is a secret: whoever has it can read
- *      that organisation's monthly figures (and nothing else). It is NOT written to any
- *      file here, so copy it now;
+ *      that organisation's monthly figures and, if it has a team workspace, list the
+ *      scrambled copies sent to it (it cannot read them: that needs the team's own private
+ *      key, which never leaves the team's browser). It is NOT written to any file here, so
+ *      copy it now;
  *   2. the line to paste into that organisation's entry in the register. It holds only a
  *      SHA-256 hash of the key, so the repository never contains a working link.
  */
@@ -25,4 +27,12 @@ Send this link to the organisation (keep it private; it is shown only now):
 Paste this line into their entry in src/lib/programme-register.ts, then push:
 
   report: { keyHash: "${keyHash}" },
+
+Optional, each only if the organisation asks and you have read CLAUDE.md "Summary links, the headcount,
+progress figures and the team workspace":
+
+  figures: true,       // anonymous progress averages, groups of 20 or more
+  workspace: {},       // a clinic or community service only: its team then makes its key on
+                       // /partners/workspace/<the same link>, and you add workspace: { publicKey: ... }
+                       // (never for a workplace or a college: the code refuses)
 `);

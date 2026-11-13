@@ -38,12 +38,12 @@ const AUDIENCES = [
   {
     icon: Stethoscope,
     title: "Clinics, hospitals and de-addiction centres",
-    body: "Help patients stay on track between visits. A patient can already send you a read-only summary of their own progress by link, if they choose to, and can stop it at any time. We would design a follow-up workspace around that with you."
+    body: "Help patients stay on track between visits. A patient can choose to share their own progress with your team, by name, in a private workspace that only your team can open (we cannot read it), and can stop at any time. It is built and you can see an example; we would set it up with your team as a pilot."
   },
   {
     icon: Briefcase,
     title: "Employers and fleets",
-    body: "An anonymous support benefit for staff and drivers, with awareness sessions for HR and managers. You would see one anonymous monthly total only (shown once at least 20 people are counted), never individuals."
+    body: "An anonymous support benefit for staff and drivers, with awareness sessions for HR and managers. You would see anonymous totals only, and averages of progress for people who choose to share them, once at least 20 people are in the group, never individuals."
   },
   {
     icon: GraduationCap,
@@ -65,7 +65,7 @@ const AUDIENCES = [
 const PROMISES = [
   "Free for individuals, always. The core app, the safety guidance and the support never sit behind a payment.",
   "No advertising and no selling of personal data.",
-  "An employer, college or insurer never sees an individual's information. A person can choose to share a summary with their own doctor or someone they trust, and that is theirs to decide.",
+  "An employer, college or insurer never sees an individual's information, even if the person agrees: a yes given to your own employer or insurer is not really free, so the software does not allow it. A person can choose to share a summary with their own doctor or someone they trust, and a clinic or community service can offer a private workspace that people choose to share into and can leave at any time.",
   "Recoverly gives support and information, not medical advice. Helplines are always one tap away.",
   "Our guides are checked against WHO, NHS and Government of India sources. A clinician has not yet reviewed them, and we are looking for clinical advisers to do so."
 ];
@@ -136,7 +136,11 @@ export default function PartnersPage() {
           <Link href="/partners/report/example" className={LINK}>
             example report
           </Link>
-          .
+          . A clinic or community service can also ask for a private{" "}
+          <Link href="/partners/workspace/example" className={LINK}>
+            team workspace
+          </Link>
+          , where people who choose to can share their own progress with you by name.
         </p>
       </section>
 

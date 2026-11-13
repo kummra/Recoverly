@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { clearPlans } from "@/lib/plans";
 import { clearPendingCode, clearProgramme } from "@/lib/programme-membership";
 import { clearPerson } from "@/lib/support-person";
+import { clearWorkspacePrefs } from "@/lib/workspace-prefs";
 import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,6 +51,7 @@ export function DeleteAccount() {
         clearPlans(user.uid);
         clearPerson(user.uid);
         clearProgramme(user.uid);
+        clearWorkspacePrefs(user.uid);
       }
       clearPendingCode();
       await signOutUser();

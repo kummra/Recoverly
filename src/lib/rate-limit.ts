@@ -96,5 +96,11 @@ export const LIMITS = {
   // device sends one a month, so a dozen an hour per person is already generous.
   programmeCount: { limit: 12, windowMs: 60 * 60_000 },
   // An organisation's private report page.
-  reportView: { limit: 60, windowMs: 60 * 60_000 }
+  reportView: { limit: 60, windowMs: 60 * 60_000 },
+  // The team workspace. A person sends a copy when they choose to and looks at the screen now
+  // and then, so these are modest per person. A team's page reads its inbox when opened and
+  // when refreshed; per address and generous because a clinic's staff share a connection.
+  workspaceSend: { limit: 30, windowMs: 60 * 60_000 },
+  workspaceManage: { limit: 120, windowMs: 60 * 60_000 },
+  workspaceInbox: { limit: 120, windowMs: 60 * 60_000 }
 } as const;

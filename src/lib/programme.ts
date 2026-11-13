@@ -8,16 +8,21 @@
  * Nothing flows back to the organisation: not who joined, not what anyone logs.
  * That is the promise `programme.private` makes in every language.
  *
- * The one exception is the optional **anonymous monthly headcount**
- * (`lib/programme-count.ts`, `programme.privateCounted`, `privacy.s12*`). It exists
- * only for a programme whose organisation has agreed to it (`headcount: true`), only
- * for a person who ticked the box (off by default) and can untick it at any time, and
- * it is a number: once a month the device adds one to a total for the programme.
- * No name, no account and no list of who was counted is ever stored, and the
- * organisation sees the total only once at least 20 people are in it. Anything
- * beyond that, such as a list, a per-person figure or a count shown below that
- * threshold, would break the promise: change CLAUDE.md, this text and the policy
- * first (firm rule 4), and never give an organisation individual-level data.
+ * Three things a person can choose to add, each off until they tick it and undone at any
+ * time (firm rule 4, `privacy.s12*` and `s14*`):
+ *   1. the anonymous **monthly headcount** (`lib/programme-count.ts`): once a month the
+ *      device adds one to a total; no name, account or list is stored; shown to the
+ *      organisation only once 20 or more people are in it;
+ *   2. anonymous **progress figures** (`lib/progress-figures.ts`): two numbers about last
+ *      month, added into averages the same way, shown only for 20 or more people;
+ *   3. a **team workspace** (`lib/workspace.ts`): sharing their own progress with the
+ *      organisation's team, by name, encrypted so only that team can read it, for as long
+ *      as the person keeps it on.
+ * The first two are numbers and cannot identify anyone; the third is individual-level data
+ * and exists only by the person's own explicit act, which they can see and undo. Nothing
+ * else about a person ever reaches an organisation. Anything beyond these (a list of who
+ * joined, a count below the group size, data given without that act) breaks the promise:
+ * change CLAUDE.md, this text and the policy first.
  *
  * This file is safe for browsers: types, cleaning and checking. The register of
  * real programmes is in `programme-register.ts` and never reaches a browser.
@@ -55,6 +60,17 @@ export type Programme = {
    * programme is ever counted and the choice is not shown.
    */
   headcount?: boolean;
+  /**
+   * The organisation also receives anonymous averages of progress figures from people who
+   * chose to share them (`lib/progress-figures.ts`). Only offered alongside the headcount.
+   */
+  figures?: boolean;
+  /**
+   * The organisation has a private team workspace where people who chose to can share their
+   * own progress with its team, by name, end-to-end encrypted (`lib/workspace.ts`). Offered
+   * only where the owner has set it up; a person is never asked unless it is on.
+   */
+  workspace?: boolean;
 };
 
 export const PROGRAMME_LIMITS = {
@@ -170,6 +186,8 @@ export function sanitiseProgramme(input: unknown): Programme | null {
   const programme: Programme = { code, name, kind, welcome: welcome as Programme["welcome"], contacts };
   if (isLocale(raw.locale)) programme.locale = raw.locale;
   if (raw.headcount === true) programme.headcount = true;
+  if (raw.figures === true && programme.headcount) programme.figures = true;
+  if (raw.workspace === true) programme.workspace = true;
   return programme;
 }
 
@@ -209,6 +227,9 @@ export function validateProgramme(programme: Programme): string[] {
 
   if (programme.locale !== undefined && !isLocale(programme.locale)) problems.push(at("locale is not one we support"));
   if (programme.headcount !== undefined && typeof programme.headcount !== "boolean") problems.push(at("headcount must be true or false"));
+  if (programme.figures !== undefined && typeof programme.figures !== "boolean") problems.push(at("figures must be true or false"));
+  if (programme.figures && !programme.headcount) problems.push(at("figures are only offered together with the headcount"));
+  if (programme.workspace !== undefined && typeof programme.workspace !== "boolean") problems.push(at("workspace must be true or false"));
 
   if (programme.contacts.length > L.contactsMax) problems.push(at(`at most ${L.contactsMax} contacts`));
   programme.contacts.forEach((contact, i) => {

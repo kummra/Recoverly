@@ -10,7 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/hooks/use-auth";
 import { useProgramme } from "@/hooks/use-programme";
 import { type Programme, isSample, welcomeFor } from "@/lib/programme";
+import { getDrinkRecords } from "@/lib/firestore";
 import { tickIfDue } from "@/lib/programme-headcount";
+import { buildProgressFigures } from "@/lib/progress-figures";
 import {
   clearPendingCode,
   loadPendingCode,
@@ -113,7 +115,8 @@ export function ProgrammeCard({ userId }: { userId: string }) {
   const offersHeadcount = programme?.headcount === true;
   useEffect(() => {
     if (!offersHeadcount || !counted || gone) return;
-    void tickIfDue(userId, getIdToken);
+    // Figures are worked out (the records are read) only if the person chose to share them.
+    void tickIfDue(userId, getIdToken, { loadFigures: async () => buildProgressFigures(await getDrinkRecords(userId)) });
   }, [offersHeadcount, counted, gone, userId, getIdToken]);
 
   if (!programme) return null;
@@ -154,6 +157,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   const [pending, setPending] = useState<Programme | null>(null);
   const [failed, setFailed] = useState(false);
   const [counted, setCounted] = useState(false);
+  const [figures, setFigures] = useState(false);
 
   useEffect(() => {
     const code = loadPendingCode();
@@ -175,7 +179,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   if (!pending) return null;
 
   const join = () => {
-    if (saveProgramme(userId, pending, { counted })) {
+    if (saveProgramme(userId, pending, { counted, figures })) {
       clearPendingCode();
       setPending(null);
     } else {
@@ -197,7 +201,16 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm leading-relaxed text-body">{privacy(pending)}</p>
-        <HeadcountChoice programme={pending} checked={counted} onChange={setCounted} />
+        <HeadcountChoice
+          programme={pending}
+          checked={counted}
+          onChange={(next) => {
+            setCounted(next);
+            if (!next) setFigures(false);
+          }}
+          figures={figures}
+          onFiguresChange={setFigures}
+        />
         {failed && (
           <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">
             {t("programme.errStore")}

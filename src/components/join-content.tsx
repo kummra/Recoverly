@@ -45,6 +45,7 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
   const [alreadyIn, setAlreadyIn] = useState(false);
   const [storeFailed, setStoreFailed] = useState(false);
   const [counted, setCounted] = useState(false);
+  const [figures, setFigures] = useState(false);
 
   const load = useCallback(() => {
     if (!code) {
@@ -116,7 +117,7 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
 
   const join = () => {
     if (!user) return;
-    if (saveProgramme(user.uid, programme, { counted })) {
+    if (saveProgramme(user.uid, programme, { counted, figures })) {
       setJoinedNow(true);
       setStoreFailed(false);
     } else {
@@ -161,7 +162,16 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
               </div>
             ) : (
               <div className="space-y-3">
-                <HeadcountChoice programme={programme} checked={counted} onChange={setCounted} />
+                <HeadcountChoice
+                  programme={programme}
+                  checked={counted}
+                  onChange={(next) => {
+                    setCounted(next);
+                    if (!next) setFigures(false);
+                  }}
+                  figures={figures}
+                  onFiguresChange={setFigures}
+                />
                 {storeFailed && (
                   <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">
                     {t("programme.errStore")}

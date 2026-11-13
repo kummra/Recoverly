@@ -2,7 +2,13 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const KEY = "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1v";
-const env = vi.hoisted(() => ({ counts: {} as Record<string, number> | "throw", admin: true, address: "198.51.100.1" }));
+const KEY_WITH_FIGURES = "Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2H1g0F9e";
+const env = vi.hoisted(() => ({
+  counts: {} as Record<string, number> | "throw",
+  figures: {} as Record<string, { n: number; freePctSum: number; lessOf: number; lessN: number }>,
+  admin: true,
+  address: "198.51.100.1"
+}));
 
 vi.mock("next/headers", () => ({ headers: async () => new Headers({ "x-forwarded-for": env.address }) }));
 vi.mock("next/navigation", () => ({
@@ -18,14 +24,17 @@ vi.mock("@/lib/firebase-admin", () => ({
 vi.mock("@/lib/programme-count-firestore", () => ({
   firestoreCountStore: () => ({
     increment: async () => undefined,
+    addFigures: async () => undefined,
     read: async () => {
       if (env.counts === "throw") throw new Error("database down");
       return env.counts;
-    }
+    },
+    readFigures: async () => env.figures
   })
 }));
 vi.mock("@/lib/programme-register", () => ({
-  findProgrammeByReportKey: (token: unknown) => (token === KEY ? { code: "ACMELOGI26", name: "Acme Logistics" } : null)
+  findProgrammeByReportKey: (token: unknown) =>
+    token === KEY ? { code: "ACMELOGI26", name: "Acme Logistics" } : token === KEY_WITH_FIGURES ? { code: "FIGURESORG26", name: "Figures Foundation", figures: true } : null
 }));
 
 import ProgrammeReportPage from "@/app/partners/report/[token]/page";
@@ -38,6 +47,7 @@ const text = (html: string) => html.replace(/<!--.*?-->/g, "").replace(/<[^>]+>/
 let caller = 0;
 beforeEach(() => {
   env.counts = {};
+  env.figures = {};
   env.admin = true;
   caller += 1;
   env.address = `198.51.100.${caller}`;
@@ -93,5 +103,27 @@ describe("an organisation's report page", () => {
     let blocked = false;
     for (let i = 0; i < 70 && !blocked; i++) blocked = await page(`guess-${i}-guess-${i}-guess-${i}`).then(() => false, (e: Error) => e.message === "NEXT_NOT_FOUND" && i >= 60);
     expect(blocked).toBe(true);
+  });
+
+  it("has no progress table for an organisation that did not ask for figures, even if sums exist", async () => {
+    env.figures = { [shiftMonth(now, -1)]: { n: 40, freePctSum: 40 * 70, lessOf: 30, lessN: 20 } };
+    const out = text(await page(KEY));
+    expect(out).not.toMatch(/Progress, from people who chose to share it/);
+  });
+
+  it("shows averages from people who shared, only where 20 or more are behind them, rounded", async () => {
+    const last = shiftMonth(now, -1);
+    env.figures = {
+      [last]: { n: 30, freePctSum: 30 * 72, lessOf: 25, lessN: 15 },
+      [shiftMonth(last, -1)]: { n: 25, freePctSum: 25 * 60, lessOf: 12, lessN: 9 },
+      [shiftMonth(last, -2)]: { n: 19, freePctSum: 19 * 90, lessOf: 19, lessN: 19 }
+    };
+    const out = text(await page(KEY_WITH_FIGURES));
+    expect(out).toMatch(/Progress, from people who chose to share it/);
+    expect(out).toMatch(/about 30 about 70% about 60%/);
+    expect(out).toMatch(/about 25 about 60% not shown/);
+    // 19 people: no figure of any kind for that month.
+    expect(out).not.toMatch(/about 90%/);
+    expect(out).toMatch(/self-reported logs, not clinical measurements/);
   });
 });

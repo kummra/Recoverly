@@ -14,11 +14,15 @@ import { FieldValue, type Firestore } from "firebase-admin/firestore";
 
 import { cleanActiveCounts } from "@/lib/programme-count";
 import type { CountStore } from "@/lib/programme-count-service";
+import { cleanOutcomes } from "@/lib/programme-outcomes";
 
 export const COUNTS_COLLECTION = "programmeCounts";
+/** The same idea for progress figures: `{ months: { "2026-10": { n, freePctSum, lessOf, lessN } } }`, sums only. */
+export const OUTCOMES_COLLECTION = "programmeOutcomes";
 
 export function firestoreCountStore(db: Firestore): CountStore {
   const doc = (code: string) => db.collection(COUNTS_COLLECTION).doc(code);
+  const outcomes = (code: string) => db.collection(OUTCOMES_COLLECTION).doc(code);
 
   return {
     async increment(code, month) {
@@ -28,6 +32,27 @@ export function firestoreCountStore(db: Firestore): CountStore {
     async read(code) {
       const snapshot = await doc(code).get();
       return snapshot.exists ? cleanActiveCounts(snapshot.data()?.active) : {};
+    },
+
+    async addFigures(code, month, add) {
+      await outcomes(code).set(
+        {
+          months: {
+            [month]: {
+              n: FieldValue.increment(add.n),
+              freePctSum: FieldValue.increment(add.freePctSum),
+              lessOf: FieldValue.increment(add.lessOf),
+              lessN: FieldValue.increment(add.lessN)
+            }
+          }
+        },
+        { merge: true }
+      );
+    },
+
+    async readFigures(code) {
+      const snapshot = await outcomes(code).get();
+      return snapshot.exists ? cleanOutcomes(snapshot.data()?.months) : {};
     }
   };
 }

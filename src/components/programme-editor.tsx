@@ -9,9 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/use-auth";
 import { useProgramme } from "@/hooks/use-programme";
 import { type Programme, normaliseCode } from "@/lib/programme";
-import { clearPendingCode, clearProgramme, lookupProgramme, saveProgramme, setCounted } from "@/lib/programme-membership";
+import { clearPendingCode, clearProgramme, lookupProgramme, saveProgramme, setCounted, setFigures } from "@/lib/programme-membership";
+import { stopOwnCopy } from "@/lib/workspace-client";
+import { clearWorkspacePrefs } from "@/lib/workspace-prefs";
 
 type Note = { kind: "ok" | "error"; text: string } | null;
 
@@ -29,22 +32,25 @@ type Note = { kind: "ok" | "error"; text: string } | null;
  */
 export function ProgrammeEditor({ userId }: { userId: string }) {
   const t = useT();
+  const { getIdToken } = useAuth();
   const privacy = useProgrammePrivacy();
-  const [programme, setProgramme, counted] = useProgramme(userId);
+  const [programme, setProgramme, counted, figures] = useProgramme(userId);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<Note>(null);
   /** A programme found by its code that offers the headcount, waiting for the person's yes or no to joining and to being counted. */
   const [offered, setOffered] = useState<Programme | null>(null);
   const [wantsCount, setWantsCount] = useState(false);
+  const [wantsFigures, setWantsFigures] = useState(false);
 
-  const finishJoin = (found: Programme, withCount: boolean) => {
-    if (saveProgramme(userId, found, { counted: withCount })) {
+  const finishJoin = (found: Programme, withCount: boolean, withFigures: boolean) => {
+    if (saveProgramme(userId, found, { counted: withCount, figures: withFigures })) {
       clearPendingCode();
       setProgramme(found);
       setCode("");
       setOffered(null);
       setWantsCount(false);
+      setWantsFigures(false);
       setNote({ kind: "ok", text: t("programme.joinedOk", { name: found.name }) });
     } else {
       setNote({ kind: "error", text: t("programme.errStore") });
@@ -68,13 +74,22 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
     }
     if (result.programme.headcount) {
       setWantsCount(false);
+      setWantsFigures(false);
       setOffered(result.programme);
     } else {
-      finishJoin(result.programme, false);
+      finishJoin(result.programme, false, false);
     }
   };
 
-  const leave = () => {
+  const leave = async () => {
+    // Leaving also stops sharing with the programme's team, which deletes the copy they hold. If that
+    // cannot be done now the person has not left yet and is told, so they never believe they have
+    // left while the team still holds a copy.
+    if (programme?.workspace && !(await stopOwnCopy(await getIdToken(), programme.code))) {
+      setNote({ kind: "error", text: t("workspace.leaveFailed") });
+      return;
+    }
+    if (programme) clearWorkspacePrefs(userId, programme.code);
     clearProgramme(userId);
     clearPendingCode();
     setProgramme(null);
@@ -85,6 +100,11 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
   const changeCount = (next: boolean) => {
     setNote(null);
     if (!setCounted(userId, next)) setNote({ kind: "error", text: t("programme.errStore") });
+  };
+
+  const changeFigures = (next: boolean) => {
+    setNote(null);
+    if (!setFigures(userId, next)) setNote({ kind: "error", text: t("programme.errStore") });
   };
 
   return (
@@ -101,7 +121,7 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
           <div className="space-y-3">
             <p className="text-sm font-medium text-foreground">{programme.name}</p>
             <p className="text-xs leading-relaxed text-subtle">{privacy(programme)}</p>
-            <HeadcountChoice programme={programme} checked={counted} onChange={changeCount} />
+            <HeadcountChoice programme={programme} checked={counted} onChange={changeCount} figures={figures} onFiguresChange={changeFigures} />
             <Button type="button" variant="outline" onClick={leave}>
               {t("programme.leave")}
             </Button>
@@ -110,9 +130,18 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
           <div className="space-y-3">
             <p className="text-sm font-medium text-foreground">{t("programme.joinPrompt", { name: offered.name })}</p>
             <p className="text-xs leading-relaxed text-subtle">{privacy(offered)}</p>
-            <HeadcountChoice programme={offered} checked={wantsCount} onChange={setWantsCount} />
+            <HeadcountChoice
+              programme={offered}
+              checked={wantsCount}
+              onChange={(next) => {
+                setWantsCount(next);
+                if (!next) setWantsFigures(false);
+              }}
+              figures={wantsFigures}
+              onFiguresChange={setWantsFigures}
+            />
             <div className="flex flex-wrap gap-2">
-              <Button type="button" onClick={() => finishJoin(offered, wantsCount)}>
+              <Button type="button" onClick={() => finishJoin(offered, wantsCount, wantsFigures)}>
                 {t("programme.join")}
               </Button>
               <Button type="button" variant="outline" onClick={() => setOffered(null)}>

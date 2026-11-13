@@ -5,6 +5,8 @@ import { deleteAllUserData } from "@/lib/oracle-storage";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { firestoreShareStore } from "@/lib/share-firestore";
 import { stopAllShares } from "@/lib/share-service";
+import { firestoreWorkspaceStore } from "@/lib/workspace-firestore";
+import { stopAllCopies } from "@/lib/workspace-service";
 
 export const runtime = "nodejs";
 
@@ -57,6 +59,7 @@ export async function DELETE(request: NextRequest) {
     // then the auth account itself — so "delete everything" holds in BOTH stores.
     await adminDb.recursiveDelete(adminDb.collection("users").doc(uid));
     await stopAllShares(firestoreShareStore(adminDb), uid);
+    await stopAllCopies(firestoreWorkspaceStore(adminDb), uid);
     await deleteAllUserData(uid);
     await adminAuth.deleteUser(uid);
 

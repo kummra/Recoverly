@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { findProgrammeByReportKey } from "@/lib/programme-register";
+import { findProgrammeByReportKey, findWorkspaceByReportKey } from "@/lib/programme-register";
 
 /**
- * Gives a wrong organisation-report address a real 404.
+ * Gives a wrong organisation-report address a real 404, and the same for a team-workspace address.
  *
- * `/partners/report/{key}` is a page that streams (the site has a root `loading.tsx`), and a
+ * `/partners/report/{key}` (and `/partners/workspace/{key}`, the same key) is a page that streams (the site has a root `loading.tsx`), and a
  * page that has started streaming has already sent "200", so its own `notFound()` can only
  * draw the not-found screen under a 200 status. Next's documented fix is to check before the
  * response starts, here. An address that is not a registered organisation's key is rewritten
@@ -16,8 +16,11 @@ import { findProgrammeByReportKey } from "@/lib/programme-register";
  * Proxy runs on Node, which is why it can use the register's constant-time key comparison.
  */
 export function proxy(request: NextRequest) {
-  const segment = request.nextUrl.pathname.split("/")[3] ?? "";
+  const parts = request.nextUrl.pathname.split("/");
+  const segment = parts[3] ?? "";
   if (segment === "example") return NextResponse.next();
+  // A team workspace needs more than a report key: the organisation must have one, and may.
+  const find = parts[2] === "workspace" ? findWorkspaceByReportKey : findProgrammeByReportKey;
 
   let token = segment;
   try {
@@ -25,9 +28,9 @@ export function proxy(request: NextRequest) {
   } catch {
     /* a malformed escape cannot be a key: leave it as it is and it will not match */
   }
-  if (findProgrammeByReportKey(token)) return NextResponse.next();
+  if (find(token)) return NextResponse.next();
 
   return NextResponse.rewrite(new URL("/report-key-not-found", request.url), { status: 404 });
 }
 
-export const config = { matcher: "/partners/report/:token" };
+export const config = { matcher: ["/partners/report/:token", "/partners/workspace/:token"] };

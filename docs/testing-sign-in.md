@@ -107,12 +107,28 @@ FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
 FIREBASE_PROJECT_ID=demo-recoverly
 FIREBASE_CLIENT_EMAIL=emulator@demo-recoverly.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nZW11bGF0b3I=\n-----END PRIVATE KEY-----\n"
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...a throwaway key, see below...\n-----END PRIVATE KEY-----\n"
 ORACLE_CONNECT_STRING=
 ORACLE_USER=
 ORACLE_PASSWORD=
 ```
 
-The Admin SDK honours the two `*_EMULATOR_HOST` variables, so `/api/share`, `/api/programme/count`
-and `/api/account` run their real code against a real Firestore engine and verify emulator tokens.
-Delete the file afterwards. Data seeded for a test lives only in the emulator's memory.
+The Admin SDK honours the two `*_EMULATOR_HOST` variables, so `/api/share`, `/api/programme/count`,
+`/api/workspace/*` and `/api/account` run their real code against a real Firestore engine and verify emulator
+tokens. Delete the file afterwards. Data seeded for a test lives only in the emulator's memory.
+
+Gotchas, all met while testing:
+- The Admin SDK checks that `FIREBASE_PRIVATE_KEY` is a well-formed PEM key, so a made-up string is refused (the
+  routes answer 503). Make a throwaway one with `openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048`,
+  and write it on one line with `\n` for the newlines. It is never used to sign anything real.
+- The browser's Firestore namespace is the app's own project id (`anti-alcohol-app`), the server's is
+  `demo-recoverly`: seed both if a page must see seeded data.
+- **Restart the dev server after editing `programme-register.ts`.** Pages pick the change up but a route handler
+  can keep the module it first loaded, so `/api/programme` may keep answering from the old register.
+- A script that talks to the emulator with the Admin SDK may sit for a minute probing the cloud metadata address;
+  set `GCE_METADATA_HOST=127.0.0.1:1 METADATA_SERVER_DETECTION=none` to skip that.
+- The team workspace was checked end to end this way: the team makes its key on `/partners/workspace/{key}` in a
+  real browser, its public key goes into a temporary register entry (`kind: "clinic"`, `report`, `workspace`),
+  a signed-in person joins it and shares from **Report**, and the stored `workspaceCopies` document is read back with
+  the Admin SDK. The rules were checked with the emulator's REST interface: a signed-in browser's read, list, write
+  and delete of `workspaceCopies` are all 403. Remove the temporary entry afterwards (never commit it).

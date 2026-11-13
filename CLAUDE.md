@@ -213,11 +213,14 @@ a pilot, with an enquiry form (`PartnerEnquiryForm`, `lib/partners.ts`,
   request, delete the document in the Firebase console.
 - **Read the enquiries** in the Firebase console, Firestore, `partnerEnquiries`. There is no
   email notification yet, so someone has to look.
-- **No organisation ever receives individual-level data**, with or without consent (firm rule 4 below).
-  What exists is the person's own summary link and the optional anonymous monthly headcount: see
-  "Summary links and the monthly headcount" below. A clinic dashboard of its patients, an employer
-  dashboard, or any list, per-person figure or live counter is **not built and not to be built** without
-  the owner's explicit decision and a rewritten policy.
+- **An employer, college, insurer, TPA or government body never receives individual-level data, with or
+  without consent** (firm rule 4 below): consent given to your own employer, institution or insurer is not
+  freely given, so the code refuses it. What exists: the person's own summary link, the optional anonymous
+  monthly headcount and progress figures (numbers for groups of 20 or more, never a list), and, **for a clinic
+  or community service only**, a team workspace where a person who chooses to can share their own summary by
+  name with that team. See "Summary links, the headcount, progress figures and the team workspace" below.
+  A list of who joined, a per-person view nobody chose to send, a count below 20 or anything sent in the
+  background is **not built and not to be built** without the owner's explicit decision and a rewritten policy.
 
 ## The business contact address
 
@@ -262,9 +265,10 @@ in real time.
 
 ## Organisation tools: programme codes, the toolkit, the help card
 
-Built for the organisations in the business model (employers, colleges, clinics, NGOs). Nothing here
-shows an organisation anything about a person; the one number it can receive is the opt-in anonymous
-monthly headcount (see "Summary links and the monthly headcount").
+Built for the organisations in the business model (employers, colleges, clinics, NGOs). By default nothing
+here shows an organisation anything about a person. What it can receive, only if the person chooses: the
+anonymous monthly headcount and progress averages (numbers for groups of 20 or more) and, at a clinic or
+community service, a team workspace (see "Summary links, the headcount, progress figures and the team workspace").
 
 **Programme codes** (`lib/programme.ts`, `lib/programme-register.ts`, `lib/programme-membership.ts`,
 `app/api/programme`, `/join/{code}`, `ProgrammeCard` / `ProgrammePrompt` / `ProgrammeEditor`).
@@ -272,11 +276,13 @@ An organisation gets a code; a person types it in Settings or scans a poster's Q
 organisation's name, a welcome and up to four support contacts appear on their dashboard. Rules that
 must stay true:
 - **The organisation is told nothing about who joined or what anyone logs.** That sentence is shown to
-  the person in nine languages (`programme.private`, or `programme.privateCounted` for a programme that
-  offers the headcount) and in the privacy policy (`privacy.s12*`), so it must remain true. Joining itself
-  sends nothing about the person; the lookup carries no account. The only count is the opt-in monthly
-  headcount below. **Do not add a list, a log of lookups, a per-person figure or a dashboard without the
-  owner's decision on rule 4 and without changing that text and the policy first.**
+  the person in nine languages (`programme.private`, `programme.privateCounted` for a programme that offers
+  the headcount, `programme.privateWorkspace` for one with a team workspace; `useProgrammePrivacy` picks) and
+  in the privacy policy (`privacy.s12*`), so it must remain true. Joining itself sends nothing about the
+  person; the lookup carries no account. What can reach an organisation afterwards is only what the person
+  separately ticks (the exceptions below). **Do not add a list, a log of lookups, a per-person figure or a
+  dashboard beyond those without the owner's decision on rule 4 and without changing that text and the
+  policy first.**
 - **The register is server-only** (`programme-register.ts`; `programme.test.ts` fails if a client file
   imports it) and `GET /api/programme?code=` answers one code at a time. It is code, not a database:
   to add an organisation edit the register (its header says how), and the tests run
@@ -338,14 +344,18 @@ page and in the printout, never saved or sent; the plans stay on the device unle
 the sheet they hand over. Below it, the **Share a summary** card can make an encrypted link instead of
 paper (next section): the notes and plans reach a link only if the person ticks them there.
 
-## Summary links and the monthly headcount: the two exceptions to firm rule 4
+## Summary links, the headcount, progress figures and the team workspace: the exceptions to firm rule 4
 
 On 13 Nov 2026 the owner said: where a feature is really worth it and only the privacy statement stands
-in the way, amend the statement and build it. Two features cleared that bar. **They are the only ways a
-person's data can leave their account**, and each is the person's own act, visible, reversible and
-self-ending. The policy states both (`privacy.s12Body`, `privacy.s13Body`, with `s1`, `s5`, the FAQ answer
-and the login line pointing at them) and **`lib/privacy-policy.test.ts` ties the numbers in the English and
-translated policy to the constants in code.** Change a number in code and in the policy together, or it fails.
+in the way, amend the statement and build it. Two features cleared that bar (the summary link and the
+headcount). The same day, after a review that had declined three more (a clinic dashboard, outcome figures
+for funders, live counters), the owner said to add them **but only with consent**; they became the progress
+figures and the team workspace. **These four are the only ways a person's data can leave their account**,
+and each is the person's own act, visible and reversible. The policy states them (`privacy.s12Body`
+headcount, `s13Body` summary link, `s14Body` progress figures, `s15Body` team workspace, with `s1`, `s5`, the
+FAQ answer, the login line and `programme.intro` pointing at them) and **`lib/privacy-policy.test.ts` ties the
+numbers in the English and translated policy to the constants in code.** Change a number in code and in the
+policy together, or it fails.
 
 **Summary link** (the `ShareSummary` card on `/report`; `lib/share*.ts`; `app/api/share`; viewer at `/share/{id}#{key}`):
 - **Encrypted in the browser** (AES-256-GCM through Web Crypto, a new key and nonce every time:
@@ -391,10 +401,65 @@ translated policy to the constants in code.** Change a number in code and in the
   protects people from casual identification, not from a determined insider. A person who unticks, leaves, or whose organisation stops offering it sends nothing further; counts
   already added cannot be taken back and identify nobody.
 
-**Never, whatever the consent:** a list of who was counted or who joined; per-person figures; a count shown below 20;
-a live counter; **any individual-level data to an employer, college, insurer, TPA or government body** (consent
-given to an employer or insurer is not freely given); a view a clinician has that the patient did not send; the key
-of a link stored anywhere. Each would need the owner's explicit decision and a rewritten policy first.
+**Anonymous progress figures** (`lib/progress-figures.ts`, `lib/programme-outcomes.ts`, the second box in
+`headcount-choice.tsx`, the table on `/partners/report/{key}`):
+- Offered only where the register entry has `figures: true` and `report`, and only to someone who is counted and
+  ticks a second box (off by default; unticking the count unticks it). Once a month, in the same signed-in tick as
+  the count, the device works out two numbers from the person's own records for the previous calendar month
+  (`buildProgressFigures`: the percentage of days with no drink, and whether they drank less than the month before,
+  left out when there is nothing to compare), and only if the records cover at least 7 days of that month. The server
+  takes them only if they are exactly last month's and well-formed (`cleanFigures`) and adds them into running sums
+  `programmeOutcomes/{code}.months.{yyyy-mm}` = `{ n, freePctSum, lessOf, lessN }` (`CountStore.addFigures`).
+  **No uid, no timestamp and no per-person row is stored.** The person's records are never sent.
+- Shown only when at least `MIN_GROUP` (20) people have shared, rounded to the nearest 5, capped at 100, each figure
+  hidden separately (`displayOutcomes`). Self-reported, and the report says so. These are the "outcome statistics
+  for funders". The nearest safe thing to a live counter is the current month's headcount row, which moves as people
+  tick but is thresholded and rounded, plus the workspace's live count of who is sharing.
+
+**Team workspace** (`lib/workspace*.ts`, `app/api/workspace/*`, `components/workspace-share.tsx` on `/report`,
+`components/workspace-team.tsx` at `/partners/workspace/{key}`, `/partners/workspace/example`):
+- **Who may have one: a clinic or community service only** (`WORKSPACE_KINDS`). For a workplace or a college
+  `workspaceKeyFor` and `workspaceTeamFor` return nothing, the team page 404s (`proxy.ts`) and nobody is offered it,
+  whatever the register says; `programme-register.test.ts` and `proxy.test.ts` pin that. Insurers and TPAs are not a
+  kind at all. A register entry needs `report` and `workspace: {}`; people are offered it only once the team's
+  public key is in the entry (`workspace: { publicKey }`).
+- **Keys.** The team makes an RSA-OAEP-2048 pair **in its own browser** on its workspace page and locks the private
+  half with a passphrase it chooses (PBKDF2-SHA-256, 600,000 rounds). Only the locked key is kept (browser storage
+  and a key file the team saves). The **public** key is emailed to the owner, who pastes it into the register: that is
+  the trust anchor, so someone who got hold of the team's report link can list scrambled copies but cannot swap in a
+  key of their own. The test refuses a key with any private part. **Recoverly never has the private key or the
+  passphrase and cannot recover either**; the page says so. A lost key means registering a new one and people share again.
+- **What the person sends**: the same kind of snapshot as a summary link (`buildSnapshot`), only what they tick and a
+  name they type, hybrid-encrypted on their device (a fresh AES-256-GCM key wrapped with the team's RSA public key).
+  They tick "I understand" and press Start sharing; the card shows the team's key fingerprint (`keyIdOf`, the same text
+  the server makes in `workspaceKeyId`, pinned by a test). One stored copy per person per team in the server-only
+  collection `workspaceCopies` (`uid, code, keyId, iv, ct, wk, createdAt, updatedAt, expiresAt`), replaced in place by
+  "Send an update". **Nothing is sent in the background**; a copy ends 30 days after the last send; "Stop sharing"
+  deletes it; **leaving the programme stops it first and refuses to leave if it could not**; **deleting the account
+  deletes it** (`/api/account`); a changed team key leaves old copies unreadable and the person is told. What they last
+  chose (name, sections) is kept on their device only, so an update does not blank their name, and is forgotten on
+  stop, leave and account deletion (`lib/workspace-prefs.ts`).
+- **What the team gets** (`GET /api/workspace/inbox`, the report key in an `Authorization` header, never the address):
+  scrambled copies with opaque ids and times, **no uid, account or email**. It opens them with its unlocked key in the
+  page, re-cleaned (`sanitiseSnapshot`) and shown as plain text. The board shows live counts of who is sharing, who
+  updated in the last 7 days and whose copy ends within 7. The sample programme is a practice workspace: the same flow
+  with a key made on the spot, and the server stores nothing.
+- **Verified end to end on the emulators with the repo's real rules**: the key made in a real browser, registered, a
+  person ticking and sharing, the stored document has exactly nine fields and no plaintext, the team's wrong passphrase
+  is refused, the right one opens it and shows exactly the ticked sections, an update replaces the same document,
+  Stop and Leave delete it (Leave refuses when the delete fails), a practice send stores nothing, no sign-in gets 401, a
+  wrong team link gets 404, and every browser read, list, write and delete of `workspaceCopies` is 403.
+- **The remaining risk is the organisation, not the code.** A clinic's staff can read what people chose to send them,
+  print it or pass it on, and nothing can take that back; the screen and the policy say so. If a clinic's patients
+  could be pressured to share (a court-ordered programme, a clinic that makes it a condition of treatment), the consent
+  is not free: say so when setting an organisation up, and decline it.
+
+**Never, whatever the consent:** a list of who was counted or who joined; a count or average shown below 20; any
+individual-level data to an **employer, college, insurer, TPA or government body** (consent given to your own
+employer, institution or insurer is not freely given; the workspace is refused for those kinds in code and a test pins
+it); a view a team has that the person did not send; anything sent to a team in the background; a team being able to
+tell who is behind a name beyond what the person typed; the team's private key or passphrase, or the key of a summary
+link, stored anywhere on a server. Each would need the owner's explicit decision and a rewritten policy first.
 
 ## The logo and icons
 
@@ -488,17 +553,27 @@ The app builds and renders without these, but auth and the AI coach are inert un
    dangerous for heavy drinkers (withdrawal seizures / delirium tremens) and advise
    seeing a doctor before stopping. Never cheer someone into cold-turkey quitting.
 4. **Privacy first.** One user's personal data must never be visible to anyone else, **except what that
-   person chooses to share, in exactly two ways, each of which they can see, undo, and which ends by
-   itself** (owner's decision, 13 Nov 2026): (a) a **summary link** they make for their own clinician,
-   counsellor or someone they trust: encrypted on their own device so Recoverly cannot read it, only
-   what they tick, never their email or account, 1, 7 or 30 days, stoppable at any time, deleted with
-   their account; and (b) an **anonymous monthly headcount** for their programme, only if the
-   organisation offers it and the person ticks a box that is off by default: a number, never a list,
-   shown to the organisation only when at least 20 people are counted, rounded to the nearest 5.
-   **No organisation (employer, college, insurer, TPA, government) ever receives individual-level
-   data, with or without consent.** Nothing else may make a person's data visible to anyone, and any
-   change to these two needs the owner's decision and the privacy policy (`privacy.s12*`, `s13*`)
-   changed first. See "Summary links and the monthly headcount" above.
+   person chooses to share, in exactly four ways, each of which they can see and undo** (owner's decisions,
+   13 Nov 2026): (a) a **summary link** they make for their own clinician, counsellor or someone they
+   trust: encrypted on their own device so Recoverly cannot read it, only what they tick, never their email
+   or account, 1, 7 or 30 days, stoppable at any time, deleted with their account; (b) an **anonymous
+   monthly headcount** for their programme, only if the organisation offers it and the person ticks a box
+   that is off by default: a number, never a list, shown to the organisation only when at least 20 people
+   are counted, rounded to the nearest 5; (c) two **anonymous progress figures** (the share of last
+   month's days with no drink, and whether they drank less than the month before), added into group
+   averages the same way, only if the person is counted and ticks a second box that is off by default,
+   shown only for groups of 20 or more, rounded to the nearest 5; and (d) a **team workspace at a clinic or
+   community service only**, where the person shares their own summary by name with that team, encrypted on
+   their device so only the team's own private key opens it, only what they tick, never their email or
+   account, only after they tick "I understand" and press Start sharing, readable for 30 days after they
+   last sent it (nothing is sent in the background), stoppable at any time, and deleted when they leave the
+   programme or delete their account. **No employer, college, insurer, TPA or government body ever
+   receives individual-level data, with or without consent**: consent given to your own employer,
+   institution or insurer is not freely given, so the workspace cannot be switched on for a workplace or a
+   college (`workspaceAllowedFor`, pinned by tests) whatever the register says. Nothing else may make a
+   person's data visible to anyone, and any change to these four needs the owner's decision and the
+   privacy policy (`privacy.s12*` to `s15*`) changed first. See "Summary links, the headcount, progress
+   figures and the team workspace" above.
    Enforce via Firebase Auth + Firestore `isOwner` rules; keep the OpenAI key server-side;
    apply the same per-user isolation to any ported breathalyser / Realtime-DB data.
 

@@ -8,11 +8,13 @@ import { type Programme, isSample } from "@/lib/programme";
 /**
  * The privacy sentence for a programme. A programme that offers the anonymous
  * monthly headcount says so (and what the organisation can and cannot see); one
- * that does not keeps the original, stronger promise that it sees nothing at all.
+ * that also has a team workspace says that too; one that offers neither keeps the
+ * original, stronger promise that it sees nothing at all.
  */
 export function useProgrammePrivacy() {
   const t = useT();
-  return (programme: Programme) => t(programme.headcount ? "programme.privateCounted" : "programme.private", { name: programme.name });
+  return (programme: Programme) =>
+    t(programme.workspace ? "programme.privateWorkspace" : programme.headcount ? "programme.privateCounted" : "programme.private", { name: programme.name });
 }
 
 /**
@@ -22,9 +24,23 @@ export function useProgrammePrivacy() {
  * for any other it renders nothing, because nothing about it is ever counted.
  * See `lib/programme-count.ts` for what is and is not sent.
  */
-export function HeadcountChoice({ programme, checked, onChange }: { programme: Programme; checked: boolean; onChange: (checked: boolean) => void }) {
+export function HeadcountChoice({
+  programme,
+  checked,
+  onChange,
+  figures = false,
+  onFiguresChange
+}: {
+  programme: Programme;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  /** Also share anonymous progress figures: only offered when the programme offers them and the person is counted. */
+  figures?: boolean;
+  onFiguresChange?: (figures: boolean) => void;
+}) {
   const t = useT();
   const helpId = useId();
+  const figuresHelpId = useId();
   if (!programme.headcount) return null;
   return (
     <div className="space-y-1.5 rounded-xl border border-border bg-surface-muted/50 p-3">
@@ -41,6 +57,24 @@ export function HeadcountChoice({ programme, checked, onChange }: { programme: P
       <p id={helpId} className="-mt-1 pl-[1.625rem] text-xs leading-relaxed text-subtle">
         {t("programme.countHelp", { name: programme.name })}
       </p>
+      {programme.figures && onFiguresChange && (
+        <div className="space-y-1 border-t border-border pt-2">
+          <label className={`flex min-h-9 items-start gap-2.5 py-1 text-sm font-medium ${checked ? "text-foreground" : "text-muted-foreground"}`}>
+            <input
+              type="checkbox"
+              checked={checked && figures}
+              disabled={!checked}
+              aria-describedby={figuresHelpId}
+              onChange={(event) => onFiguresChange(event.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-600"
+            />
+            {t("programme.figuresLabel")}
+          </label>
+          <p id={figuresHelpId} className="-mt-1 pl-[1.625rem] text-xs leading-relaxed text-subtle">
+            {t("programme.figuresHelp", { name: programme.name })}
+          </p>
+        </div>
+      )}
       {isSample(programme) && <p className="pl-[1.625rem] text-xs leading-relaxed text-subtle">{t("programme.countSample")}</p>}
     </div>
   );

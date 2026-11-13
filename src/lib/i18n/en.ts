@@ -372,7 +372,7 @@ export const en: Dictionary = {
     "If you drink heavily or every day, stopping suddenly can be medically dangerous — withdrawal can cause seizures or delirium tremens. Please see a doctor before you quit and only reduce or stop under medical supervision. Recoverly will never push you to quit cold turkey.",
   "faq.q3": "Is my data private?",
   "faq.a3":
-    "Yes. Your records, goals, and chats are tied to your own account and are not visible to anyone else, unless you choose to share a summary or to be counted in an organisation's anonymous total (both are optional and off until you turn them on). Data is encrypted in transit and at rest, and we never sell or share your personal information. You can permanently delete everything from Settings → Delete account at any time.",
+    "Yes. Your records, goals, and chats are tied to your own account and are not visible to anyone else, unless you choose to share a summary, to be counted in an organisation's anonymous total, or to share with a clinic's team (all are optional and off until you turn them on). Data is encrypted in transit and at rest, and we never sell or share your personal information. You can permanently delete everything from Settings → Delete account at any time.",
   "faq.q4": "How does the AI coach work?",
   "faq.a4":
     "When you chat, your message is sent through a secure server to an AI model that replies with non-judgmental support. It is designed to avoid medical advice and to point you to real help when needed. It is a companion for motivation and reflection — not a clinician.",
@@ -427,7 +427,7 @@ export const en: Dictionary = {
   "privacy.title": "Privacy Policy",
   "privacy.s1Title": "What we collect",
   "privacy.s1Body":
-    "We only collect data needed to provide recovery tracking and guidance features: your email, drink records, weekly goals, and AI chat history. If you choose to share a summary or to be counted in an organisation's anonymous total, what that involves is described in the sections below.",
+    "We only collect data needed to provide recovery tracking and guidance features: your email, drink records, weekly goals, and AI chat history. If you choose to share a summary, to be counted in an organisation's anonymous total, or to share with a clinic's team, what that involves is described in the sections below.",
   "privacy.s2Title": "Where data is stored",
   "privacy.s2Body":
     "Your account data is stored in Firebase and scoped to your authenticated identity. Records are encrypted in transit and at rest.",
@@ -464,6 +464,12 @@ export const en: Dictionary = {
   "privacy.s13Title": "Sharing a summary",
   "privacy.s13Body":
     "On the clinician summary page you can choose to make a link to a read-only copy of that summary, for a doctor, counsellor or someone who supports you. Nothing is included unless you tick it, and your email address and account details are never part of it. The summary is scrambled (encrypted) on your device before it is sent to us, and the key to unscramble it is only in the link, which we never receive. We store only the scrambled copy and cannot read it. Anyone who has the whole link can read the summary until it stops working: after the 1, 7 or 30 days you choose, or sooner if you stop sharing on that page, which deletes our copy straight away. Deleting your account deletes the stored copy of every link you made. You can have up to 5 links at a time. Please send a link only to the person you mean. The email or messaging service you use carries the link, and anyone who has already opened, saved or printed the summary keeps what they saw.",
+  "privacy.s14Title": "Sharing progress figures",
+  "privacy.s14Body":
+    "Some organisations that receive the monthly total also offer a second, separate tick: to add two figures about your previous month to averages for the group. The two figures are the share of days with no drink, and whether you drank less than the month before. They are worked out on your device from your own records, which are never sent. This happens only if the programme offers it, you are counted, and you tick that box, and you can untick it at any time in Settings. Once a month your device sends only those two numbers, signed in only so they cannot be faked, and we add them into running totals for that programme and month without keeping who sent them. We store no name, no account and no list. The organisation sees the averages only when at least 20 people have shared, rounded to the nearest 5, and never who they were. Figures already added cannot be taken back, but they identify nobody.",
+  "privacy.s15Title": "Sharing with an organisation's team",
+  "privacy.s15Body":
+    "A clinic or community service that supports people directly may offer a private team workspace. A workplace or a college never can, because it is hard to say no to your own employer or college. If your programme offers it, a card on the clinician summary page lets you share your own progress with that team, by name. It is off unless you turn it on: you read what it means, tick that you understand, and press Start sharing. What is shared is the same kind of summary as a link: only what you tick, never your email or account details, under a name you choose. It is scrambled (encrypted) on your device for the team's key, which exists only in the team's own browser, locked with a passphrase that only the team knows. We store only the scrambled copy and cannot read it, and the team never receives your account or email. A copy stays readable for 30 days after you last sent it, so sharing carries on only while you keep sending it: nothing is sent in the background. You can stop at any time on that card, which deletes our copy straight away. Leaving the programme in Settings, or deleting your account, does the same. Whatever the team has already read, saved or printed cannot be taken back, so share only what you are happy for them to see.",
   "privacy.lastUpdated": "Last updated: November 2026",
   "privacy.s8Title": "Enquiries from organisations",
   "privacy.s8Body":
@@ -473,7 +479,7 @@ export const en: Dictionary = {
     "For a privacy question, to ask us to delete or correct something you sent us, or for a business enquiry, write to {email}. This address is for questions, not emergencies. If you need help right now, please see the Support & helplines page.",
   "privacy.s5Title": "Third parties",
   "privacy.s5Body":
-    "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated. The only ways information about you reaches anyone else are ones you start yourself: sending a summary link to someone you trust, or choosing to be counted in an organisation's anonymous total. Both are described below.",
+    "We do not sell or share your personal data with third parties. Analytics, if any, are anonymized and aggregated. The only ways information about you reaches anyone else are ones you start yourself: sending a summary link to someone you trust, choosing to be counted in an organisation's anonymous total, or, where a clinic or community service offers it, sharing with its team. All are described below.",
   "terms.title": "Terms of Use",
   "terms.s1Title": "Purpose",
   "terms.s1Body":
@@ -761,8 +767,7 @@ export const en: Dictionary = {
   "login.heroBody":
     "You are making a meaningful choice by being here. This platform tracks your journey, provides honest insights, and supports you with compassionate AI guidance.",
   "login.privateTitle": "Private & secure",
-  "login.privateBody":
-    "Your data is encrypted and only visible to you, unless you choose to share a summary.",
+  "login.privateBody": "Your data is encrypted and only visible to you, unless you choose to share it.",
   "login.noJudgmentTitle": "No judgment, ever",
   "login.noJudgmentBody": "Built on identity-reinforcement, not shame.",
   "login.createAccount": "Create account",
@@ -867,7 +872,7 @@ export const en: Dictionary = {
   // Programme codes and the poster
   "programme.title": "Programme code",
   "programme.intro":
-    "If your employer, college, clinic or another organisation gave you a programme code, enter it here. It adds their name and support contacts to your dashboard, on this device. They are not told that you joined, and they cannot see anything you log.",
+    "If your employer, college, clinic or another organisation gave you a programme code, enter it here. It adds their name and support contacts to your dashboard, on this device. They are not told that you joined, and they cannot see anything you log unless you choose to share it.",
   "programme.join": "Join",
   "programme.notFound": "We do not recognise that code. Please check it and try again.",
   "programme.checkFailed": "Could not check the code just now. Please try again in a little while.",
@@ -892,11 +897,40 @@ export const en: Dictionary = {
     "You need a free account to join. Your code will be waiting for you after you sign in.",
   "programme.gone": "This programme is no longer available. You can remove it in Settings.",
   "programme.privateCounted":
-    "{name} cannot see who joined, what anyone logs, or anything else about you. If you choose to be counted, they only ever see a total number of people, and only when at least 20 are counted.",
+    "{name} cannot see who joined, what anyone logs, or anything else about you. If you choose to be counted, they only ever see totals and averages for groups of at least 20 people.",
   "programme.countLabel": "Count me in {name}'s monthly total",
   "programme.countHelp":
     "Once a month, when you open Recoverly, your device adds one to a number for {name}. Nothing else is sent: no name, no account, nothing you log. {name} sees the total only when at least 20 people are counted, rounded to the nearest 5. You can turn this off any time in Settings.",
   "programme.countSample": "This is only a sample, so nothing is counted.",
+  "programme.privateWorkspace":
+    "{name} cannot see who joined, what anyone logs, or anything else about you. Totals and averages are shown only for groups of at least 20 people. If you choose to share with their team, only that team can read what you share, under the name you give.",
+  "programme.figuresLabel": "Also add two figures about my previous month to the group's averages",
+  "programme.figuresHelp":
+    "Once a month, when you are counted, your device also works out two numbers from your own records: the share of last month's days with no drink, and whether you drank less than the month before. Only those two numbers are sent, with no name or account, and they are added into averages for {name}. {name} sees the averages only when at least 20 people have shared, rounded to the nearest 5. Your records themselves are never sent. You can turn this off any time in Settings.",
+  "workspace.title": "Share with {name}'s team",
+  "workspace.intro":
+    "If you want to, you can share your own progress with the team at {name}, under a name you choose. Only that team can read it: it is scrambled on this device for their key, so Recoverly cannot read it either. It is off unless you turn it on, and you can stop whenever you like.",
+  "workspace.understand":
+    "I understand that {name}'s team will be able to read what I choose to share, under the name I give, until I stop or it ends. I am choosing this myself.",
+  "workspace.nameHint":
+    "The team sees this name, so use the name you want them to know you by. Your email and account details are never included.",
+  "workspace.keyId":
+    "The team's key ID is {id}. To be sure it really is their key, ask them to read it back to you.",
+  "workspace.start": "Start sharing",
+  "workspace.update": "Send an update",
+  "workspace.stop": "Stop sharing",
+  "workspace.active": "You are sharing with {name}'s team.",
+  "workspace.activeLine":
+    "Last sent {updated}. They can read it until {expires}. After that it is deleted, unless you send an update.",
+  "workspace.sent": "Sent. {name}'s team can read it until {expires}.",
+  "workspace.stopped": "Stopped. The copy you shared has been deleted.",
+  "workspace.keyChanged":
+    "The team's key has changed since you last sent, so they can no longer read your earlier copy. Please check the new key ID with the team, then send again if you still want to.",
+  "workspace.practice": "This is a practice organisation. Nothing you send here is stored or reaches anyone.",
+  "workspace.noCrypto":
+    "This browser cannot scramble (encrypt) what you share, so nothing was sent. Please use an up-to-date browser.",
+  "workspace.leaveFailed":
+    "Could not stop sharing with the team just now, so you have not left yet. Please try again in a little while.",
   "poster.headline": "Thinking about drinking less, or stopping?",
   "poster.sub": "Recoverly is free, private and available in your language.",
   "poster.scan": "Scan to start",

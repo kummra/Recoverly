@@ -1,6 +1,9 @@
 import { PrintButton } from "@/components/print-button";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { MIN_GROUP, ROUND_TO, type ReportRow, monthLabel } from "@/lib/programme-count";
+import type { OutcomeRow, PercentDisplay } from "@/lib/programme-outcomes";
+
+const percent = (p: PercentDisplay) => (p.shown ? `about ${p.percent}%` : <span className="font-normal text-muted-foreground">not shown</span>);
 
 /**
  * An organisation's monthly report: the one thing Recoverly can tell it about its
@@ -12,7 +15,7 @@ import { MIN_GROUP, ROUND_TO, type ReportRow, monthLabel } from "@/lib/programme
  *
  * Plain and server-rendered: no script, and nothing here knows a person.
  */
-export function ProgrammeReport({ name, rows, example = false }: { name: string; rows: ReportRow[]; example?: boolean }) {
+export function ProgrammeReport({ name, rows, outcomes, example = false }: { name: string; rows: ReportRow[]; outcomes?: OutcomeRow[]; example?: boolean }) {
   return (
     <div lang="en" className="mx-auto max-w-3xl space-y-8">
       {example && (
@@ -57,6 +60,52 @@ export function ProgrammeReport({ name, rows, example = false }: { name: string;
         </table>
         <PrintButton label="Print or save as PDF" />
       </section>
+
+      {outcomes && (
+        <section aria-labelledby="progress" className="space-y-3">
+          <h2 id="progress" className="text-lg font-semibold">
+            Progress, from people who chose to share it
+          </h2>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            People who also ticked &ldquo;share my progress figures&rdquo; send two numbers once a month about the month that just ended. Each row is a month that has finished, and each figure
+            is an average across the people who shared. It appears only when at least {MIN_GROUP} people are behind it.
+          </p>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-muted-foreground">
+                <th scope="col" className="py-2 pr-4 font-medium">
+                  Month
+                </th>
+                <th scope="col" className="py-2 pr-4 text-right font-medium">
+                  People sharing
+                </th>
+                <th scope="col" className="py-2 pr-4 text-right font-medium">
+                  Days with no drink (average)
+                </th>
+                <th scope="col" className="py-2 text-right font-medium">
+                  Drank less than the month before
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {outcomes.map((row) => (
+                <tr key={row.month} className="border-b border-border/60 last:border-0">
+                  <td className="py-2 pr-4 text-body">{monthLabel(row.month)}</td>
+                  <td className="py-2 pr-4 text-right font-medium tabular-nums">
+                    {row.display.people.shown ? `about ${row.display.people.value}` : <span className="font-normal text-muted-foreground">fewer than {MIN_GROUP}</span>}
+                  </td>
+                  <td className="py-2 pr-4 text-right font-medium tabular-nums">{percent(row.display.freeDays)}</td>
+                  <td className="py-2 text-right font-medium tabular-nums">{percent(row.display.lessThanBefore)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="max-w-2xl text-xs leading-relaxed text-subtle">
+            These are self-reported logs, not clinical measurements, and the people who choose to share may not be typical of everyone you serve. &ldquo;Drank less&rdquo; compares the amount
+            logged with the month before and counts only people who drank in both months. Treat these as a sign of direction, not proof that a programme works.
+          </p>
+        </section>
+      )}
 
       <section aria-labelledby="how" className="space-y-3 rounded-2xl border border-border p-5">
         <h2 id="how" className="text-lg font-semibold">

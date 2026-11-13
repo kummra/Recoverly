@@ -36,6 +36,14 @@ vi.mock("@/lib/share-firestore", () => ({
     }
   })
 }));
+vi.mock("@/lib/workspace-firestore", () => ({
+  firestoreWorkspaceStore: () => ({
+    deleteByOwner: async (uid: string) => {
+      calls.order.push(`workspace:${uid}`);
+      return 1;
+    }
+  })
+}));
 
 import { DELETE } from "@/app/api/account/route";
 
@@ -52,11 +60,11 @@ beforeEach(() => {
 });
 
 describe("DELETE /api/account", () => {
-  it("deletes the person's data, every summary link they made, the mirror, and then the sign-in itself", async () => {
+  it("deletes the person's data, every summary link they made, every copy they shared with a team, the mirror, and then the sign-in itself", async () => {
     const res = await del();
     expect(res.status).toBe(200);
-    // The links go before the account does, so a failure part-way never leaves a link behind a deleted person.
-    expect(calls.order).toEqual(["user-data:users/uid-leaving", "shares:uid-leaving", "oracle:uid-leaving", "auth:uid-leaving"]);
+    // The links and the team copies go before the account does, so a failure part-way never leaves one behind a deleted person.
+    expect(calls.order).toEqual(["user-data:users/uid-leaving", "shares:uid-leaving", "workspace:uid-leaving", "oracle:uid-leaving", "auth:uid-leaving"]);
   });
 
   it("does nothing for someone who is not signed in", async () => {

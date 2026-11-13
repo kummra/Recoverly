@@ -75,6 +75,25 @@ now the only exceptions to firm rule 4 (CLAUDE.md, "Summary links and the monthl
 enquiries and survey answers are kept until the person asks for deletion (survey answers also go
 when the account is deleted). The privacy text says exactly that.
 
+### Fifth round (13 November 2026): the three things that were declined, now built, with consent
+
+A review after the fourth round declined three things: a clinic dashboard of patients, outcome figures for
+funders, and live counters. The owner said to add them **but only with consent**. All three are built, each
+behind a person's own off-by-default choice, and rule 4 now lists four things a person may choose (CLAUDE.md,
+"Summary links, the headcount, progress figures and the team workspace").
+
+| Feature | Why it earns its place | Where |
+|---|---|---|
+| **Anonymous progress figures** (the "outcome statistics for funders") | Funders ask "does it help?". Two numbers about last month (share of days with no drink; drank less than the month before), from people who are counted and tick a second off-by-default box, added into running sums. Shown only for 20 or more, rounded to 5. Self-reported, and the report says so. | `lib/progress-figures.ts`, `lib/programme-outcomes.ts`, `headcount-choice.tsx`, table on `/partners/report/{key}` |
+| **Team workspace** (the "clinic dashboard") | A clinic or counselling service can see the progress of people who chose to share it, by name, between visits. Encrypted on the person's device to a key that exists only in the team's browser, so Recoverly cannot read it; only what they tick; 30 days after the last send; nothing sent in the background; stop, leave and delete all remove it. | `lib/workspace*.ts`, `app/api/workspace/*`, `workspace-share.tsx` (on `/report`), `workspace-team.tsx` at `/partners/workspace/{key}`, `/partners/workspace/example` |
+| **Live counters** | The board shows, live, how many people are sharing, how many updated in the last 7 days and whose copy ends within 7. The report's current-month headcount row also moves as people tick, but only past the 20-person threshold and rounded, so it cannot show anyone joining. | `workspace-team.tsx`, `programme-report.tsx` |
+
+**What is deliberately not offered, even with consent:** the workspace for a **workplace or a college**
+(their employer or institution is the one asking, so a "yes" is not free), and anything for an insurer or
+TPA. The code refuses it whatever the register says (`workspaceAllowedFor`), and tests pin it. This keeps the
+stricter public promise on the organisations page true: an employer, college or insurer never sees an
+individual's information.
+
 ## 3. Capacity: the number to plan around
 
 The coach model on this Groq account allows about 1,000 requests a day and 8,000 tokens a
@@ -87,11 +106,16 @@ data terms first: the conversations are about alcohol and mental health.
 ## 4. Decisions only the owner can make
 
 1. ~~**Consented sharing.**~~ **Decided 13 Nov 2026:** the owner said to amend the privacy statement for any
-   feature that is really worth it. Rule 4 now allows exactly two things a person may choose, both
-   built: the summary link and the optional anonymous monthly headcount (group size 20, rounded to 5).
-   Both are in the policy (`privacy.s12*`, `s13*`) and in CLAUDE.md. Considered and refused, even with
-   consent: individual-level data to an employer, college, insurer or government body, and a clinic
-   dashboard of patients (section 6).
+   feature that is really worth it, and later to add the declined items "but only with consent". Rule 4
+   now allows exactly four things a person may choose, all built: the summary link, the optional anonymous
+   monthly headcount, two anonymous progress figures, and a team workspace at a clinic or community service
+   (group size 20, rounded to 5; 30 days; nothing in the background). All are in the policy
+   (`privacy.s12*` to `s15*`) and in CLAUDE.md. Still refused, even with consent: individual-level data to
+   an employer, college, insurer or government body (section 6).
+   **Open, yours to decide per organisation:** whether to switch a workspace on for a given clinic (it
+   needs `workspace: {}` in its register entry, then its public key; `docs/deploy-checklist.md` section 7).
+   Think about clinics where treatment is court-ordered or a condition of something else: a person there
+   cannot freely say no, so decline.
 2. ~~**A business contact address.**~~ **Decided 12 Nov 2026:** the address in `lib/contact.ts`
    is public, and the policy says it is for questions, not emergencies. Open follow-up: because
    nothing is deleted automatically, a deletion request must be answered by a person. Pick a
@@ -137,15 +161,19 @@ In rough order of benefit for risk:
 - **A paid tier for individuals:** the owner decided against it.
 - **Any individual-level data to an employer, college, insurer, TPA or government body, even with the
   person's consent:** a person's "yes" to their own employer or insurer is not freely given, and a
-  leaked or subpoenaed list would cost them their job or cover. The headcount gives them a number;
-  nothing gives them a person. (13 Nov 2026, with the amended rule 4.)
-- **A clinic dashboard of its patients' progress:** it would be the same thing one step removed.
-  The patient sends their clinician a summary link; the clinician does not watch them.
-- **Outcome figures (average reduction in drinking, and so on) for funders:** needs per-person data to
-  leave the account, small cohorts can identify people, and self-reported logs are weak evidence. If a
-  funder needs outcomes, design it with them, with a privacy review and group-size rules, not before.
-- **A live headcount, a "who joined" list, or a count shown below 20:** each lets one person be picked
-  out (a count that ticks from 20 to 21 the day after a colleague was seen scanning the poster).
+  leaked or subpoenaed list would cost them their job or cover. They get numbers for groups of 20 or
+  more; nothing gives them a person. The workspace is refused for a workplace or a college in code.
+  (13 Nov 2026, with the amended rule 4.)
+- ~~**A clinic dashboard of its patients' progress.**~~ Built 13 Nov 2026, **with consent, for a clinic or
+  community service only**: the team workspace. Each person ticks "I understand" and presses Start
+  sharing, it is encrypted so Recoverly cannot read it, it ends 30 days after the last send, and stop,
+  leave and account deletion remove it. What the team has already read cannot be taken back.
+- ~~**Outcome figures for funders.**~~ Built 13 Nov 2026 as two anonymous figures added into group averages,
+  only for people who are counted and tick a second box, shown only for 20 or more and rounded to 5. Still
+  self-reported and weak as evidence; the report says so. Do not present them as clinical outcomes.
+- **A "who joined" list, a count or average shown below 20, or anything that ticks for one person:**
+  each lets one person be picked out (a count that ticks from 20 to 21 the day after a colleague was
+  seen scanning the poster). The workspace's live counts are for people who chose to be named to that team.
 - **Deleting enquiries automatically after a fixed time (a Firestore TTL policy):** the owner
   decided against it on 12 Nov 2026. Do not add a `deleteAt` field without changing the
   privacy text, which now says data is kept until the person asks for deletion.

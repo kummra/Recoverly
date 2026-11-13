@@ -110,6 +110,41 @@ A live create has not been run (it would write to the real database), so as a fi
 - To give a real organisation the monthly headcount: `node scripts/make-report-key.mjs`, paste the
   `report` line into its register entry, push, and send them the link it printed.
 
+## 7. Progress figures and the team workspace
+Read-only checks (these write nothing):
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/api/workspace/inbox"                     # 404 (no team link)
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/api/workspace?code=SAMPLE"              # 401 (needs a signed-in person)
+curl -s -o /dev/null -w "%{http_code}\n" -X PUT "https://recoverly.co.in/api/workspace/copy"             # 401
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/partners/workspace/example"            # 200
+curl -s -o /dev/null -w "%{http_code}\n" "https://recoverly.co.in/partners/workspace/not-a-real-key-not-a-real-key"   # 404 (a real 404, from the proxy)
+```
+The whole flow was run end to end on the Firestore emulator with the repo's real rules: a team making its key in a real
+browser, a person sharing, the stored document (nine fields, no plaintext), the team opening it, update, stop, leave,
+practice mode, and every browser read or write of `workspaceCopies` refused (403). A live run has not been done
+(it would write to the real database), so as a final confirmation **do this once, as the owner, with a spare account**:
+- [ ] Add a temporary clinic to the register (`kind: "clinic"`, a `report` line from `scripts/make-report-key.mjs`,
+      `workspace: {}`, optionally `figures: true`), push, open `/partners/workspace/<link>`: it offers to make a key.
+      Make it, save the key file, copy the public key, paste it into the entry as `workspace: { publicKey: {...} }`, push.
+- [ ] As the spare account join that code, open **Report**: a "Share with the team" card shows the key ID, and Start
+      sharing stays disabled until "I understand" is ticked. Share, then open the team page, unlock, and read it.
+- [ ] Firestore, `workspaceCopies`: one document with only `uid, code, keyId, iv, ct, wk, createdAt, updatedAt, expiresAt`
+      (nothing readable). Stop sharing: it is gone. Remove the temporary entry afterwards.
+- [ ] Optional: a Firestore TTL policy on `workspaceCopies.expiresAt`, so an ended copy is removed even if nobody asks.
+
+**To give a real clinic or community service a workspace** (never a workplace or a college: the code refuses):
+1. `node scripts/make-report-key.mjs`; put its `report` line and `workspace: {}` in the entry; set `kind: "clinic"` or
+   `"community"`; push; send the team its private link (it also opens the workspace page).
+2. The team makes its key on that page (a passphrase of its choosing, which nobody can recover), saves the key file,
+   and **emails you the public key block it shows**. Accept a key only from the team's own page or message.
+3. Paste it as `workspace: { publicKey: { ... } }`, push (the tests refuse any private part), and read the key ID back
+   to the team (the page shows it) so they know it is theirs. People in that programme are offered the workspace from
+   that deploy.
+4. If the team loses both passphrase and key file: register a new key. Copies made for the old key become unreadable
+   and their senders are told; people share again.
+Before enabling it, ask whether the people in that programme can freely say no to the clinic. If treatment, a court
+order or anything else depends on sharing, decline.
+
 ## Notes
 - This local repo has **no git remote**. Confirm how Vercel builds (connected GitHub repo
   vs. CLI) and point it at this consolidated codebase before relying on the live site.

@@ -10,6 +10,7 @@ import {
   loadProgramme,
   lookupProgramme,
   markCountedMonth,
+  setFigures,
   parseStoredMembership,
   parseStoredProgramme,
   programmeStorageKey,
@@ -168,7 +169,7 @@ describe("the choice to be counted in an organisation's monthly total", () => {
 
   it("is off unless the person turns it on, however they join", () => {
     saveProgramme("u1", OFFERS);
-    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, countedMonth: null });
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, countedMonth: null });
     saveProgramme("u2", OFFERS, { counted: false });
     expect(loadMembership("u2")?.counted).toBe(false);
   });
@@ -196,7 +197,7 @@ describe("the choice to be counted in an organisation's monthly total", () => {
     markCountedMonth("u1", "2026-11");
     expect(loadMembership("u1")?.countedMonth).toBe("2026-11");
     expect(setCounted("u1", false)).toBe(true);
-    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, countedMonth: null });
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, countedMonth: null });
     setCounted("u1", true);
     expect(loadMembership("u1")?.countedMonth).toBeNull();
   });
@@ -233,5 +234,55 @@ describe("the choice to be counted in an organisation's monthly total", () => {
     saveProgramme("u1", OFFERS, { counted: true });
     const raw = (window.localStorage as unknown as ReturnType<typeof fakeStorage>).data.get("recoverly:programme:u1") as string;
     expect(Object.keys(JSON.parse(raw)).sort()).toEqual(["counted", "programme"]);
+  });
+
+  describe("sharing anonymous progress figures", () => {
+    const OFFERS_FIGURES: Programme = { ...PROGRAMME, headcount: true, figures: true };
+
+    it("is off unless chosen, and needs both the count and a programme that offers it", () => {
+      saveProgramme("u1", OFFERS_FIGURES, { counted: true });
+      expect(loadMembership("u1")).toMatchObject({ counted: true, figures: false });
+      saveProgramme("u2", OFFERS_FIGURES, { counted: false, figures: true });
+      expect(loadMembership("u2")).toMatchObject({ counted: false, figures: false });
+      saveProgramme("u3", { ...PROGRAMME, headcount: true }, { counted: true, figures: true });
+      expect(loadMembership("u3")).toMatchObject({ counted: true, figures: false });
+    });
+
+    it("can be turned on and off while counted, and does not restart the monthly tick", () => {
+      saveProgramme("u1", OFFERS_FIGURES, { counted: true });
+      markCountedMonth("u1", "2026-11");
+      expect(setFigures("u1", true)).toBe(true);
+      expect(loadMembership("u1")).toMatchObject({ counted: true, figures: true, countedMonth: "2026-11" });
+      expect(setFigures("u1", false)).toBe(true);
+      expect(loadMembership("u1")?.figures).toBe(false);
+    });
+
+    it("goes when the count goes", () => {
+      saveProgramme("u1", OFFERS_FIGURES, { counted: true, figures: true });
+      expect(loadMembership("u1")?.figures).toBe(true);
+      setCounted("u1", false);
+      expect(loadMembership("u1")).toMatchObject({ counted: false, figures: false });
+      setCounted("u1", true);
+      expect(loadMembership("u1")?.figures).toBe(false);
+    });
+
+    it("has nothing to turn on without a count or a programme, and is kept when the programme's details refresh", () => {
+      expect(setFigures("nobody", true)).toBe(false);
+      saveProgramme("u1", OFFERS_FIGURES);
+      expect(setFigures("u1", true)).toBe(false);
+      saveProgramme("u2", OFFERS_FIGURES, { counted: true, figures: true });
+      saveProgramme("u2", { ...OFFERS_FIGURES, name: "Acme Logistics Ltd" });
+      expect(loadMembership("u2")?.figures).toBe(true);
+      // The organisation stops offering figures: the choice goes.
+      saveProgramme("u2", { ...OFFERS_FIGURES, figures: undefined });
+      expect(loadMembership("u2")).toMatchObject({ counted: true, figures: false });
+    });
+
+    it("does not trust a hand-edited stored value", () => {
+      const edited = (extra: object) => JSON.stringify({ programme: OFFERS_FIGURES, ...extra });
+      expect(parseStoredMembership(edited({ counted: true, figures: "yes" }))?.figures).toBe(false);
+      expect(parseStoredMembership(edited({ counted: false, figures: true }))?.figures).toBe(false);
+      expect(parseStoredMembership(edited({ counted: true, figures: true }))?.figures).toBe(true);
+    });
   });
 });

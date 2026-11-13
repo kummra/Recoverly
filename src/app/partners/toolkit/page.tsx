@@ -96,7 +96,11 @@ export default function ToolkitPage() {
           <Link href="/partners/report/example" className={LINK}>
             example of the monthly report
           </Link>{" "}
-          (with invented figures). We never give an organisation anything about an individual, with or without their consent.
+          (with invented figures). We never give an employer, college or insurer anything about an individual, with or without their consent. A clinic or community service can also ask for a private{" "}
+          <Link href="/partners/workspace/example" className={LINK}>
+            team workspace
+          </Link>
+          , which people choose to share into.
         </p>
       </section>
 

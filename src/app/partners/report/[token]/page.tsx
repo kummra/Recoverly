@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ProgrammeReport } from "@/components/programme-report";
 import { adminDb } from "@/lib/firebase-admin";
 import { buildReportRows } from "@/lib/programme-count";
+import { buildOutcomeRows } from "@/lib/programme-outcomes";
 import { firestoreCountStore } from "@/lib/programme-count-firestore";
 import { findProgrammeByReportKey } from "@/lib/programme-register";
 import { LIMITS, rateLimit } from "@/lib/rate-limit";
@@ -38,10 +39,17 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
   if (!entry) notFound();
 
   let counts: Record<string, number> | null = null;
+  let figures: Awaited<ReturnType<ReturnType<typeof firestoreCountStore>["readFigures"]>> | null = null;
   try {
-    counts = adminDb ? await firestoreCountStore(adminDb).read(entry.code) : null;
+    if (adminDb) {
+      const store = firestoreCountStore(adminDb);
+      counts = await store.read(entry.code);
+      // The progress table exists only for an organisation that has agreed to receive it.
+      if (entry.figures) figures = await store.readFigures(entry.code);
+    }
   } catch {
     counts = null;
+    figures = null;
   }
 
   if (!counts) {
@@ -54,5 +62,6 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
     );
   }
 
-  return <ProgrammeReport name={entry.name} rows={buildReportRows(counts, new Date())} />;
+  const now = new Date();
+  return <ProgrammeReport name={entry.name} rows={buildReportRows(counts, now)} outcomes={figures ? buildOutcomeRows(figures, now) : undefined} />;
 }

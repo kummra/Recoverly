@@ -6,8 +6,9 @@ import type { Programme } from "@/lib/programme";
 import { PROGRAMME_CHANGED_EVENT, loadMembership, programmeStorageKey } from "@/lib/programme-membership";
 
 /**
- * The programme this device has joined, and whether the person chose to be counted
- * in its anonymous monthly total (third value; false unless they ticked the box).
+ * The programme this device has joined, whether the person chose to be counted in its
+ * anonymous monthly total (third value) and whether they also chose to share anonymous
+ * progress figures (fourth). Both are false unless they ticked the box.
  * Read after mount (storage does not exist on the server, and reading it during the
  * first render would make server and browser markup differ), and kept in step with
  * changes made in another tab (the browser's `storage` event) and in this one
@@ -16,12 +17,14 @@ import { PROGRAMME_CHANGED_EVENT, loadMembership, programmeStorageKey } from "@/
 export function useProgramme(userId: string | undefined) {
   const [programme, setProgramme] = useState<Programme | null>(null);
   const [counted, setCounted] = useState(false);
+  const [figures, setFigures] = useState(false);
 
   useEffect(() => {
     const read = () => {
       const membership = userId ? loadMembership(userId) : null;
       setProgramme(membership?.programme ?? null);
       setCounted(membership?.counted ?? false);
+      setFigures(membership?.figures ?? false);
     };
     read();
     if (!userId) return;
@@ -39,5 +42,5 @@ export function useProgramme(userId: string | undefined) {
     };
   }, [userId]);
 
-  return [programme, setProgramme, counted] as const;
+  return [programme, setProgramme, counted, figures] as const;
 }

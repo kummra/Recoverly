@@ -39,6 +39,8 @@ export type Membership = {
   programme: Programme;
   /** They ticked "count me". Only ever true for a programme that offers the headcount. Off unless chosen. */
   counted: boolean;
+  /** They also ticked "share my progress figures, anonymously". Only ever true if counted and the programme offers it. */
+  figures: boolean;
   /** The month ("2026-11") this device last sent its tick for, so it sends one a month and no more. */
   countedMonth: string | null;
 };
@@ -47,12 +49,13 @@ export type Membership = {
 export function parseStoredMembership(raw: string | null): Membership | null {
   if (!raw) return null;
   try {
-    const data = JSON.parse(raw) as { programme?: unknown; counted?: unknown; countedMonth?: unknown } | null;
+    const data = JSON.parse(raw) as { programme?: unknown; counted?: unknown; figures?: unknown; countedMonth?: unknown } | null;
     const programme = sanitiseProgramme(data?.programme);
     if (!programme) return null;
-    // A choice to be counted only means anything where the organisation offers it.
+    // A choice to be counted only means anything where the organisation offers it, and sharing figures only with it.
     const counted = data?.counted === true && programme.headcount === true;
-    return { programme, counted, countedMonth: counted && isMonthKey(data?.countedMonth) ? (data?.countedMonth as string) : null };
+    const figures = counted && data?.figures === true && programme.figures === true;
+    return { programme, counted, figures, countedMonth: counted && isMonthKey(data?.countedMonth) ? (data?.countedMonth as string) : null };
   } catch {
     return null;
   }
@@ -79,6 +82,7 @@ function writeMembership(userId: string, membership: Membership): boolean {
   const stored: Record<string, unknown> = { programme: membership.programme };
   if (membership.counted && membership.programme.headcount === true) {
     stored.counted = true;
+    if (membership.figures && membership.programme.figures === true) stored.figures = true;
     if (membership.countedMonth) stored.countedMonth = membership.countedMonth;
   }
   try {
@@ -97,12 +101,13 @@ function writeMembership(userId: string, membership: Membership): boolean {
  * programme offers it. False when the browser refused to store it, so the caller can
  * say so.
  */
-export function saveProgramme(userId: string, programme: Programme, options: { counted?: boolean } = {}): boolean {
+export function saveProgramme(userId: string, programme: Programme, options: { counted?: boolean; figures?: boolean } = {}): boolean {
   const existing = loadMembership(userId);
   const same = existing?.programme.code === programme.code;
   const counted = programme.headcount === true && (options.counted ?? (same ? existing.counted : false));
+  const figures = counted && programme.figures === true && (options.figures ?? (same ? existing.figures : false));
   const countedMonth = same && counted && options.counted === undefined ? existing.countedMonth : null;
-  if (!writeMembership(userId, { programme, counted, countedMonth })) return false;
+  if (!writeMembership(userId, { programme, counted, figures, countedMonth })) return false;
   announceChange();
   return true;
 }
@@ -116,7 +121,21 @@ export function setCounted(userId: string, counted: boolean): boolean {
   const existing = loadMembership(userId);
   if (!existing) return false;
   const next = counted && existing.programme.headcount === true;
-  if (!writeMembership(userId, { programme: existing.programme, counted: next, countedMonth: null })) return false;
+  // Sharing figures goes with being counted: turning the count off turns it off too.
+  if (!writeMembership(userId, { programme: existing.programme, counted: next, figures: next && existing.figures, countedMonth: null })) return false;
+  announceChange();
+  return true;
+}
+
+/**
+ * The person ticks or unticks "share my progress figures". It only means something while they are
+ * counted in a programme that offers it. The next tick (next month) is the first to carry figures.
+ * False if there is nothing to change or storage refused.
+ */
+export function setFigures(userId: string, figures: boolean): boolean {
+  const existing = loadMembership(userId);
+  if (!existing || !existing.counted || existing.programme.figures !== true) return false;
+  if (!writeMembership(userId, { ...existing, figures })) return false;
   announceChange();
   return true;
 }

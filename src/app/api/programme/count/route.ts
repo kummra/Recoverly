@@ -9,8 +9,8 @@ import { getUserIdFromRequest } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
 
-/** A tick is `{"code":"ACMELOGI26"}`. */
-const MAX_BODY_BYTES = 500;
+/** A tick is `{"code":"ACMELOGI26"}`, plus `{"figures":{"month":"2026-10","freeDayPct":72,"lessThanBefore":true}}` if chosen. */
+const MAX_BODY_BYTES = 800;
 
 /**
  * The monthly "a person who chose to be counted used Recoverly" tick: add one to a
@@ -23,7 +23,9 @@ const MAX_BODY_BYTES = 500;
  * to people). The code travels in the body, not the address, so it is not in a URL log.
  *
  * Only a programme that has agreed to the headcount accepts a tick; any other answers
- * "not found". The sample programme accepts and stores nothing.
+ * "not found". The sample programme accepts and stores nothing. If the person also chose
+ * to share anonymous progress figures (and the programme offers them), two numbers about last
+ * month ride along and are added into running sums; nothing about the person is kept.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -43,9 +45,9 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
     }
-    const code = typeof body === "object" && body !== null ? (body as { code?: unknown }).code : undefined;
+    const fields = typeof body === "object" && body !== null ? (body as { code?: unknown; figures?: unknown }) : {};
 
-    const result = await recordTick(firestoreCountStore(adminDb), findProgramme(code), new Date());
+    const result = await recordTick(firestoreCountStore(adminDb), findProgramme(fields.code), new Date(), fields.figures);
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
     return NextResponse.json({ ok: true, month: result.month });
   } catch (error) {
