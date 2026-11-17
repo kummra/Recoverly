@@ -238,3 +238,27 @@ describe("addresses, keys and links", () => {
     expect(SHARE_EXPIRY_HOURS.map((h) => h / 24)).toEqual([1, 7, 30]);
   });
 });
+
+describe("a request to be contacted", () => {
+  it("is cleaned to a short single line, and counts as content on its own", () => {
+    const draft = sanitiseSnapshot({ v: 1, createdAt: NOW.toISOString(), contact: { note: "after 6 pm\non WhatsApp ".padEnd(300, "x") } });
+    expect(draft?.contact?.note.length).toBeLessThanOrEqual(120);
+    expect(draft?.contact?.note).not.toContain("\n");
+    expect(draft && hasContent(draft)).toBe(true);
+  });
+
+  it("is absent from an ordinary summary, and an empty note is still a request", () => {
+    expect(sanitiseSnapshot({ v: 1, createdAt: NOW.toISOString(), progress: undefined, note: "hi" })?.contact).toBeUndefined();
+    expect(sanitiseSnapshot({ v: 1, createdAt: NOW.toISOString(), contact: {} })?.contact).toEqual({ note: "" });
+    expect(sanitiseSnapshot({ v: 1, createdAt: NOW.toISOString(), contact: "yes" })?.contact).toBeUndefined();
+  });
+});
+
+describe("buildSnapshot with a contact request", () => {
+  it("adds the request only when the options carry one", () => {
+    const facts = { recordsSince: null, totalLogged: 0, monthMl: 0, previousMonthMl: 0, dailyAverageMl: 0, currentStreakDays: 0, longestStreakDays: 0, freeDaysThisMonth: 0, daysThisMonth: 1, weeklyGoalMl: null, audit: null, cravings: null, patterns: [], motivation: null, note: "", plans: [] };
+    expect(buildSnapshot(facts, [], { now: NOW }).contact).toBeUndefined();
+    expect(buildSnapshot(facts, [], { now: NOW, contact: { note: "mornings" } }).contact).toEqual({ note: "mornings" });
+    expect(hasContent(buildSnapshot(facts, [], { now: NOW, contact: {} }))).toBe(true);
+  });
+});

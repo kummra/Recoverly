@@ -92,6 +92,9 @@ export function WorkspaceShare({ facts }: { facts: ShareFacts }) {
   const [picked, setPicked] = useState<ReadonlySet<ShareSection>>(() => new Set<ShareSection>(["progress"]));
   const [label, setLabel] = useState("");
   const [understood, setUnderstood] = useState(false);
+  /** "Please contact me": a request made fresh each time, never remembered. */
+  const [askContact, setAskContact] = useState(false);
+  const [contactNote, setContactNote] = useState("");
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [errorKey, setErrorKey] = useState<string | null>(null);
@@ -149,18 +152,20 @@ export function WorkspaceShare({ facts }: { facts: ShareFacts }) {
     if (busy || !team) return;
     setErrorKey(null);
     setNotice(null);
-    if (chosen.length === 0) {
+    if (chosen.length === 0 && !askContact) {
       setErrorKey("share.pick");
       return;
     }
     setBusy(true);
-    const snapshot = buildSnapshot(facts, chosen, { label: label.trim() || undefined });
+    const snapshot = buildSnapshot(facts, chosen, { label: label.trim() || undefined, contact: askContact ? { note: contactNote.trim() } : undefined });
     const outcome = await sendToTeam({ snapshot, code, team, token: await getIdToken() });
     setBusy(false);
     if (outcome.ok) {
       if (uid) saveWorkspacePrefs(uid, code, { label: label.trim(), sections: chosen });
       if (!outcome.stored) setPracticeSent({ updatedAt: outcome.updatedAt, expiresAt: outcome.expiresAt });
       setEditing(false);
+      setAskContact(false);
+      setContactNote("");
       setNotice({ key: "workspace.sent", expires: outcome.expiresAt });
       await refresh();
       return;
@@ -235,6 +240,20 @@ export function WorkspaceShare({ facts }: { facts: ShareFacts }) {
               <Label htmlFor="workspace-name">{t("share.nameLabel")}</Label>
               <Input id="workspace-name" value={label} maxLength={SHARE_LIMITS.labelMax} autoComplete="off" onChange={(event) => setLabel(event.target.value)} />
               <p className="text-xs text-subtle">{t("workspace.nameHint")}</p>
+            </div>
+
+            <div className="space-y-2 rounded-xl border border-border p-3">
+              <label className="flex min-h-11 items-center gap-2 text-sm font-medium">
+                <input type="checkbox" checked={askContact} onChange={(event) => setAskContact(event.target.checked)} className="h-4 w-4 accent-emerald-600" />
+                {t("workspace.contactLabel")}
+              </label>
+              {askContact && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="workspace-contact-note">{t("workspace.contactNoteLabel")}</Label>
+                  <Input id="workspace-contact-note" value={contactNote} maxLength={SHARE_LIMITS.contactNoteMax} autoComplete="off" onChange={(event) => setContactNote(event.target.value)} />
+                  <p className="text-xs leading-relaxed text-subtle">{t("workspace.contactNotEmergency")}</p>
+                </div>
+              )}
             </div>
 
             {team && !team.practice && <p className="text-xs leading-relaxed text-subtle">{t("workspace.keyId", { id: formatKeyId(team.keyId) })}</p>}

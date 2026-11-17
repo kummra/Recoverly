@@ -40,6 +40,8 @@ export const SHARE_LIMITS = {
   noteMax: 1000,
   whyMax: 200,
   plansMax: 3,
+  /** A short note on how and when to reach someone, with a request to be contacted. */
+  contactNoteMax: 120,
   planTextMax: 120,
   patternsMax: 3,
   moodMax: 40
@@ -86,6 +88,8 @@ export type ShareSnapshot = {
   why?: string;
   note?: string;
   plans?: SharePlan[];
+  /** "Please contact me." Only ever made by the team workspace card, never by a summary link. */
+  contact?: { note: string };
 };
 
 /** The only pattern labels a summary may carry: the app's own, so a stranger's link cannot make the page say anything. */
@@ -236,12 +240,15 @@ export function sanitiseSnapshot(input: unknown): ShareSnapshot | null {
     if (plans.length) out.plans = plans;
   }
 
+  const contact = record(raw.contact);
+  if (contact) out.contact = { note: line(contact.note, SHARE_LIMITS.contactNoteMax) };
+
   return out;
 }
 
 /** Does this summary carry anything a reader could see? (A link with nothing in it is a mistake.) */
 export function hasContent(snapshot: ShareSnapshot): boolean {
-  return Boolean(snapshot.progress || snapshot.audit || snapshot.cravings || snapshot.patterns || snapshot.why || snapshot.note || snapshot.plans);
+  return Boolean(snapshot.progress || snapshot.audit || snapshot.cravings || snapshot.patterns || snapshot.why || snapshot.note || snapshot.plans || snapshot.contact);
 }
 
 // ─── Building ─────────────────────────────────────────────────────────────
@@ -277,7 +284,7 @@ function isoDay(date: Date): string {
  * function the viewer uses, so what is made and what is shown cannot drift.
  * The account is never an input: there is no email or display name here to leak.
  */
-export function buildSnapshot(facts: ShareFacts, sections: readonly ShareSection[], options: { label?: string; now?: Date } = {}): ShareSnapshot {
+export function buildSnapshot(facts: ShareFacts, sections: readonly ShareSection[], options: { label?: string; now?: Date; contact?: { note?: string } } = {}): ShareSnapshot {
   const picked = new Set(sections);
   const draft: Record<string, unknown> = { v: 1, createdAt: (options.now ?? new Date()).toISOString() };
   if (options.label) draft.label = options.label;
@@ -306,6 +313,7 @@ export function buildSnapshot(facts: ShareFacts, sections: readonly ShareSection
   if (picked.has("why") && facts.motivation) draft.why = facts.motivation;
   if (picked.has("notes") && facts.note.trim()) draft.note = facts.note;
   if (picked.has("plans") && facts.plans.length) draft.plans = facts.plans;
+  if (options.contact) draft.contact = { note: options.contact.note ?? "" };
 
   // The draft is built from known shapes, so this cannot be null.
   return sanitiseSnapshot(draft) as ShareSnapshot;

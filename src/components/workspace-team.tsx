@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import type { ShareSnapshot } from "@/lib/share";
 import { WORKSPACE_LIMITS, cleanPublicKey, formatKeyId, publicKeyText } from "@/lib/workspace";
+import { orderForBoard } from "@/lib/workspace-board";
 import { fetchInbox } from "@/lib/workspace-client";
 import {
   MIN_PASSPHRASE_LENGTH,
@@ -398,7 +399,7 @@ function Board({ token, name, privateKey, onLock }: { token: string; name: strin
       if (snapshot) entries.push({ id: copy.id, snapshot, updatedAt: copy.updatedAt, expiresAt: copy.expiresAt });
       else unreadable += 1;
     }
-    setState({ status: "ready", data: { entries, unreadable, loadedAt: Date.now() } });
+    setState({ status: "ready", data: { entries: orderForBoard(entries), unreadable, loadedAt: Date.now() } });
   }, [token, privateKey]);
 
   useEffect(() => {
@@ -472,6 +473,7 @@ function BoardView({ name, state, onRefresh, onLock }: { name: string; state: Bo
                 <li key={entry.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm">
                   <span>
                     <span className="font-medium">{entry.snapshot.label ?? "No name given"}</span>
+                    {entry.snapshot.contact && <span className="ml-2 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-800 dark:text-amber-200">Asked to be contacted</span>}
                     <span className="block text-xs text-subtle">
                       Updated {dateTime(entry.updatedAt)} · readable until {dateTime(entry.expiresAt)}
                     </span>

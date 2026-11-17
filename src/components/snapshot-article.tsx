@@ -47,6 +47,13 @@ export function SnapshotArticle({ snapshot, meta }: { snapshot: ShareSnapshot; m
         <p className="text-sm text-muted-foreground">{meta}</p>
       </header>
 
+      {snapshot.contact && (
+        <section className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3">
+          <h2 className={heading}>{t("report.contactHeading")}</h2>
+          {snapshot.contact.note && <p className="break-words text-sm text-body">{snapshot.contact.note}</p>}
+        </section>
+      )}
+
       {progress && (
         <section>
           <h2 className={heading}>{t("report.consumption")}</h2>

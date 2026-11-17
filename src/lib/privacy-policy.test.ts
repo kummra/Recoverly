@@ -89,6 +89,10 @@ describe("the English policy states what the code does", () => {
     expect(body).toMatch(/deletes our copy straight away/);
     expect(body).toMatch(/Leaving the programme in Settings, or deleting your account, does the same/);
     expect(body).toMatch(/cannot be taken back/);
+    expect(body).toMatch(/ask the team to contact you/);
+    expect(body).toMatch(/not an emergency service/);
+    expect(body).toContain("112");
+    expect(body).toContain("14416");
   });
 
   it("points the general sections at every exception, so no section says 'never' without them", () => {
@@ -130,6 +134,11 @@ describe("every translation of the policy states the same numbers", () => {
       for (const key of ["privacy.s14Body", "programme.figuresHelp"]) {
         expect(dict[key], `${locale} ${key}`).toContain(String(MIN_GROUP));
         expect(dict[key], `${locale} ${key}`).toMatch(new RegExp(`(^|[^0-9])${ROUND_TO}([^0-9]|$)`));
+      }
+      // The contact request is not an emergency channel: the way to real help is named beside it.
+      for (const key of ["privacy.s15Body", "workspace.contactNotEmergency"]) {
+        expect(dict[key], `${locale} ${key}`).toContain("112");
+        expect(dict[key], `${locale} ${key}`).toContain("14416");
       }
       // The team workspace: how long a copy stays readable after it was last sent.
       expect(dict["privacy.s15Body"], `${locale} s15`).toMatch(new RegExp(`(^|[^0-9])${WORKSPACE_LIMITS.expiryDays}([^0-9]|$)`));
