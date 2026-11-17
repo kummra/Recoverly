@@ -497,6 +497,9 @@ export const pa: Dictionary = {
     "ਇਹ ਸਿਰਫ਼ ਇਸ ਪ੍ਰਿੰਟਆਊਟ ਲਈ ਹੈ। ਇੱਥੇ ਤੁਸੀਂ ਜੋ ਲਿਖਦੇ ਹੋ ਉਹ ਕਿਤੇ ਵੀ ਸੰਭਾਲਿਆ ਜਾਂ ਭੇਜਿਆ ਨਹੀਂ ਜਾਂਦਾ।",
   "report.notesLabel": "ਮੈਨੂੰ ਜੋ ਦੱਸਣਾ ਜਾਂ ਪੁੱਛਣਾ ਹੈ",
   "report.includePlans": "ਔਖੇ ਪਲਾਂ ਲਈ ਆਪਣੀਆਂ ਯੋਜਨਾਵਾਂ ਸ਼ਾਮਲ ਕਰੋ",
+  "report.apptWhen": "ਮੁਲਾਕਾਤ ਦੀ ਤਾਰੀਖ਼ ਅਤੇ ਸਮਾਂ (ਆਪਣੇ ਕੈਲੰਡਰ ਵਿੱਚ ਜੋੜਨ ਲਈ)",
+  "report.apptSave": "ਮੇਰੇ ਕੈਲੰਡਰ ਵਿੱਚ ਸੰਭਾਲੋ",
+  "report.apptTitle": "ਮੁਲਾਕਾਤ: ਆਪਣਾ Recoverly ਸਾਰ ਨਾਲ ਲੈ ਜਾਓ",
   "report.plansHeading": "ਔਖੇ ਪਲਾਂ ਲਈ ਮੇਰੀਆਂ ਯੋਜਨਾਵਾਂ (ਮੇਰੀਆਂ ਲਿਖੀਆਂ ਹੋਈਆਂ)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
@@ -663,6 +666,14 @@ export const pa: Dictionary = {
   "plan.whenPlaceholder": "ਕੰਮ ਤੋਂ ਬਾਅਦ ਮੈਨੂੰ ਤਣਾਅ ਮਹਿਸੂਸ ਹੁੰਦਾ ਹੈ",
   "plan.thenLabel": "…ਤਾਂ ਮੈਂ ਇਹ ਕਰਾਂਗਾ/ਕਰਾਂਗੀ",
   "plan.thenPlaceholder": "ਦਸ ਮਿੰਟ ਦੀ ਸੈਰ ਅਤੇ ਆਪਣੀ ਭੈਣ ਨੂੰ ਫ਼ੋਨ",
+  "plan.starters": "ਵਿਚਾਰ ਚਾਹੀਦਾ ਹੈ? ਇਹਨਾਂ ਵਿੱਚੋਂ ਇੱਕ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ:",
+  "plan.starterHome.label": "ਸੁਰੱਖਿਅਤ ਘਰ ਪਹੁੰਚਣਾ",
+  "plan.starterHome.when": "ਮੈਨੂੰ ਅਜਿਹੀ ਥਾਂ ਜਾਣਾ ਹੈ ਜਿੱਥੇ ਸ਼ਰਾਬ ਹੋਵੇਗੀ",
+  "plan.starterHome.then": "ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਘਰ ਮੁੜਨ ਦਾ ਪ੍ਰਬੰਧ ਤੈਅ ਕਰਨਾ, ਅਤੇ ਸ਼ਰਾਬ ਪੀ ਕੇ ਕਦੇ ਗੱਡੀ ਨਾ ਚਲਾਉਣਾ",
+  "plan.starterFestival.label": "ਕੋਈ ਸਮਾਗਮ ਜਾਂ ਵਿਆਹ",
+  "plan.starterFestival.when": "ਕਿਸੇ ਸਮਾਗਮ ਵਿੱਚ ਕੋਈ ਮੈਨੂੰ ਸ਼ਰਾਬ ਪੇਸ਼ ਕਰਦਾ ਹੈ",
+  "plan.starterFestival.then":
+    "'ਨਹੀਂ, ਧੰਨਵਾਦ' ਕਹਿਣਾ, ਹੱਥ ਵਿੱਚ ਕੋਈ ਸਾਫ਼ਟ ਡ੍ਰਿੰਕ ਰੱਖਣਾ, ਅਤੇ ਲੋੜ ਪਵੇ ਤਾਂ ਥੋੜ੍ਹੀ ਦੇਰ ਬਾਹਰ ਜਾਣਾ",
   "plan.add": "ਯੋਜਨਾ ਸੰਭਾਲੋ",
   "plan.remove": "ਯੋਜਨਾ ਹਟਾਓ",
   "plan.limit": "ਤੁਹਾਡੀਆਂ {max} ਯੋਜਨਾਵਾਂ ਹਨ, ਜੋ ਵੱਧ ਤੋਂ ਵੱਧ ਰੱਖੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ। ਨਵੀਂ ਬਣਾਉਣ ਲਈ ਇੱਕ ਹਟਾਓ।",

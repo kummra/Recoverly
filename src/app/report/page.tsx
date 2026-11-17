@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Printer } from "lucide-react";
+import { CalendarPlus, Printer } from "lucide-react";
 
 import { PlanItem } from "@/components/plan-list";
 import { ProtectedRoute } from "@/components/protected-route";
 import { useT } from "@/components/i18n-provider";
 import { ShareSummary } from "@/components/share-summary";
+import { buildAppointmentIcs } from "@/lib/ics";
 import { WorkspaceShare } from "@/components/workspace-share";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -71,6 +72,22 @@ function ReportContent() {
   const [notes, setNotes] = useState("");
   const [plans, setPlans] = useState<Plan[]>([]);
   const [includePlans, setIncludePlans] = useState(false);
+  const [apptAt, setApptAt] = useState("");
+
+  /** Saves a calendar file on this device. Nothing about it is sent anywhere. */
+  const saveAppointment = () => {
+    const start = new Date(apptAt);
+    if (Number.isNaN(start.getTime())) return;
+    const ics = buildAppointmentIcs({ start, title: t("report.apptTitle") });
+    const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "appointment.ics";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
 
   // Plans live only in this browser; read them after mount.
   useEffect(() => {
@@ -186,6 +203,23 @@ function ReportContent() {
             maxLength={MAX_NOTES}
             className="w-full rounded-xl border border-border bg-surface-muted px-3 py-2 text-sm text-foreground placeholder:text-subtle focus:border-emerald-500/50 focus:outline-none"
           />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="report-appt" className="text-sm font-medium">
+            {t("report.apptWhen")}
+          </label>
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              id="report-appt"
+              type="datetime-local"
+              value={apptAt}
+              onChange={(event) => setApptAt(event.target.value)}
+              className="h-11 rounded-xl border border-border bg-surface-muted px-3 text-sm text-foreground focus:border-emerald-500/50 focus:outline-none"
+            />
+            <Button type="button" variant="outline" disabled={apptAt === ""} onClick={saveAppointment} className="gap-1.5">
+              <CalendarPlus className="h-4 w-4" aria-hidden /> {t("report.apptSave")}
+            </Button>
+          </div>
         </div>
         {plans.length > 0 && (
           <label className="flex min-h-11 items-center gap-2 text-sm">

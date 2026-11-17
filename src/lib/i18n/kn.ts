@@ -497,6 +497,9 @@ export const kn: Dictionary = {
     "ಇದು ಈ ಮುದ್ರಣಕ್ಕೆ ಮಾತ್ರ. ಇಲ್ಲಿ ನೀವು ಬರೆಯುವುದು ಎಲ್ಲಿಯೂ ಉಳಿಸಲ್ಪಡುವುದಿಲ್ಲ ಅಥವಾ ಕಳುಹಿಸಲ್ಪಡುವುದಿಲ್ಲ.",
   "report.notesLabel": "ನಾನು ಹೇಳಲು ಅಥವಾ ಕೇಳಲು ಬಯಸುವುದು",
   "report.includePlans": "ಕಷ್ಟದ ಕ್ಷಣಗಳಿಗಾಗಿ ನನ್ನ ಯೋಜನೆಗಳನ್ನು ಸೇರಿಸಿ",
+  "report.apptWhen": "ಭೇಟಿಯ ದಿನಾಂಕ ಮತ್ತು ಸಮಯ (ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಲು)",
+  "report.apptSave": "ನನ್ನ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಉಳಿಸಿ",
+  "report.apptTitle": "ಭೇಟಿ: ನನ್ನ Recoverly ಸಾರಾಂಶವನ್ನು ಕೊಂಡೊಯ್ಯಿರಿ",
   "report.plansHeading": "ಕಷ್ಟದ ಕ್ಷಣಗಳಿಗಾಗಿ ನನ್ನ ಯೋಜನೆಗಳು (ನಾನು ಬರೆದವು)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
@@ -663,6 +666,15 @@ export const kn: Dictionary = {
   "plan.whenPlaceholder": "ಕೆಲಸದ ನಂತರ ನನಗೆ ಒತ್ತಡ ಅನಿಸುತ್ತದೆ",
   "plan.thenLabel": "…ನಾನು ಇದನ್ನು ಮಾಡುತ್ತೇನೆ",
   "plan.thenPlaceholder": "ಹತ್ತು ನಿಮಿಷ ನಡೆದಾಡಿ ನನ್ನ ಅಕ್ಕನಿಗೆ ಕರೆ ಮಾಡುತ್ತೇನೆ",
+  "plan.starters": "ಒಂದು ಆಲೋಚನೆ ಬೇಕೇ? ಇವುಗಳಲ್ಲಿ ಒಂದರಿಂದ ಆರಂಭಿಸಿ:",
+  "plan.starterHome.label": "ಸುರಕ್ಷಿತವಾಗಿ ಮನೆ ತಲುಪುವುದು",
+  "plan.starterHome.when": "ಮದ್ಯ ಇರುವ ಸ್ಥಳಕ್ಕೆ ನಾನು ಹೋಗಬೇಕು",
+  "plan.starterHome.then":
+    "ಹೋಗುವ ಮೊದಲೇ ಮನೆಗೆ ಮರಳುವ ದಾರಿ ನಿರ್ಧರಿಸುತ್ತೇನೆ, ಕುಡಿದ ನಂತರ ಎಂದಿಗೂ ವಾಹನ ಓಡಿಸುವುದಿಲ್ಲ",
+  "plan.starterFestival.label": "ಒಂದು ಸಮಾರಂಭ ಅಥವಾ ಮದುವೆ",
+  "plan.starterFestival.when": "ಸಮಾರಂಭದಲ್ಲಿ ಯಾರಾದರೂ ನನಗೆ ಮದ್ಯ ನೀಡುತ್ತಾರೆ",
+  "plan.starterFestival.then":
+    "'ಬೇಡ, ಧನ್ಯವಾದ' ಎನ್ನುತ್ತೇನೆ, ಕೈಯಲ್ಲಿ ತಂಪು ಪಾನೀಯ ಹಿಡಿಯುತ್ತೇನೆ, ಬೇಕಾದರೆ ಸ್ವಲ್ಪ ಹೊತ್ತು ಹೊರಗೆ ಹೋಗುತ್ತೇನೆ",
   "plan.add": "ಯೋಜನೆ ಉಳಿಸಿ",
   "plan.remove": "ಯೋಜನೆ ತೆಗೆದುಹಾಕಿ",
   "plan.limit": "ನಿಮ್ಮಲ್ಲಿ {max} ಯೋಜನೆಗಳಿವೆ, ಇದಕ್ಕಿಂತ ಹೆಚ್ಚು ಇಟ್ಟುಕೊಳ್ಳಲಾಗದು. ಹೊಸದನ್ನು ಮಾಡಲು ಒಂದನ್ನು ತೆಗೆದುಹಾಕಿ.",

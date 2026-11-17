@@ -513,6 +513,9 @@ export const hi: Dictionary = {
     "यह सिर्फ़ इस प्रिंटआउट के लिए है। यहाँ आप जो लिखते हैं वह कहीं सहेजा या भेजा नहीं जाता।",
   "report.notesLabel": "जो मुझे बताना या पूछना है",
   "report.includePlans": "मुश्किल पलों के लिए अपनी योजनाएँ शामिल करें",
+  "report.apptWhen": "अपॉइंटमेंट की तारीख और समय (अपने कैलेंडर में जोड़ने के लिए)",
+  "report.apptSave": "मेरे कैलेंडर में सहेजें",
+  "report.apptTitle": "अपॉइंटमेंट: अपना Recoverly सारांश साथ ले जाएँ",
   "report.plansHeading": "मुश्किल पलों के लिए मेरी योजनाएँ (मेरी लिखी हुई)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
@@ -678,6 +681,14 @@ export const hi: Dictionary = {
   "plan.whenPlaceholder": "काम के बाद मुझे तनाव महसूस होता है",
   "plan.thenLabel": "…तो मैं यह करूँगा/करूँगी",
   "plan.thenPlaceholder": "मैं दस मिनट टहलूँगा/टहलूँगी और अपनी बहन को फ़ोन करूँगा/करूँगी",
+  "plan.starters": "आइडिया चाहिए? इनमें से किसी से शुरू करें:",
+  "plan.starterHome.label": "सुरक्षित घर पहुँचना",
+  "plan.starterHome.when": "मुझे ऐसी जगह जाना है जहाँ शराब होगी",
+  "plan.starterHome.then": "जाने से पहले घर लौटने का इंतज़ाम तय करना, पीने के बाद गाड़ी कभी न चलाना",
+  "plan.starterFestival.label": "कोई समारोह या शादी",
+  "plan.starterFestival.when": "किसी समारोह में कोई मुझे शराब ऑफ़र करता है",
+  "plan.starterFestival.then":
+    "'नहीं, धन्यवाद' कहना, हाथ में कोई सॉफ़्ट ड्रिंक रखना, और ज़रूरत हो तो कुछ देर बाहर जाना",
   "plan.add": "योजना सहेजें",
   "plan.remove": "योजना हटाएँ",
   "plan.limit": "आपकी {max} योजनाएँ हैं, इससे ज़्यादा नहीं रखी जा सकतीं। नई योजना बनाने के लिए एक हटा दें।",

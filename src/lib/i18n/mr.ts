@@ -497,6 +497,9 @@ export const mr: Dictionary = {
     "हे फक्त या प्रिंटआउटसाठी आहे. तुम्ही इथे जे लिहिता ते कुठेही जतन केले किंवा पाठवले जात नाही.",
   "report.notesLabel": "मला जे सांगायचे किंवा विचारायचे आहे",
   "report.includePlans": "कठीण क्षणांसाठीच्या माझ्या योजना समाविष्ट करा",
+  "report.apptWhen": "भेटीची तारीख आणि वेळ (तुमच्या कॅलेंडरमध्ये जोडण्यासाठी)",
+  "report.apptSave": "माझ्या कॅलेंडरमध्ये जतन करा",
+  "report.apptTitle": "भेट: माझा Recoverly सारांश सोबत घ्या",
   "report.plansHeading": "कठीण क्षणांसाठी माझ्या योजना (मी लिहिलेल्या)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
@@ -662,6 +665,14 @@ export const mr: Dictionary = {
   "plan.whenPlaceholder": "कामानंतर मला तणाव वाटतो",
   "plan.thenLabel": "…मी हे करेन",
   "plan.thenPlaceholder": "मी दहा मिनिटे फिरेन आणि बहिणीला फोन करेन",
+  "plan.starters": "कल्पना हवी? यापैकी एकापासून सुरू करा:",
+  "plan.starterHome.label": "सुरक्षित घरी पोहोचणे",
+  "plan.starterHome.when": "मला अशा ठिकाणी जायचे आहे जिथे दारू असेल",
+  "plan.starterHome.then": "जाण्यापूर्वीच घरी परतण्याची सोय ठरवणे, आणि दारू पिऊन कधीही गाडी न चालवणे",
+  "plan.starterFestival.label": "एखादा समारंभ किंवा लग्न",
+  "plan.starterFestival.when": "एखाद्या समारंभात कोणी मला दारू देऊ करते",
+  "plan.starterFestival.then":
+    "'नको, धन्यवाद' म्हणणे, हातात सॉफ्ट ड्रिंक ठेवणे, आणि गरज वाटल्यास थोडा वेळ बाहेर जाणे",
   "plan.add": "योजना जतन करा",
   "plan.remove": "योजना काढून टाका",
   "plan.limit": "तुमच्याकडे {max} योजना आहेत, यापेक्षा जास्त ठेवता येत नाहीत. नवी योजना आखण्यासाठी एक काढून टाका.",

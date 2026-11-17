@@ -1,7 +1,9 @@
 import { PrintButton } from "@/components/print-button";
+import { ReportCsvButton } from "@/components/report-csv-button";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { MIN_GROUP, ROUND_TO, type ReportRow, monthLabel } from "@/lib/programme-count";
 import type { OutcomeRow, PercentDisplay } from "@/lib/programme-outcomes";
+import { reportCsv } from "@/lib/report-csv";
 
 const percent = (p: PercentDisplay) => (p.shown ? `about ${p.percent}%` : <span className="font-normal text-muted-foreground">not shown</span>);
 
@@ -58,7 +60,10 @@ export function ProgrammeReport({ name, rows, outcomes, example = false }: { nam
             ))}
           </tbody>
         </table>
-        <PrintButton label="Print or save as PDF" />
+        <div className="flex flex-wrap gap-2">
+          <PrintButton label="Print or save as PDF" />
+          <ReportCsvButton csv={reportCsv(name, rows, outcomes)} />
+        </div>
       </section>
 
       {outcomes && (

@@ -497,6 +497,9 @@ export const gu: Dictionary = {
     "આ ફક્ત આ પ્રિન્ટઆઉટ માટે છે. અહીં તમે જે લખો છો તે ક્યાંય સાચવવામાં કે મોકલવામાં આવતું નથી.",
   "report.notesLabel": "મારે જે કહેવું અથવા પૂછવું છે",
   "report.includePlans": "મુશ્કેલ સમય માટે મારી યોજનાઓ સામેલ કરો",
+  "report.apptWhen": "મુલાકાતની તારીખ અને સમય (તમારા કેલેન્ડરમાં ઉમેરવા માટે)",
+  "report.apptSave": "મારા કેલેન્ડરમાં સાચવો",
+  "report.apptTitle": "મુલાકાત: મારો Recoverly સારાંશ સાથે લઈ જવો",
   "report.plansHeading": "મુશ્કેલ સમય માટે મારી યોજનાઓ (મેં લખેલી)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
@@ -662,6 +665,15 @@ export const gu: Dictionary = {
   "plan.whenPlaceholder": "કામ પછી મને તણાવ લાગે છે",
   "plan.thenLabel": "…ત્યારે હું આ કરીશ",
   "plan.thenPlaceholder": "હું દસ મિનિટ ચાલું છું અને મારી બહેનને ફોન કરું છું",
+  "plan.starters": "વિચાર જોઈએ છે? આમાંથી એકથી શરૂ કરો:",
+  "plan.starterHome.label": "સુરક્ષિત રીતે ઘરે પહોંચવું",
+  "plan.starterHome.when": "મારે એવી જગ્યાએ જવાનું છે જ્યાં દારૂ હશે",
+  "plan.starterHome.then":
+    "જતાં પહેલાં ઘરે પાછા ફરવાની રીત નક્કી કરીશ, અને દારૂ પીધા પછી ક્યારેય ગાડી ચલાવીશ નહીં",
+  "plan.starterFestival.label": "કોઈ ઉજવણી અથવા લગ્ન",
+  "plan.starterFestival.when": "કોઈ ઉજવણીમાં કોઈ મને દારૂ ઓફર કરે છે",
+  "plan.starterFestival.then":
+    "'ના, આભાર' કહીશ, હાથમાં કોઈ સોફ્ટ ડ્રિંક રાખીશ, અને જરૂર પડે તો થોડીવાર બહાર જઈશ",
   "plan.add": "યોજના સાચવો",
   "plan.remove": "યોજના દૂર કરો",
   "plan.limit": "તમારી પાસે {max} યોજનાઓ છે, આનાથી વધુ રાખી શકાતી નથી. નવી બનાવવા માટે એક દૂર કરો.",

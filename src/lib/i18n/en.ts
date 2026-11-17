@@ -653,6 +653,9 @@ export const en: Dictionary = {
   "report.prepHint": "This is only for this printout. Nothing you type here is saved or sent anywhere.",
   "report.notesLabel": "What I want to tell or ask",
   "report.includePlans": "Include my plans for hard moments",
+  "report.apptWhen": "Appointment date and time (to add to your calendar)",
+  "report.apptSave": "Save to my calendar",
+  "report.apptTitle": "Appointment: bring my Recoverly summary",
   "report.plansHeading": "My plans for hard moments (written by me)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
@@ -846,6 +849,13 @@ export const en: Dictionary = {
   "plan.whenPlaceholder": "I feel stressed after work",
   "plan.thenLabel": "…I will do this",
   "plan.thenPlaceholder": "I walk for ten minutes and call my sister",
+  "plan.starters": "Need an idea? Start from one:",
+  "plan.starterHome.label": "Getting home safely",
+  "plan.starterHome.when": "I am going out where there will be drinks",
+  "plan.starterHome.then": "I decide how I get home before I go, and I never drive after drinking",
+  "plan.starterFestival.label": "A celebration or wedding",
+  "plan.starterFestival.when": "Someone offers me a drink at a celebration",
+  "plan.starterFestival.then": "I say 'no thanks', hold a soft drink, and step outside if I need a break",
   "plan.add": "Save plan",
   "plan.remove": "Remove plan",
   "plan.limit": "You have {max} plans, which is the most you can keep. Remove one to make a new one.",

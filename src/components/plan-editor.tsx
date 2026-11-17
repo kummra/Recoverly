@@ -137,6 +137,29 @@ export function PlanEditor({ userId }: { userId: string }) {
                 placeholder={t("plan.thenPlaceholder")}
               />
             </div>
+            <div className="space-y-1.5">
+              <p className="text-xs text-subtle">{t("plan.starters")}</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: t("plan.starterHome.label"), when: t("plan.starterHome.when"), then: t("plan.starterHome.then") },
+                  { label: t("plan.starterFestival.label"), when: t("plan.starterFestival.when"), then: t("plan.starterFestival.then") }
+                ].map((starter) => (
+                  <Button
+                    key={starter.label}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setWhen(starter.when);
+                      setThen(starter.then);
+                      setStatus(null);
+                    }}
+                  >
+                    {starter.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
             <Button type="submit" disabled={!ready} className="w-full sm:w-auto">
               {t("plan.add")}
             </Button>

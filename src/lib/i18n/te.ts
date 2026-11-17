@@ -496,6 +496,9 @@ export const te: Dictionary = {
   "report.prepHint": "ఇది ఈ ప్రింట్‌అవుట్ కోసం మాత్రమే. ఇక్కడ మీరు టైప్ చేసేది ఎక్కడా సేవ్ చేయబడదు, పంపబడదు.",
   "report.notesLabel": "నేను చెప్పాలనుకునేది లేదా అడగాలనుకునేది",
   "report.includePlans": "కష్ట సమయాల కోసం నా ప్లాన్‌లను చేర్చండి",
+  "report.apptWhen": "అపాయింట్‌మెంట్ తేదీ, సమయం (మీ క్యాలెండర్‌లో చేర్చడానికి)",
+  "report.apptSave": "నా క్యాలెండర్‌లో సేవ్ చేయి",
+  "report.apptTitle": "అపాయింట్‌మెంట్: నా Recoverly సారాంశాన్ని తీసుకెళ్లాలి",
   "report.plansHeading": "కష్ట సమయాల కోసం నా ప్లాన్‌లు (నేను రాసినవి)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
@@ -662,6 +665,15 @@ export const te: Dictionary = {
   "plan.whenPlaceholder": "పని తర్వాత నాకు ఒత్తిడిగా అనిపిస్తుంది",
   "plan.thenLabel": "…నేను ఇది చేస్తాను",
   "plan.thenPlaceholder": "పది నిమిషాలు నడిచి, అక్కకు ఫోన్ చేస్తాను",
+  "plan.starters": "ఆలోచన కావాలా? వీటిలో ఒకదానితో మొదలుపెట్టండి:",
+  "plan.starterHome.label": "సురక్షితంగా ఇంటికి చేరడం",
+  "plan.starterHome.when": "మద్యం ఉండే చోటికి నేను వెళ్లాలి",
+  "plan.starterHome.then":
+    "వెళ్లే ముందే ఇంటికి చేరే మార్గం నిర్ణయించుకుంటాను, తాగిన తర్వాత ఎప్పుడూ డ్రైవ్ చేయను",
+  "plan.starterFestival.label": "ఒక వేడుక లేదా పెళ్లి",
+  "plan.starterFestival.when": "వేడుకలో ఎవరైనా నాకు మద్యం ఇస్తారు",
+  "plan.starterFestival.then":
+    "'వద్దు, ధన్యవాదాలు' అంటాను, చేతిలో శీతల పానీయం ఉంచుకుంటాను, అవసరమైతే కాసేపు బయటకు వెళ్తాను",
   "plan.add": "ప్లాన్ సేవ్ చేయి",
   "plan.remove": "ప్లాన్ తొలగించు",
   "plan.limit": "మీకు {max} ప్లాన్‌లు ఉన్నాయి, అంతకంటే ఎక్కువ ఉంచుకోలేరు. కొత్తది చేయడానికి ఒకదాన్ని తొలగించండి.",
