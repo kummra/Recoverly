@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AlertCircle, Building2, Check } from "lucide-react";
 
 import { HeadcountChoice, useProgrammePrivacy } from "@/components/headcount-choice";
+import { ProgrammePlansChoice } from "@/components/programme-plans-choice";
 import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +14,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useProgramme } from "@/hooks/use-programme";
 import { type Programme, normaliseCode } from "@/lib/programme";
 import { clearPendingCode, clearProgramme, lookupProgramme, saveProgramme, setCounted, setFigures } from "@/lib/programme-membership";
+import { addProgrammePlans, newPlanId } from "@/lib/programme-plans";
 import { stopOwnCopy } from "@/lib/workspace-client";
 import { clearWorkspacePrefs } from "@/lib/workspace-prefs";
 
@@ -42,15 +44,20 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
   const [offered, setOffered] = useState<Programme | null>(null);
   const [wantsCount, setWantsCount] = useState(false);
   const [wantsFigures, setWantsFigures] = useState(false);
+  const [wantsPlans, setWantsPlans] = useState(false);
 
-  const finishJoin = (found: Programme, withCount: boolean, withFigures: boolean) => {
+  const finishJoin = (found: Programme, withCount: boolean, withFigures: boolean, withPlans: boolean) => {
     if (saveProgramme(userId, found, { counted: withCount, figures: withFigures })) {
+      if (withPlans && !addProgrammePlans(userId, found, newPlanId).ok) {
+        setNote({ kind: "error", text: t("programme.errStore") });
+      }
       clearPendingCode();
       setProgramme(found);
       setCode("");
       setOffered(null);
       setWantsCount(false);
       setWantsFigures(false);
+      setWantsPlans(false);
       setNote({ kind: "ok", text: t("programme.joinedOk", { name: found.name }) });
     } else {
       setNote({ kind: "error", text: t("programme.errStore") });
@@ -72,12 +79,13 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
       setNote({ kind: "error", text: t(result.reason === "busy" || result.reason === "network" ? "programme.checkFailed" : "programme.notFound") });
       return;
     }
-    if (result.programme.headcount) {
+    if (result.programme.headcount || result.programme.plans?.length) {
       setWantsCount(false);
       setWantsFigures(false);
+      setWantsPlans(false);
       setOffered(result.programme);
     } else {
-      finishJoin(result.programme, false, false);
+      finishJoin(result.programme, false, false, false);
     }
   };
 
@@ -140,8 +148,9 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
               figures={wantsFigures}
               onFiguresChange={setWantsFigures}
             />
+            <ProgrammePlansChoice programme={offered} checked={wantsPlans} onChange={setWantsPlans} />
             <div className="flex flex-wrap gap-2">
-              <Button type="button" onClick={() => finishJoin(offered, wantsCount, wantsFigures)}>
+              <Button type="button" onClick={() => finishJoin(offered, wantsCount, wantsFigures, wantsPlans)}>
                 {t("programme.join")}
               </Button>
               <Button type="button" variant="outline" onClick={() => setOffered(null)}>

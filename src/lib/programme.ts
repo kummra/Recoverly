@@ -71,7 +71,15 @@ export type Programme = {
    * only where the owner has set it up; a person is never asked unless it is on.
    */
   workspace?: boolean;
+  /**
+   * Up to three ready-made "when this happens, I will do that" plans the organisation (a clinic
+   * after discharge, above all) offers. A person may copy them into their own plans, on their device
+   * only; nothing flows back, and the organisation is not told whether they did.
+   */
+  plans?: ProgrammePlan[];
 };
+
+export type ProgrammePlan = { when: string; then: string };
 
 export const PROGRAMME_LIMITS = {
   codeMin: 4,
@@ -86,6 +94,8 @@ export const PROGRAMME_LIMITS = {
   emailMax: 120,
   urlMax: 200,
   contactsMax: 4,
+  plansMax: 3,
+  planTextMax: 120,
   phoneDigitsMin: 3,
   phoneDigitsMax: 15
 } as const;
@@ -188,6 +198,11 @@ export function sanitiseProgramme(input: unknown): Programme | null {
   if (raw.headcount === true) programme.headcount = true;
   if (raw.figures === true && programme.headcount) programme.figures = true;
   if (raw.workspace === true) programme.workspace = true;
+  const plans = (Array.isArray(raw.plans) ? raw.plans : [])
+    .map(cleanPlan)
+    .filter((p): p is ProgrammePlan => p !== null)
+    .slice(0, PROGRAMME_LIMITS.plansMax);
+  if (plans.length) programme.plans = plans;
   return programme;
 }
 
@@ -205,6 +220,14 @@ export function isSample(programme: Programme): boolean {
  * sentences. The tests run this over every entry, so a typo in a new
  * organisation's number or link fails the build instead of reaching its people.
  */
+function cleanPlan(value: unknown): ProgrammePlan | null {
+  if (typeof value !== "object" || value === null) return null;
+  const raw = value as Record<string, unknown>;
+  const when = cleanText(raw.when, PROGRAMME_LIMITS.planTextMax);
+  const then = cleanText(raw.then, PROGRAMME_LIMITS.planTextMax);
+  return when && then ? { when, then } : null;
+}
+
 export function validateProgramme(programme: Programme): string[] {
   const problems: string[] = [];
   const at = (message: string) => `${programme.code || "(no code)"}: ${message}`;
@@ -230,6 +253,14 @@ export function validateProgramme(programme: Programme): string[] {
   if (programme.figures !== undefined && typeof programme.figures !== "boolean") problems.push(at("figures must be true or false"));
   if (programme.figures && !programme.headcount) problems.push(at("figures are only offered together with the headcount"));
   if (programme.workspace !== undefined && typeof programme.workspace !== "boolean") problems.push(at("workspace must be true or false"));
+  if (programme.plans !== undefined) {
+    if (!Array.isArray(programme.plans) || programme.plans.length > L.plansMax) problems.push(at(`at most ${L.plansMax} plans`));
+    else {
+      for (const plan of programme.plans) {
+        if (cleanPlan(plan)?.when !== plan?.when || cleanPlan(plan)?.then !== plan?.then) problems.push(at(`each plan needs a "when" and a "then", 1 to ${L.planTextMax} characters on one line`));
+      }
+    }
+  }
 
   if (programme.contacts.length > L.contactsMax) problems.push(at(`at most ${L.contactsMax} contacts`));
   programme.contacts.forEach((contact, i) => {

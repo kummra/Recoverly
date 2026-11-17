@@ -5,6 +5,7 @@ import { Building2, ExternalLink, Mail, Phone } from "lucide-react";
 
 import { HeadcountChoice, useProgrammePrivacy } from "@/components/headcount-choice";
 import { useI18n } from "@/components/i18n-provider";
+import { ProgrammePlansChoice } from "@/components/programme-plans-choice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -12,6 +13,7 @@ import { useProgramme } from "@/hooks/use-programme";
 import { type Programme, isSample, welcomeFor } from "@/lib/programme";
 import { getDrinkRecords } from "@/lib/firestore";
 import { tickIfDue } from "@/lib/programme-headcount";
+import { addProgrammePlans, newPlanId } from "@/lib/programme-plans";
 import { buildProgressFigures } from "@/lib/progress-figures";
 import {
   clearPendingCode,
@@ -158,6 +160,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   const [failed, setFailed] = useState(false);
   const [counted, setCounted] = useState(false);
   const [figures, setFigures] = useState(false);
+  const [plans, setPlans] = useState(false);
 
   useEffect(() => {
     const code = loadPendingCode();
@@ -180,6 +183,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
 
   const join = () => {
     if (saveProgramme(userId, pending, { counted, figures })) {
+      if (plans && !addProgrammePlans(userId, pending, newPlanId).ok) setFailed(true);
       clearPendingCode();
       setPending(null);
     } else {
@@ -211,6 +215,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
           figures={figures}
           onFiguresChange={setFigures}
         />
+        <ProgrammePlansChoice programme={pending} checked={plans} onChange={setPlans} />
         {failed && (
           <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">
             {t("programme.errStore")}

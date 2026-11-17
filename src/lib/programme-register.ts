@@ -31,6 +31,8 @@
  *      only once at least 20 people are counted.
  *
  * TO OFFER MORE (each needs `report` above, and each is still the person's own unticked choice)
+ *   - `plans: [{ when, then }]` up to three ready-made plans (a clinic's aftercare) a person may copy
+ *                       into their own device-only plans when they join. Nothing flows back. No `report` needed.
  *   - `figures: true`   anonymous progress-figure averages (lib/progress-figures.ts), shown on the
  *                       same report page, only for groups of 20 or more.
  *   - `workspace: {}`   a private team workspace (lib/workspace.ts) where people who choose to can

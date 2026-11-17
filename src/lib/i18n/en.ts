@@ -918,6 +918,9 @@ export const en: Dictionary = {
   "programme.figuresLabel": "Also add two figures about my previous month to the group's averages",
   "programme.figuresHelp":
     "Once a month, when you are counted, your device also works out two numbers from your own records: the share of last month's days with no drink, and whether you drank less than the month before. Only those two numbers are sent, with no name or account, and they are added into averages for {name}. {name} sees the averages only when at least 20 people have shared, rounded to the nearest 5. Your records themselves are never sent. You can turn this off any time in Settings.",
+  "programme.plansLabel": "Add {name}'s suggested plans to my plans",
+  "programme.plansHelp":
+    "Ready-made plans for hard moments, written by {name}. They are saved in your own plans, on this device only, and you can change or remove them at any time. {name} is not told whether you add them.",
   "workspace.title": "Share with {name}'s team",
   "workspace.intro":
     "If you want to, you can share your own progress with the team at {name}, under a name you choose. Only that team can read it: it is scrambled on this device for their key, so Recoverly cannot read it either. It is off unless you turn it on, and you can stop whenever you like.",
