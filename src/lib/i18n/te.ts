@@ -500,6 +500,12 @@ export const te: Dictionary = {
   "report.apptSave": "నా క్యాలెండర్‌లో సేవ్ చేయి",
   "report.apptTitle": "అపాయింట్‌మెంట్: నా Recoverly సారాంశాన్ని తీసుకెళ్లాలి",
   "report.contactHeading": "బృందం తమను సంప్రదించమని కోరారు",
+  "report.supporterTitle": "నాకు తోడుగా ఉండే వ్యక్తికి సందేశం",
+  "report.supporterIntro": "మీరు మార్చి, కాపీ చేసి, మీరే పంపగల చిన్న అప్‌డేట్. Recoverly ఏమీ పంపదు.",
+  "report.supporterTemplate":
+    "నమస్తే, నా నుండి ఒక చిన్న అప్‌డేట్. ఈ నెలలో నేను {month} ml నమోదు చేశాను, గత నెల {previous} ml. ఇప్పటివరకు {days} రోజుల్లో {free} రోజులు మద్యం లేకుండా గడిచాయి, నా వరుస మద్యం-లేని రోజులు ప్రస్తుతం {streak}. తోడుగా ఉన్నందుకు ధన్యవాదాలు.",
+  "report.supporterCopy": "సందేశాన్ని కాపీ చేయి",
+  "report.supporterCopied": "కాపీ అయింది",
   "report.plansHeading": "కష్ట సమయాల కోసం నా ప్లాన్‌లు (నేను రాసినవి)",
 
   // Summary links: the creator on the report page, and the page a recipient sees

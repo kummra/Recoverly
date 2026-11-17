@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/components/protected-route";
 import { useT } from "@/components/i18n-provider";
 import { ShareSummary } from "@/components/share-summary";
 import { buildAppointmentIcs } from "@/lib/ics";
+import { SupporterMessage } from "@/components/supporter-message";
 import { WorkspaceShare } from "@/components/workspace-share";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -231,6 +232,7 @@ function ReportContent() {
 
       <ShareSummary facts={facts} />
       <WorkspaceShare facts={facts} />
+      <SupporterMessage facts={facts} />
 
       <article className="space-y-6 rounded-2xl border border-border bg-card p-6 print:border-0 print:p-0">
         <header className="border-b border-border pb-4">

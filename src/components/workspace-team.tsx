@@ -71,7 +71,15 @@ export function WorkspaceTeam({ token, code, name, publicKey, keyId }: { token: 
   if (!ready) {
     body = <p role="status" className="text-sm text-muted-foreground">Loading…</p>;
   } else if (privateKey) {
-    body = <Board token={token} name={name} privateKey={privateKey} onLock={() => setPrivateKey(null)} />;
+    body = (
+      <Board
+        token={token}
+        name={name}
+        privateKey={privateKey}
+        onLock={() => setPrivateKey(null)}
+        onSaveKeyFile={locked && publicKey ? () => download(`recoverly-team-key-${code}.json`, keyFileText(code, locked, publicKey)) : undefined}
+      />
+    );
   } else if (!publicKey) {
     body = locked && pending ? <AwaitingPanel code={code} name={name} locked={locked} publicKey={pending} onStartOver={startOver} /> : (
       <SetupPanel
@@ -382,7 +390,7 @@ type Loaded = { entries: Entry[]; unreadable: number; loadedAt: number };
 type BoardState = { status: "loading" } | { status: "error"; busy: boolean } | { status: "ready"; data: Loaded };
 
 /** Fetch what people have shared, open it with the team's key, and show it. */
-function Board({ token, name, privateKey, onLock }: { token: string; name: string; privateKey: JsonWebKey; onLock: () => void }) {
+function Board({ token, name, privateKey, onLock, onSaveKeyFile }: { token: string; name: string; privateKey: JsonWebKey; onLock: () => void; onSaveKeyFile?: () => void }) {
   const [state, setState] = useState<BoardState>({ status: "loading" });
 
   const load = useCallback(async () => {
@@ -406,11 +414,11 @@ function Board({ token, name, privateKey, onLock }: { token: string; name: strin
     void load();
   }, [load]);
 
-  return <BoardView name={name} state={state} onRefresh={() => void load()} onLock={onLock} />;
+  return <BoardView name={name} state={state} onRefresh={() => void load()} onLock={onLock} onSaveKeyFile={onSaveKeyFile} />;
 }
 
 /** What the team sees, from whatever has been opened. Also used, with invented people, for the public example. */
-function BoardView({ name, state, onRefresh, onLock }: { name: string; state: BoardState; onRefresh?: () => void; onLock?: () => void }) {
+function BoardView({ name, state, onRefresh, onLock, onSaveKeyFile }: { name: string; state: BoardState; onRefresh?: () => void; onLock?: () => void; onSaveKeyFile?: () => void }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const open = state.status === "ready" ? state.data.entries.find((entry) => entry.id === openId) : undefined;
 
@@ -419,15 +427,20 @@ function BoardView({ name, state, onRefresh, onLock }: { name: string; state: Bo
       <p className={`${NOTE} bg-emerald-500/10 leading-relaxed text-emerald-800 dark:text-emerald-200`}>
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
         <span>
-          Everyone listed here chose to share this with {name}&apos;s team, under the name they gave, and can stop at any time. Use it only to support them. Never make sharing a condition of care, employment or cover, never pass it on, and remember that each copy ends {WORKSPACE_LIMITS.expiryDays} days after the person last sent it.
+          Everyone listed here chose to share this with {name}&apos;s team, under the name they gave, and can stop at any time. Use it only to support them. To let a colleague open this workspace, give them the key file and the passphrase by separate routes, never together. Never make sharing a condition of care, employment or cover, never pass it on, and remember that each copy ends {WORKSPACE_LIMITS.expiryDays} days after the person last sent it.
         </span>
       </p>
 
-      {(onRefresh || onLock) && (
+      {(onRefresh || onLock || onSaveKeyFile) && (
         <div className="flex flex-wrap gap-2 print:hidden">
           {onRefresh && (
             <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={onRefresh}>
               <RefreshCw className="h-4 w-4" aria-hidden /> Refresh
+            </Button>
+          )}
+          {onSaveKeyFile && (
+            <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={onSaveKeyFile}>
+              <Download className="h-4 w-4" aria-hidden /> Save key file for a colleague
             </Button>
           )}
           {onLock && (

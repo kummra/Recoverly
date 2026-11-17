@@ -502,6 +502,13 @@ export const ml: Dictionary = {
   "report.apptSave": "എന്റെ കലണ്ടറിൽ സൂക്ഷിക്കുക",
   "report.apptTitle": "അപ്പോയിന്റ്‌മെന്റ്: എന്റെ Recoverly സംഗ്രഹം കൊണ്ടുപോകുക",
   "report.contactHeading": "ടീം തങ്ങളെ ബന്ധപ്പെടണമെന്ന് അഭ്യർത്ഥിച്ചിരിക്കുന്നു",
+  "report.supporterTitle": "എന്നെ പിന്തുണയ്ക്കുന്ന ഒരാൾക്കുള്ള സന്ദേശം",
+  "report.supporterIntro":
+    "നിങ്ങൾക്ക് തന്നെ മാറ്റി, പകർത്തി, അയയ്ക്കാവുന്ന ഒരു ചെറിയ അപ്ഡേറ്റ്. Recoverly ഒന്നും അയയ്ക്കില്ല.",
+  "report.supporterTemplate":
+    "നമസ്കാരം, എന്റെ ഭാഗത്തുനിന്ന് ഒരു ചെറിയ അപ്ഡേറ്റ്. ഈ മാസം ഞാൻ {month} ml രേഖപ്പെടുത്തി, കഴിഞ്ഞ മാസം {previous} ml ആയിരുന്നു. ഇതുവരെ {days} ദിവസങ്ങളിൽ {free} ദിവസം മദ്യമില്ലാതെ കടന്നുപോയി, എന്റെ തുടർച്ചയായ മദ്യരഹിത ദിവസങ്ങൾ ഇപ്പോൾ {streak} ആണ്. കൂടെ നിന്നതിന് നന്ദി.",
+  "report.supporterCopy": "സന്ദേശം പകർത്തുക",
+  "report.supporterCopied": "പകർത്തി",
   "report.plansHeading": "ബുദ്ധിമുട്ടുള്ള നിമിഷങ്ങൾക്കുള്ള എന്റെ പദ്ധതികൾ (ഞാൻ എഴുതിയത്)",
 
   // Summary links: the creator on the report page, and the page a recipient sees

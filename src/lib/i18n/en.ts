@@ -657,6 +657,13 @@ export const en: Dictionary = {
   "report.apptSave": "Save to my calendar",
   "report.apptTitle": "Appointment: bring my Recoverly summary",
   "report.contactHeading": "Asked the team to contact them",
+  "report.supporterTitle": "A message for someone who supports me",
+  "report.supporterIntro":
+    "A short update you can edit, copy and send yourself. Nothing is sent by Recoverly.",
+  "report.supporterTemplate":
+    "Hi, a quick update from me. This month I have logged {month} ml, compared with {previous} ml last month. I have had {free} alcohol-free days out of {days} so far, and my current alcohol-free streak is {streak}. Thank you for being there.",
+  "report.supporterCopy": "Copy message",
+  "report.supporterCopied": "Copied",
   "report.plansHeading": "My plans for hard moments (written by me)",
 
   // Summary links: the creator on the report page, and the page a recipient sees

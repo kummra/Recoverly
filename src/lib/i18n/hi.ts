@@ -517,6 +517,13 @@ export const hi: Dictionary = {
   "report.apptSave": "मेरे कैलेंडर में सहेजें",
   "report.apptTitle": "अपॉइंटमेंट: अपना Recoverly सारांश साथ ले जाएँ",
   "report.contactHeading": "टीम से संपर्क करने को कहा है",
+  "report.supporterTitle": "मेरा साथ देने वाले किसी के लिए संदेश",
+  "report.supporterIntro":
+    "एक छोटा अपडेट जिसे आप बदलकर कॉपी करके खुद भेज सकते हैं। Recoverly कुछ नहीं भेजता।",
+  "report.supporterTemplate":
+    "नमस्ते, मेरी तरफ़ से एक छोटा अपडेट। इस महीने मैंने {month} ml दर्ज किया, जबकि पिछले महीने {previous} ml था। अब तक {days} में से {free} दिन बिना शराब के रहे, और मेरे लगातार बिना शराब वाले दिन अभी {streak} हैं। साथ देने के लिए धन्यवाद।",
+  "report.supporterCopy": "संदेश कॉपी करें",
+  "report.supporterCopied": "कॉपी हो गया",
   "report.plansHeading": "मुश्किल पलों के लिए मेरी योजनाएँ (मेरी लिखी हुई)",
 
   // Summary links: the creator on the report page, and the page a recipient sees

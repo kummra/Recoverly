@@ -502,6 +502,13 @@ export const ta: Dictionary = {
   "report.apptSave": "என் நாட்காட்டியில் சேமி",
   "report.apptTitle": "சந்திப்பு: என் Recoverly சுருக்கத்தைக் கொண்டு செல்லவும்",
   "report.contactHeading": "குழு தம்மைத் தொடர்புகொள்ளுமாறு கேட்டுள்ளனர்",
+  "report.supporterTitle": "எனக்குத் துணை நிற்பவருக்கான செய்தி",
+  "report.supporterIntro":
+    "நீங்களே மாற்றி, நகலெடுத்து அனுப்பக்கூடிய ஒரு சிறு தகவல். Recoverly எதையும் அனுப்பாது.",
+  "report.supporterTemplate":
+    "வணக்கம், என்னிடமிருந்து ஒரு சிறு தகவல். இந்த மாதம் நான் {month} ml பதிவு செய்தேன், கடந்த மாதம் {previous} ml. இதுவரை {days} நாட்களில் {free} நாட்கள் மது இல்லாமல் கழிந்தன, என் தொடர்ச்சியான மது இல்லாத நாட்கள் இப்போது {streak}. துணை நிற்பதற்கு நன்றி.",
+  "report.supporterCopy": "செய்தியை நகலெடு",
+  "report.supporterCopied": "நகலெடுக்கப்பட்டது",
   "report.plansHeading": "கடினமான தருணங்களுக்கான எனது திட்டங்கள் (நானே எழுதியவை)",
 
   // Summary links: the creator on the report page, and the page a recipient sees
