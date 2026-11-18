@@ -16,12 +16,12 @@ import type { ProgressFigures } from "@/lib/progress-figures";
 type Fetch = typeof fetch;
 
 /** `true` when the tick needs no retry this month: sent, or the programme no longer asks for ticks. */
-export async function sendTick(code: string, token: string, fetchImpl: Fetch = fetch, figures?: ProgressFigures | null): Promise<boolean> {
+export async function sendTick(code: string, token: string, fetchImpl: Fetch = fetch, figures?: ProgressFigures | null, challenge = false): Promise<boolean> {
   try {
     const response = await fetchImpl("/api/programme/count", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify(figures ? { code, figures } : { code })
+      body: JSON.stringify({ code, ...(figures ? { figures } : {}), ...(challenge ? { challenge: true } : {}) })
     });
     return response.ok || response.status === 404;
   } catch {
@@ -59,7 +59,7 @@ export async function tickIfDue(
         figures = null; // the count still goes; figures are a bonus
       }
     }
-    sent = token ? await sendTick(membership.programme.code, token, options.fetchImpl, figures) : false;
+    sent = token ? await sendTick(membership.programme.code, token, options.fetchImpl, figures, membership.challenge) : false;
   } catch {
     sent = false;
   }

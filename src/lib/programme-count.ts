@@ -26,6 +26,9 @@ export const ROUND_TO = 5;
 /** How many months a report lists. */
 export const REPORT_MONTHS = 6;
 
+/** The challenge count lives beside the headcount under this suffix. A real code has no colon, so it can never collide with one. */
+export const CHALLENGE_SUFFIX = ":DRY";
+
 /** The pair of numbers in "2026-11": a year and a month (1 to 12), or `null`. */
 export function parseMonthKey(value: unknown): { year: number; month: number } | null {
   if (typeof value !== "string") return null;

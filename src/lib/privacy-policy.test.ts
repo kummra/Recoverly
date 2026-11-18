@@ -73,6 +73,16 @@ describe("the English policy states what the code does", () => {
     expect(body).toMatch(/no name, no account and no list/);
   });
 
+  it("states the dry-month challenge: optional, a count only, shown for groups, never checked or rewarded", () => {
+    const body = en["privacy.s16Body"];
+    expect(body).toMatch(/only if the programme offers it, you are counted, and you tick that box/);
+    expect(body).toMatch(/untick it at any time/);
+    expect(body).toContain(`at least ${MIN_GROUP} are`);
+    expect(body).toContain(`nearest ${ROUND_TO}`);
+    expect(body).toMatch(/no name, no account and no list/);
+    expect(body).toMatch(/do not check or reward taking part/);
+  });
+
   it("states the team workspace: only a clinic or community service, never a workplace or a college, off until turned on, scrambled so we cannot read it, ends, and can be stopped", () => {
     const body = en["privacy.s15Body"];
     expect(WORKSPACE_KINDS).toEqual(["clinic", "community"]);
@@ -133,6 +143,11 @@ describe("every translation of the policy states the same numbers", () => {
       expect(dict["programme.privateWorkspace"], `${locale} privateWorkspace`).toContain(String(MIN_GROUP));
       // The progress figures: group size and rounding, here and beside the tick.
       for (const key of ["privacy.s14Body", "programme.figuresHelp"]) {
+        expect(dict[key], `${locale} ${key}`).toContain(String(MIN_GROUP));
+        expect(dict[key], `${locale} ${key}`).toMatch(new RegExp(`(^|[^0-9])${ROUND_TO}([^0-9]|$)`));
+      }
+      // The dry-month challenge: group size and rounding, here and beside the tick.
+      for (const key of ["privacy.s16Body", "programme.challengeHelp"]) {
         expect(dict[key], `${locale} ${key}`).toContain(String(MIN_GROUP));
         expect(dict[key], `${locale} ${key}`).toMatch(new RegExp(`(^|[^0-9])${ROUND_TO}([^0-9]|$)`));
       }

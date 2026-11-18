@@ -17,7 +17,7 @@ const percent = (p: PercentDisplay) => (p.shown ? `about ${p.percent}%` : <span 
  *
  * Plain and server-rendered: no script, and nothing here knows a person.
  */
-export function ProgrammeReport({ name, rows, outcomes, example = false, groupNote }: { name: string; rows: ReportRow[]; outcomes?: OutcomeRow[]; example?: boolean; groupNote?: string }) {
+export function ProgrammeReport({ name, rows, outcomes, example = false, groupNote, challengeRows }: { name: string; rows: ReportRow[]; outcomes?: OutcomeRow[]; example?: boolean; groupNote?: string; challengeRows?: ReportRow[] }) {
   return (
     <div lang="en" className="mx-auto max-w-3xl space-y-8">
       {example && (
@@ -66,6 +66,39 @@ export function ProgrammeReport({ name, rows, outcomes, example = false, groupNo
           <ReportCsvButton csv={reportCsv(name, rows, outcomes)} />
         </div>
       </section>
+
+      {challengeRows && (
+        <section aria-labelledby="challenge" className="space-y-3">
+          <h2 id="challenge" className="text-lg font-semibold">
+            People taking part in the dry-month challenge
+          </h2>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            People who ticked the challenge add one to this count once a month. It says how many chose to take part, not how anyone is doing, and a month is shown only when at least {MIN_GROUP} people are in it.
+          </p>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-muted-foreground">
+                <th scope="col" className="py-2 pr-4 font-medium">
+                  Month
+                </th>
+                <th scope="col" className="py-2 text-right font-medium">
+                  People taking part
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {challengeRows.map((row) => (
+                <tr key={row.month} className="border-b border-border/60 last:border-0">
+                  <td className="py-2 pr-4 text-body">{monthLabel(row.month)}</td>
+                  <td className="py-2 text-right font-medium tabular-nums">
+                    {row.display.shown ? `about ${row.display.value}` : <span className="font-normal text-muted-foreground">fewer than {MIN_GROUP}</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
 
       {outcomes && (
         <section aria-labelledby="progress" className="space-y-3">

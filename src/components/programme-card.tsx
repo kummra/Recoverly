@@ -161,6 +161,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   const [counted, setCounted] = useState(false);
   const [figures, setFigures] = useState(false);
   const [plans, setPlans] = useState(false);
+  const [challenge, setChallenge] = useState(false);
 
   useEffect(() => {
     const code = loadPendingCode();
@@ -182,7 +183,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   if (!pending) return null;
 
   const join = () => {
-    if (saveProgramme(userId, pending, { counted, figures })) {
+    if (saveProgramme(userId, pending, { counted, figures, challenge })) {
       if (plans && !addProgrammePlans(userId, pending, newPlanId).ok) setFailed(true);
       clearPendingCode();
       setPending(null);
@@ -210,10 +211,15 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
           checked={counted}
           onChange={(next) => {
             setCounted(next);
-            if (!next) setFigures(false);
+            if (!next) {
+              setFigures(false);
+              setChallenge(false);
+            }
           }}
           figures={figures}
           onFiguresChange={setFigures}
+          challenge={challenge}
+          onChallengeChange={setChallenge}
         />
         <ProgrammePlansChoice programme={pending} checked={plans} onChange={setPlans} />
         {failed && (

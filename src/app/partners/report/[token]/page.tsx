@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { ProgrammeReport } from "@/components/programme-report";
 import { adminDb } from "@/lib/firebase-admin";
-import { buildReportRows } from "@/lib/programme-count";
+import { CHALLENGE_SUFFIX, buildReportRows } from "@/lib/programme-count";
 import { buildOutcomeRows } from "@/lib/programme-outcomes";
 import { firestoreCountStore } from "@/lib/programme-count-firestore";
 import { findProgrammeByReportKey } from "@/lib/programme-register";
@@ -39,6 +39,7 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
   if (!entry) notFound();
 
   let counts: Record<string, number> | null = null;
+  let challenge: Record<string, number> | null = null;
   let figures: Awaited<ReturnType<ReturnType<typeof firestoreCountStore>["readFigures"]>> | null = null;
   try {
     if (adminDb) {
@@ -46,6 +47,8 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
       counts = await store.read(entry.code);
       // The progress table exists only for an organisation that has agreed to receive it.
       if (entry.figures) figures = await store.readFigures(entry.code);
+      // The optional dry-month challenge count, kept beside the headcount.
+      if (entry.challenge) challenge = await store.read(`${entry.code}${CHALLENGE_SUFFIX}`);
     }
   } catch {
     counts = null;
@@ -63,5 +66,5 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
   }
 
   const now = new Date();
-  return <ProgrammeReport name={entry.name} rows={buildReportRows(counts, now)} outcomes={figures ? buildOutcomeRows(figures, now) : undefined} />;
+  return <ProgrammeReport name={entry.name} rows={buildReportRows(counts, now)} outcomes={figures ? buildOutcomeRows(figures, now) : undefined} challengeRows={challenge ? buildReportRows(challenge, now) : undefined} />;
 }

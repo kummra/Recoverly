@@ -18,6 +18,7 @@ export function useProgramme(userId: string | undefined) {
   const [programme, setProgramme] = useState<Programme | null>(null);
   const [counted, setCounted] = useState(false);
   const [figures, setFigures] = useState(false);
+  const [challenge, setChallenge] = useState(false);
 
   useEffect(() => {
     const read = () => {
@@ -25,6 +26,7 @@ export function useProgramme(userId: string | undefined) {
       setProgramme(membership?.programme ?? null);
       setCounted(membership?.counted ?? false);
       setFigures(membership?.figures ?? false);
+      setChallenge(membership?.challenge ?? false);
     };
     read();
     if (!userId) return;
@@ -42,5 +44,5 @@ export function useProgramme(userId: string | undefined) {
     };
   }, [userId]);
 
-  return [programme, setProgramme, counted, figures] as const;
+  return [programme, setProgramme, counted, figures, challenge] as const;
 }

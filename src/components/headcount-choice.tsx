@@ -29,7 +29,9 @@ export function HeadcountChoice({
   checked,
   onChange,
   figures = false,
-  onFiguresChange
+  onFiguresChange,
+  challenge = false,
+  onChallengeChange
 }: {
   programme: Programme;
   checked: boolean;
@@ -37,10 +39,14 @@ export function HeadcountChoice({
   /** Also share anonymous progress figures: only offered when the programme offers them and the person is counted. */
   figures?: boolean;
   onFiguresChange?: (figures: boolean) => void;
+  /** Also take part in the anonymous dry-month challenge: only offered when the programme runs one and the person is counted. */
+  challenge?: boolean;
+  onChallengeChange?: (challenge: boolean) => void;
 }) {
   const t = useT();
   const helpId = useId();
   const figuresHelpId = useId();
+  const challengeHelpId = useId();
   if (!programme.headcount) return null;
   return (
     <div className="space-y-1.5 rounded-xl border border-border bg-surface-muted/50 p-3">
@@ -72,6 +78,24 @@ export function HeadcountChoice({
           </label>
           <p id={figuresHelpId} className="-mt-1 pl-[1.625rem] text-xs leading-relaxed text-subtle">
             {t("programme.figuresHelp", { name: programme.name })}
+          </p>
+        </div>
+      )}
+      {programme.challenge && onChallengeChange && (
+        <div className="space-y-1 border-t border-border pt-2">
+          <label className={`flex min-h-9 items-start gap-2.5 py-1 text-sm font-medium ${checked ? "text-foreground" : "text-muted-foreground"}`}>
+            <input
+              type="checkbox"
+              checked={checked && challenge}
+              disabled={!checked}
+              aria-describedby={challengeHelpId}
+              onChange={(event) => onChallengeChange(event.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-600"
+            />
+            {t("programme.challengeLabel")}
+          </label>
+          <p id={challengeHelpId} className="-mt-1 pl-[1.625rem] text-xs leading-relaxed text-subtle">
+            {t("programme.challengeHelp", { name: programme.name })}
           </p>
         </div>
       )}

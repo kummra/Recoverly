@@ -145,6 +145,14 @@ practice mode, and every browser read or write of `workspaceCopies` refused (403
 Before enabling it, ask whether the people in that programme can freely say no to the clinic. If treatment, a court
 order or anything else depends on sharing, decline.
 
+## 8. Round 6 options in the register
+- `plans: [{ when, then }]` (up to 3) and `questions: ["..."]` (up to 3, for clinics with a workspace); plans need no report key.
+- `challenge: true` (needs `report`): adds the optional dry-month tick and a table on the report; counts live in `programmeCounts/{CODE}:DRY`.
+- `group: "Name"` on each district entry and `GROUPS: [{ name, keyHash }]` (make the key with `node scripts/make-report-key.mjs`): the
+  roll-up is at `/partners/group/<key>`. Restart the dev server after any register edit.
+- Read-only checks: `/trust`, `/partners/pilot`, `/partners/faq`, `/press`, `/accessibility`, `/.well-known/security.txt` all 200;
+  `/partners/group/not-a-real-key-not-a-real-key` is a real 404.
+
 ## Notes
 - This local repo has **no git remote**. Confirm how Vercel builds (connected GitHub repo
   vs. CLI) and point it at this consolidated codebase before relying on the live site.

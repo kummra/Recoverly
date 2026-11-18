@@ -10,7 +10,7 @@
  * added without that test, and this note, being changed on purpose.
  */
 import { type Programme } from "@/lib/programme";
-import { monthKey } from "@/lib/programme-count";
+import { CHALLENGE_SUFFIX, monthKey } from "@/lib/programme-count";
 import { type OutcomeTotals, contribution } from "@/lib/programme-outcomes";
 import { cleanFigures } from "@/lib/progress-figures";
 
@@ -30,7 +30,7 @@ export interface CountStore {
 }
 
 export type TickResult =
-  | { ok: true; month: string; counted: boolean; figuresCounted: boolean }
+  | { ok: true; month: string; counted: boolean; figuresCounted: boolean; challengeCounted: boolean }
   | { ok: false; status: number; error: string };
 
 /**
@@ -42,10 +42,10 @@ export type TickResult =
  * accepts the tick and stores nothing, so the choice can be tried out without
  * leaving anything behind.
  */
-export async function recordTick(store: CountStore, programme: Programme | null, now: Date, figures?: unknown): Promise<TickResult> {
+export async function recordTick(store: CountStore, programme: Programme | null, now: Date, figures?: unknown, challenge?: unknown): Promise<TickResult> {
   if (!programme || !programme.headcount) return { ok: false, status: 404, error: "not-found" };
   const month = monthKey(now);
-  if (programme.kind === "sample") return { ok: true, month, counted: false, figuresCounted: false };
+  if (programme.kind === "sample") return { ok: true, month, counted: false, figuresCounted: false, challengeCounted: false };
   await store.increment(programme.code, month);
 
   // Progress figures ride along only where the organisation offers them and they are exactly
@@ -56,5 +56,11 @@ export async function recordTick(store: CountStore, programme: Programme | null,
     await store.addFigures(programme.code, clean.month, contribution(clean));
     figuresCounted = true;
   }
-  return { ok: true, month, counted: true, figuresCounted };
+  // The dry-month challenge: one more on a separate anonymous count, only where it is offered and asked for.
+  let challengeCounted = false;
+  if (programme.challenge && challenge === true) {
+    await store.increment(`${programme.code}${CHALLENGE_SUFFIX}`, month);
+    challengeCounted = true;
+  }
+  return { ok: true, month, counted: true, figuresCounted, challengeCounted };
 }

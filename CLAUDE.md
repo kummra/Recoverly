@@ -454,6 +454,23 @@ policy together, or it fails.
   could be pressured to share (a court-ordered programme, a clinic that makes it a condition of treatment), the consent
   is not free: say so when setting an organisation up, and decline it.
 
+**Round 6 additions (17-18 Nov 2026), all inside the rules above:**
+- Device-only helpers, no data flow: report CSV (`lib/report-csv.ts`, built from the rounded, thresholded rows only), calendar file for
+  an appointment (`lib/ics.ts`), plan starters, gentle milestones (`lib/milestones.ts`, never a countdown), a savings estimate
+  (`lib/savings.ts`, only when less was logged than last month), risk dates (`lib/risk-dates.ts`, shows the person's own plan 3 days
+  before) and a supporter message the person copies and sends themselves. Account deletion clears the prices and dates. The craving
+  screen already had a breathing timer.
+- A programme may carry up to three ready-made `plans` (aftercare) a person may copy into their own plans: unticked, device-only, the
+  organisation is not told (`lib/programme-plans.ts`). It may also carry up to three `questions`; typed answers travel only inside the
+  encrypted workspace summary (`ShareSnapshot.checkin`). A "please contact me" request travels the same way (`ShareSnapshot.contact`) and
+  the board pins those people first (`lib/workspace-board.ts`).
+- `group` plus `GROUPS` in the register give a private roll-up page (`/partners/group/{key}`) that sums only districts reaching 20 alone.
+- Content pages: `/trust`, `/press`, `/accessibility`, `/partners/faq`, `/partners/pilot`, `/partners/compliance`, `/partners/regional`, and
+  the toolkit's campaigns, disclosure protocol, help-a-friend, orientation and clinic handout (all in the footer's "All pages" block).
+- Not built: shift-aware quiet hours (reminders are server-side profile data), a self-serve organisation portal, an owner dashboard,
+  scheduled report emails, an anonymous pulse survey, offline/voice mode, co-branding logos, a referral directory, a pricing page.
+- Verified by unit tests; the round-6 screens were not clicked through on the emulator (the workspace itself was, in round 5).
+
 **Never, whatever the consent:** a list of who was counted or who joined; a count or average shown below 20; any
 individual-level data to an **employer, college, insurer, TPA or government body** (consent given to your own
 employer, institution or insurer is not freely given; the workspace is refused for those kinds in code and a test pins
@@ -564,10 +581,13 @@ The app builds and renders without these, but auth and the AI coach are inert un
    averages the same way, only if the person is counted and ticks a second box that is off by default,
    shown only for groups of 20 or more, rounded to the nearest 5; and (d) a **team workspace at a clinic or
    community service only**, where the person shares their own summary by name with that team, encrypted on
-   their device so only the team's own private key opens it, only what they tick, never their email or
-   account, only after they tick "I understand" and press Start sharing, readable for 30 days after they
-   last sent it (nothing is sent in the background), stoppable at any time, and deleted when they leave the
-   programme or delete their account. **No employer, college, insurer, TPA or government body ever
+   their device so only the team's own private key opens it, only what they tick (plus, if they choose, a
+   request to be contacted, which is not an emergency channel, and answers to up to three short questions
+   the clinic set), never their email or account, only after they tick "I understand" and press Start
+   sharing, readable for 30 days after they last sent it (nothing is sent in the background), stoppable at
+   any time, and deleted when they leave the programme or delete their account. The optional **dry-month
+   challenge** (`privacy.s16*`) is a variant of (b): a second anonymous count under the same rules (ticked,
+   20 or more, rounded to 5, no list), kept beside the headcount as `{CODE}:DRY`. **No employer, college, insurer, TPA or government body ever
    receives individual-level data, with or without consent**: consent given to your own employer,
    institution or insurer is not freely given, so the workspace cannot be switched on for a workplace or a
    college (`workspaceAllowedFor`, pinned by tests) whatever the register says. Nothing else may make a

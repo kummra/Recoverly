@@ -94,6 +94,14 @@ TPA. The code refuses it whatever the register says (`workspaceAllowedFor`), and
 stricter public promise on the organisations page true: an employer, college or insurer never sees an
 individual's information.
 
+### Sixth round (17-18 November 2026): more for every client group
+
+Trust and procurement pages, a toolkit expansion (campaign kit, disclosure protocol, help-a-friend, orientation pack, clinic handout,
+regional partners), report CSV, an appointment calendar file, clinic aftercare plans and check-in questions, "ask my team to contact me",
+a supporter message, gentle milestones, a savings estimate, risk dates, an optional dry-month challenge count and district roll-up
+reports. Limits are in CLAUDE.md. Still not built: a self-serve organisation portal, owner dashboard, scheduled report emails, an
+anonymous pulse survey, offline/voice mode, shift-aware quiet hours, co-branding logos, a referral directory, pricing.
+
 ## 3. Capacity: the number to plan around
 
 The coach model on this Groq account allows about 1,000 requests a day and 8,000 tokens a

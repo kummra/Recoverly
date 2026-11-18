@@ -41,8 +41,8 @@ const counting: Programme = { ...base, headcount: true };
 describe("recordTick", () => {
   it("adds one to the programme's total for this month, and says which month", async () => {
     const { store, totals } = memoryStore();
-    expect(await recordTick(store, counting, NOW)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false });
-    expect(await recordTick(store, counting, NOW)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false });
+    expect(await recordTick(store, counting, NOW)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false, challengeCounted: false });
+    expect(await recordTick(store, counting, NOW)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false, challengeCounted: false });
     expect(totals.get("ACMELOGI26")).toEqual({ "2026-11": 2 });
   });
 
@@ -63,7 +63,7 @@ describe("recordTick", () => {
   it("accepts a tick for the sample programme and stores nothing, so trying the choice leaves nothing behind", async () => {
     const { store, calls } = memoryStore();
     const sample: Programme = { ...counting, code: "SAMPLE", kind: "sample" };
-    expect(await recordTick(store, sample, NOW)).toEqual({ ok: true, month: "2026-11", counted: false, figuresCounted: false });
+    expect(await recordTick(store, sample, NOW)).toEqual({ ok: true, month: "2026-11", counted: false, figuresCounted: false, challengeCounted: false });
     expect(calls).toEqual([]);
   });
 
@@ -99,7 +99,7 @@ describe("the headcount cannot become a list of people", () => {
   it("answers with a month and whether it counted, and nothing about who sent it", async () => {
     const { store } = memoryStore();
     const result = await recordTick(store, counting, NOW);
-    expect(Object.keys(result).sort()).toEqual(["counted", "figuresCounted", "month", "ok"]);
+    expect(Object.keys(result).sort()).toEqual(["challengeCounted", "counted", "figuresCounted", "month", "ok"]);
   });
 });
 
@@ -109,7 +109,7 @@ describe("progress figures", () => {
 
   it("are added into the programme's running sums, for last month, and only as sums", async () => {
     const { store, sums, calls } = memoryStore();
-    expect(await recordTick(store, offering, NOW, figures)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: true });
+    expect(await recordTick(store, offering, NOW, figures)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: true, challengeCounted: false });
     await recordTick(store, offering, NOW, { month: "2026-10", freeDayPct: 40, lessThanBefore: null });
     await recordTick(store, offering, NOW, { month: "2026-10", freeDayPct: 90, lessThanBefore: false });
     expect(sums.get("ACMELOGI26")).toEqual({ "2026-10": { n: 3, freePctSum: 202, lessOf: 2, lessN: 1 } });
@@ -122,7 +122,7 @@ describe("progress figures", () => {
     for (const bad of [{ ...figures, month: "2026-11" }, { ...figures, month: "2026-09" }, { ...figures, month: "2027-10" }, { ...figures, freeDayPct: 101 }, { ...figures, freeDayPct: -1 }, { ...figures, freeDayPct: 71.5 }, { ...figures, freeDayPct: "72" }, { ...figures, lessThanBefore: "yes" }, { month: "2026-10" }, "junk", 5, null, []]) {
       const { store, totals, sums } = memoryStore();
       const result = await recordTick(store, offering, NOW, bad);
-      expect(result, JSON.stringify(bad)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false });
+      expect(result, JSON.stringify(bad)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false, challengeCounted: false });
       expect(totals.get("ACMELOGI26")).toEqual({ "2026-11": 1 });
       expect(sums.size).toBe(0);
     }
@@ -130,7 +130,7 @@ describe("progress figures", () => {
 
   it("are ignored, quietly, by a programme that does not offer them", async () => {
     const { store, sums } = memoryStore();
-    expect(await recordTick(store, counting, NOW, figures)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false });
+    expect(await recordTick(store, counting, NOW, figures)).toEqual({ ok: true, month: "2026-11", counted: true, figuresCounted: false, challengeCounted: false });
     expect(sums.size).toBe(0);
   });
 
@@ -145,5 +145,23 @@ describe("progress figures", () => {
     // 19:00 UTC on 30 November is already December in India: the figures must be November's.
     await recordTick(store, offering, new Date("2026-11-30T19:00:00Z"), { month: "2026-11", freeDayPct: 50, lessThanBefore: null });
     expect(sums.get("ACMELOGI26")).toEqual({ "2026-11": { n: 1, freePctSum: 50, lessOf: 0, lessN: 0 } });
+  });
+});
+
+describe("the dry-month challenge", () => {
+  const withChallenge: Programme = { ...counting, challenge: true };
+
+  it("adds one to a separate anonymous count only where it is offered and asked for", async () => {
+    const { store, calls } = memoryStore();
+    expect(await recordTick(store, withChallenge, NOW, undefined, true)).toMatchObject({ counted: true, challengeCounted: true });
+    expect(calls.filter((c) => c[0] === "increment")).toEqual([["increment", "ACMELOGI26", "2026-11"], ["increment", "ACMELOGI26:DRY", "2026-11"]]);
+  });
+
+  it("is ignored when not asked for, not offered, or asked for in a way that is not exactly true", async () => {
+    for (const [programme, ask] of [[withChallenge, undefined], [withChallenge, "yes"], [withChallenge, 1], [counting, true]] as const) {
+      const { store, calls } = memoryStore();
+      expect(await recordTick(store, programme, NOW, undefined, ask)).toMatchObject({ challengeCounted: false });
+      expect(calls.filter((c) => c[0] === "increment")).toHaveLength(1);
+    }
   });
 });

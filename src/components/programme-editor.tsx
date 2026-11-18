@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useProgramme } from "@/hooks/use-programme";
 import { type Programme, normaliseCode } from "@/lib/programme";
-import { clearPendingCode, clearProgramme, lookupProgramme, saveProgramme, setCounted, setFigures } from "@/lib/programme-membership";
+import { clearPendingCode, clearProgramme, lookupProgramme, saveProgramme, setChallenge, setCounted, setFigures } from "@/lib/programme-membership";
 import { addProgrammePlans, newPlanId } from "@/lib/programme-plans";
 import { stopOwnCopy } from "@/lib/workspace-client";
 import { clearWorkspacePrefs } from "@/lib/workspace-prefs";
@@ -36,7 +36,7 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
   const t = useT();
   const { getIdToken } = useAuth();
   const privacy = useProgrammePrivacy();
-  const [programme, setProgramme, counted, figures] = useProgramme(userId);
+  const [programme, setProgramme, counted, figures, challenge] = useProgramme(userId);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<Note>(null);
@@ -45,9 +45,10 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
   const [wantsCount, setWantsCount] = useState(false);
   const [wantsFigures, setWantsFigures] = useState(false);
   const [wantsPlans, setWantsPlans] = useState(false);
+  const [wantsChallenge, setWantsChallenge] = useState(false);
 
-  const finishJoin = (found: Programme, withCount: boolean, withFigures: boolean, withPlans: boolean) => {
-    if (saveProgramme(userId, found, { counted: withCount, figures: withFigures })) {
+  const finishJoin = (found: Programme, withCount: boolean, withFigures: boolean, withPlans: boolean, withChallenge: boolean) => {
+    if (saveProgramme(userId, found, { counted: withCount, figures: withFigures, challenge: withChallenge })) {
       if (withPlans && !addProgrammePlans(userId, found, newPlanId).ok) {
         setNote({ kind: "error", text: t("programme.errStore") });
       }
@@ -58,6 +59,7 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
       setWantsCount(false);
       setWantsFigures(false);
       setWantsPlans(false);
+      setWantsChallenge(false);
       setNote({ kind: "ok", text: t("programme.joinedOk", { name: found.name }) });
     } else {
       setNote({ kind: "error", text: t("programme.errStore") });
@@ -83,9 +85,10 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
       setWantsCount(false);
       setWantsFigures(false);
       setWantsPlans(false);
+      setWantsChallenge(false);
       setOffered(result.programme);
     } else {
-      finishJoin(result.programme, false, false, false);
+      finishJoin(result.programme, false, false, false, false);
     }
   };
 
@@ -110,6 +113,11 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
     if (!setCounted(userId, next)) setNote({ kind: "error", text: t("programme.errStore") });
   };
 
+  const changeChallenge = (next: boolean) => {
+    setNote(null);
+    if (!setChallenge(userId, next)) setNote({ kind: "error", text: t("programme.errStore") });
+  };
+
   const changeFigures = (next: boolean) => {
     setNote(null);
     if (!setFigures(userId, next)) setNote({ kind: "error", text: t("programme.errStore") });
@@ -129,7 +137,7 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
           <div className="space-y-3">
             <p className="text-sm font-medium text-foreground">{programme.name}</p>
             <p className="text-xs leading-relaxed text-subtle">{privacy(programme)}</p>
-            <HeadcountChoice programme={programme} checked={counted} onChange={changeCount} figures={figures} onFiguresChange={changeFigures} />
+            <HeadcountChoice programme={programme} checked={counted} onChange={changeCount} figures={figures} onFiguresChange={changeFigures} challenge={challenge} onChallengeChange={changeChallenge} />
             <Button type="button" variant="outline" onClick={leave}>
               {t("programme.leave")}
             </Button>
@@ -143,14 +151,19 @@ export function ProgrammeEditor({ userId }: { userId: string }) {
               checked={wantsCount}
               onChange={(next) => {
                 setWantsCount(next);
-                if (!next) setWantsFigures(false);
+                if (!next) {
+                  setWantsFigures(false);
+                  setWantsChallenge(false);
+                }
               }}
               figures={wantsFigures}
               onFiguresChange={setWantsFigures}
+              challenge={wantsChallenge}
+              onChallengeChange={setWantsChallenge}
             />
             <ProgrammePlansChoice programme={offered} checked={wantsPlans} onChange={setWantsPlans} />
             <div className="flex flex-wrap gap-2">
-              <Button type="button" onClick={() => finishJoin(offered, wantsCount, wantsFigures, wantsPlans)}>
+              <Button type="button" onClick={() => finishJoin(offered, wantsCount, wantsFigures, wantsPlans, wantsChallenge)}>
                 {t("programme.join")}
               </Button>
               <Button type="button" variant="outline" onClick={() => setOffered(null)}>

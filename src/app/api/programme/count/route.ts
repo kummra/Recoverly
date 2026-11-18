@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
     }
-    const fields = typeof body === "object" && body !== null ? (body as { code?: unknown; figures?: unknown }) : {};
+    const fields = typeof body === "object" && body !== null ? (body as { code?: unknown; figures?: unknown; challenge?: unknown }) : {};
 
-    const result = await recordTick(firestoreCountStore(adminDb), findProgramme(fields.code), new Date(), fields.figures);
+    const result = await recordTick(firestoreCountStore(adminDb), findProgramme(fields.code), new Date(), fields.figures, fields.challenge);
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
     return NextResponse.json({ ok: true, month: result.month });
   } catch (error) {

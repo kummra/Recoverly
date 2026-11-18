@@ -36,5 +36,5 @@ export default function ExampleReportPage() {
   EXAMPLE_OUTCOMES.forEach((o, i) => {
     sums[shiftMonth(lastMonth, i - (EXAMPLE_OUTCOMES.length - 1))] = { n: o.n, freePctSum: o.n * o.avg, lessOf: o.lessOf, lessN: o.lessN };
   });
-  return <ProgrammeReport name="Example organisation" rows={buildReportRows(counts, now)} outcomes={buildOutcomeRows(sums, now)} example />;
+  return <ProgrammeReport name="Example organisation" rows={buildReportRows(counts, now)} outcomes={buildOutcomeRows(sums, now)} challengeRows={buildReportRows({ [shiftMonth(thisMonth, -1)]: 24, [thisMonth]: 31 }, now)} example />;
 }

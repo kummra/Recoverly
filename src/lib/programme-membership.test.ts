@@ -11,6 +11,7 @@ import {
   lookupProgramme,
   markCountedMonth,
   setFigures,
+  setChallenge,
   parseStoredMembership,
   parseStoredProgramme,
   programmeStorageKey,
@@ -169,7 +170,7 @@ describe("the choice to be counted in an organisation's monthly total", () => {
 
   it("is off unless the person turns it on, however they join", () => {
     saveProgramme("u1", OFFERS);
-    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, countedMonth: null });
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, challenge: false, countedMonth: null });
     saveProgramme("u2", OFFERS, { counted: false });
     expect(loadMembership("u2")?.counted).toBe(false);
   });
@@ -197,7 +198,7 @@ describe("the choice to be counted in an organisation's monthly total", () => {
     markCountedMonth("u1", "2026-11");
     expect(loadMembership("u1")?.countedMonth).toBe("2026-11");
     expect(setCounted("u1", false)).toBe(true);
-    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, countedMonth: null });
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, challenge: false, countedMonth: null });
     setCounted("u1", true);
     expect(loadMembership("u1")?.countedMonth).toBeNull();
   });
@@ -284,5 +285,29 @@ describe("the choice to be counted in an organisation's monthly total", () => {
       expect(parseStoredMembership(edited({ counted: false, figures: true }))?.figures).toBe(false);
       expect(parseStoredMembership(edited({ counted: true, figures: true }))?.figures).toBe(true);
     });
+  });
+});
+
+describe("the dry-month challenge choice", () => {
+  beforeEach(() => vi.stubGlobal("window", { localStorage: fakeStorage(), dispatchEvent: () => true }));
+  afterEach(() => vi.unstubAllGlobals());
+  const OFFERS_ALL: Programme = { ...PROGRAMME, headcount: true, challenge: true };
+
+  it("is on only while counted, in a programme that offers it, and can be turned off", () => {
+    saveProgramme("c1", OFFERS_ALL, { counted: true, challenge: true });
+    expect(loadMembership("c1")).toMatchObject({ counted: true, challenge: true });
+    expect(setChallenge("c1", false)).toBe(true);
+    expect(loadMembership("c1")?.challenge).toBe(false);
+    saveProgramme("c2", OFFERS_ALL, { counted: false, challenge: true });
+    expect(loadMembership("c2")?.challenge).toBe(false);
+    saveProgramme("c3", { ...PROGRAMME, headcount: true }, { counted: true, challenge: true });
+    expect(loadMembership("c3")?.challenge).toBe(false);
+    expect(setChallenge("c3", true)).toBe(false);
+  });
+
+  it("goes off when the count is turned off", () => {
+    saveProgramme("c4", OFFERS_ALL, { counted: true, challenge: true });
+    setCounted("c4", false);
+    expect(loadMembership("c4")).toMatchObject({ counted: false, challenge: false });
   });
 });
