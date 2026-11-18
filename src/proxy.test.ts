@@ -7,7 +7,8 @@ const CLINIC_KEY = "Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2H1g0F9e";
 
 vi.mock("@/lib/programme-register", () => ({
   findProgrammeByReportKey: (token: unknown) => (token === KEY || token === CLINIC_KEY ? { code: "ACMELOGI26" } : null),
-  findWorkspaceByReportKey: (token: unknown) => (token === CLINIC_KEY ? { code: "CLINICA26" } : null)
+  findWorkspaceByReportKey: (token: unknown) => (token === CLINIC_KEY ? { code: "CLINICA26" } : null),
+  findGroupByKey: (token: unknown) => (token === "G".repeat(43) ? { group: { name: "North network" }, members: [] } : null)
 }));
 
 import { config, proxy } from "@/proxy";
@@ -38,7 +39,7 @@ describe("proxy: a wrong organisation-report address is a real 404", () => {
   });
 
   it("only watches the report and workspace addresses", () => {
-    expect(config.matcher).toEqual(["/partners/report/:token", "/partners/workspace/:token"]);
+    expect(config.matcher).toEqual(["/partners/report/:token", "/partners/workspace/:token", "/partners/group/:token"]);
   });
 });
 
@@ -59,5 +60,14 @@ describe("proxy: a team-workspace address is a real 404 unless the organisation 
   it("does not open the report page with a workspace-only check, or the other way round", () => {
     expect(passesThrough(ask(`/partners/report/${CLINIC_KEY}`))).toBe(true);
     expect(passesThrough(ask(`/partners/workspace/${KEY}`))).toBe(false);
+  });
+});
+
+describe("proxy: a group roll-up address is a real 404 unless it is a group's key", () => {
+  it("lets a group key through and refuses a report key or a guess", () => {
+    expect(passesThrough(ask(`/partners/group/${"G".repeat(43)}`))).toBe(true);
+    for (const path of [`/partners/group/${KEY}`, "/partners/group/not-a-real-key-not-a-real-key", "/partners/group/example"]) {
+      expect(ask(path).status, path).toBe(path.endsWith("example") ? 200 : 404);
+    }
   });
 });

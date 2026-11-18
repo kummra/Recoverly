@@ -234,6 +234,7 @@ describe("the register stays on the server", () => {
       "src/app/api/workspace/copy/route.ts",
       "src/app/api/workspace/inbox/route.ts",
       "src/app/api/workspace/route.ts",
+      "src/app/partners/group/[token]/page.tsx",
       "src/app/partners/report/[token]/page.tsx",
       "src/app/partners/toolkit/poster/page.tsx",
       "src/app/partners/workspace/[token]/page.tsx",

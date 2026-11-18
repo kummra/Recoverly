@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
+  GROUPS,
   PROGRAMMES,
   type RegisterEntry,
   findProgramme,
@@ -182,5 +183,18 @@ describe("the team workspace", () => {
 describe("hashReportKey", () => {
   it("is the SHA-256 of the key, in hex, so what scripts/make-report-key.mjs prints matches what the register checks", () => {
     expect(hashReportKey("abc")).toBe("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+  });
+});
+
+describe("groups in the real register", () => {
+  it("have well-formed unique keys, and every programme in a group has a report key and names a group that exists", () => {
+    const hashes = GROUPS.map((g) => g.keyHash);
+    for (const hash of hashes) expect(hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(new Set(hashes).size).toBe(hashes.length);
+    for (const entry of PROGRAMMES) {
+      if (!entry.group) continue;
+      expect(entry.report, `${entry.code} is in a group so needs a report key`).toBeDefined();
+      expect(GROUPS.map((g) => g.name), `${entry.code}: unknown group`).toContain(entry.group);
+    }
   });
 });

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { findProgrammeByReportKey, findWorkspaceByReportKey } from "@/lib/programme-register";
+import { findGroupByKey, findProgrammeByReportKey, findWorkspaceByReportKey } from "@/lib/programme-register";
 
 /**
  * Gives a wrong organisation-report address a real 404, and the same for a team-workspace address.
@@ -20,7 +20,7 @@ export function proxy(request: NextRequest) {
   const segment = parts[3] ?? "";
   if (segment === "example") return NextResponse.next();
   // A team workspace needs more than a report key: the organisation must have one, and may.
-  const find = parts[2] === "workspace" ? findWorkspaceByReportKey : findProgrammeByReportKey;
+  const find = parts[2] === "workspace" ? findWorkspaceByReportKey : parts[2] === "group" ? findGroupByKey : findProgrammeByReportKey;
 
   let token = segment;
   try {
@@ -33,4 +33,4 @@ export function proxy(request: NextRequest) {
   return NextResponse.rewrite(new URL("/report-key-not-found", request.url), { status: 404 });
 }
 
-export const config = { matcher: ["/partners/report/:token", "/partners/workspace/:token"] };
+export const config = { matcher: ["/partners/report/:token", "/partners/workspace/:token", "/partners/group/:token"] };

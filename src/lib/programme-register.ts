@@ -31,6 +31,9 @@
  *      only once at least 20 people are counted.
  *
  * TO OFFER MORE (each needs `report` above, and each is still the person's own unticked choice)
+ *   - `group: "Name"`     roll this programme into a `GROUPS` entry (an NGO network's districts); make the group's
+ *                       private link with `node scripts/make-report-key.mjs` and add `{ name, keyHash }` to `GROUPS`.
+ *                       The roll-up (`/partners/group/<key>`) sums only districts that reach 20 on their own.
  *   - `plans: [{ when, then }]` up to three ready-made plans (a clinic's aftercare) a person may copy
  *                       into their own device-only plans when they join. Nothing flows back. No `report` needed.
  *   - `figures: true`   anonymous progress-figure averages (lib/progress-figures.ts), shown on the
@@ -73,7 +76,14 @@ export type RegisterEntry = Omit<Programme, "headcount" | "figures" | "workspace
    * made it on its own page and sent it to us; people are offered the workspace only from then.
    */
   workspace?: { publicKey?: JsonWebKey };
+  /** The name of a `GROUPS` entry this programme rolls up into (an NGO network's districts). Needs `report`. */
+  group?: string;
 };
+
+/** A roll-up report for several programmes: its name and the SHA-256 of its private link, made like a report key. */
+export type RegisterGroup = { name: string; keyHash: string };
+
+export const GROUPS: readonly RegisterGroup[] = [];
 
 export const PROGRAMMES: readonly RegisterEntry[] = [
   {
@@ -96,7 +106,8 @@ export const PROGRAMMES: readonly RegisterEntry[] = [
  * (`recordTick` in `programme-count-service.ts`).
  */
 export function publicProgramme(entry: RegisterEntry): Programme {
-  const { report, figures, workspace, ...rest } = entry;
+  const { report, figures, workspace, group, ...rest } = entry;
+  void group;
   const programme: Programme = { ...rest };
   const demo = entry.kind === "sample";
   if (report || demo) programme.headcount = true;
@@ -164,6 +175,23 @@ export function matchReportKey(entries: readonly RegisterEntry[], token: unknown
     if (timingSafeEqual(given, Buffer.from(entry.report.keyHash, "hex"))) found = entry;
   }
   return found;
+}
+
+/** Which of `groups` a private link belongs to, or `null`. Constant-time, like `matchReportKey`. */
+export function matchGroupKey(groups: readonly RegisterGroup[], token: unknown): RegisterGroup | null {
+  if (typeof token !== "string" || token.length < 20 || token.length > 100) return null;
+  const given = createHash("sha256").update(token).digest();
+  let found: RegisterGroup | null = null;
+  for (const group of groups) {
+    if (!/^[0-9a-f]{64}$/.test(group.keyHash)) continue;
+    if (timingSafeEqual(given, Buffer.from(group.keyHash, "hex"))) found = group;
+  }
+  return found;
+}
+
+export function findGroupByKey(token: unknown): { group: RegisterGroup; members: RegisterEntry[] } | null {
+  const group = matchGroupKey(GROUPS, token);
+  return group ? { group, members: PROGRAMMES.filter((entry) => entry.group === group.name && entry.report) } : null;
 }
 
 /** The organisation a private report link belongs to, or `null`. */

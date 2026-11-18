@@ -17,7 +17,7 @@ const percent = (p: PercentDisplay) => (p.shown ? `about ${p.percent}%` : <span 
  *
  * Plain and server-rendered: no script, and nothing here knows a person.
  */
-export function ProgrammeReport({ name, rows, outcomes, example = false }: { name: string; rows: ReportRow[]; outcomes?: OutcomeRow[]; example?: boolean }) {
+export function ProgrammeReport({ name, rows, outcomes, example = false, groupNote }: { name: string; rows: ReportRow[]; outcomes?: OutcomeRow[]; example?: boolean; groupNote?: string }) {
   return (
     <div lang="en" className="mx-auto max-w-3xl space-y-8">
       {example && (
@@ -38,6 +38,7 @@ export function ProgrammeReport({ name, rows, outcomes, example = false }: { nam
         <h2 id="figures" className="text-lg font-semibold">
           People counted each month
         </h2>
+        {groupNote && <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{groupNote}</p>}
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-muted-foreground">
