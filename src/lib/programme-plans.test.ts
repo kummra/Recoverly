@@ -57,3 +57,12 @@ describe("adding them to the person's own plans", () => {
     expect(addProgrammePlans("u1", { plans: [P1] }, id)).toEqual({ ok: false, added: 0 });
   });
 });
+
+describe("a programme's check-in questions", () => {
+  it("are cleaned to at most three one-line questions and checked when written", () => {
+    expect(sanitiseProgramme({ ...base, questions: ["How is your sleep?", "  ", "Any hard days?\n", 5, "Q3", "Q4"] })?.questions).toEqual(["How is your sleep?", "Any hard days?", "Q3"]);
+    expect(sanitiseProgramme({ ...base, questions: "no" })?.questions).toBeUndefined();
+    expect(validateProgramme({ ...base, questions: ["a", "b", "c", "d"] } as never).join()).toMatch(/at most 3 questions/);
+    expect(validateProgramme({ ...base, questions: ["How are you?"] } as never)).toEqual([]);
+  });
+});

@@ -95,6 +95,7 @@ export function WorkspaceShare({ facts }: { facts: ShareFacts }) {
   /** "Please contact me": a request made fresh each time, never remembered. */
   const [askContact, setAskContact] = useState(false);
   const [contactNote, setContactNote] = useState("");
+  const [answers, setAnswers] = useState<string[]>([]);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [errorKey, setErrorKey] = useState<string | null>(null);
@@ -152,12 +153,13 @@ export function WorkspaceShare({ facts }: { facts: ShareFacts }) {
     if (busy || !team) return;
     setErrorKey(null);
     setNotice(null);
-    if (chosen.length === 0 && !askContact) {
+    const checkin = (programme?.questions ?? []).map((q, i) => ({ q, a: (answers[i] ?? "").trim() })).filter((item) => item.a !== "");
+    if (chosen.length === 0 && !askContact && checkin.length === 0) {
       setErrorKey("share.pick");
       return;
     }
     setBusy(true);
-    const snapshot = buildSnapshot(facts, chosen, { label: label.trim() || undefined, contact: askContact ? { note: contactNote.trim() } : undefined });
+    const snapshot = buildSnapshot(facts, chosen, { label: label.trim() || undefined, contact: askContact ? { note: contactNote.trim() } : undefined, checkin });
     const outcome = await sendToTeam({ snapshot, code, team, token: await getIdToken() });
     setBusy(false);
     if (outcome.ok) {
@@ -166,6 +168,7 @@ export function WorkspaceShare({ facts }: { facts: ShareFacts }) {
       setEditing(false);
       setAskContact(false);
       setContactNote("");
+      setAnswers([]);
       setNotice({ key: "workspace.sent", expires: outcome.expiresAt });
       await refresh();
       return;
@@ -241,6 +244,24 @@ export function WorkspaceShare({ facts }: { facts: ShareFacts }) {
               <Input id="workspace-name" value={label} maxLength={SHARE_LIMITS.labelMax} autoComplete="off" onChange={(event) => setLabel(event.target.value)} />
               <p className="text-xs text-subtle">{t("workspace.nameHint")}</p>
             </div>
+
+            {programme.questions && programme.questions.length > 0 && (
+              <div className="space-y-3 rounded-xl border border-border p-3">
+                <p className="text-xs leading-relaxed text-subtle">{t("workspace.checkinHelp", { name })}</p>
+                {programme.questions.map((question, index) => (
+                  <div key={index} className="space-y-1.5">
+                    <Label htmlFor={`workspace-q-${index}`}>{question}</Label>
+                    <Input
+                      id={`workspace-q-${index}`}
+                      value={answers[index] ?? ""}
+                      maxLength={SHARE_LIMITS.checkinAnswerMax}
+                      autoComplete="off"
+                      onChange={(event) => setAnswers((current) => Object.assign([...current], { [index]: event.target.value }))}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="space-y-2 rounded-xl border border-border p-3">
               <label className="flex min-h-11 items-center gap-2 text-sm font-medium">

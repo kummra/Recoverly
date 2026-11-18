@@ -77,6 +77,8 @@ export type Programme = {
    * only; nothing flows back, and the organisation is not told whether they did.
    */
   plans?: ProgrammePlan[];
+  /** Up to three short check-in questions a clinic team asks the people who share with it. Answers go only inside the encrypted workspace summary, if written. */
+  questions?: string[];
 };
 
 export type ProgrammePlan = { when: string; then: string };
@@ -95,6 +97,8 @@ export const PROGRAMME_LIMITS = {
   urlMax: 200,
   contactsMax: 4,
   plansMax: 3,
+  questionsMax: 3,
+  questionMax: 100,
   planTextMax: 120,
   phoneDigitsMin: 3,
   phoneDigitsMax: 15
@@ -203,6 +207,8 @@ export function sanitiseProgramme(input: unknown): Programme | null {
     .filter((p): p is ProgrammePlan => p !== null)
     .slice(0, PROGRAMME_LIMITS.plansMax);
   if (plans.length) programme.plans = plans;
+  const questions = (Array.isArray(raw.questions) ? raw.questions : []).map((q) => cleanText(q, PROGRAMME_LIMITS.questionMax)).filter(Boolean).slice(0, PROGRAMME_LIMITS.questionsMax);
+  if (questions.length) programme.questions = questions;
   return programme;
 }
 
@@ -253,6 +259,11 @@ export function validateProgramme(programme: Programme): string[] {
   if (programme.figures !== undefined && typeof programme.figures !== "boolean") problems.push(at("figures must be true or false"));
   if (programme.figures && !programme.headcount) problems.push(at("figures are only offered together with the headcount"));
   if (programme.workspace !== undefined && typeof programme.workspace !== "boolean") problems.push(at("workspace must be true or false"));
+  if (programme.questions !== undefined) {
+    if (!Array.isArray(programme.questions) || programme.questions.length > L.questionsMax || programme.questions.some((q) => typeof q !== "string" || cleanText(q, L.questionMax) !== q || q === "")) {
+      problems.push(at(`at most ${L.questionsMax} questions, each 1 to ${L.questionMax} characters on one line`));
+    }
+  }
   if (programme.plans !== undefined) {
     if (!Array.isArray(programme.plans) || programme.plans.length > L.plansMax) problems.push(at(`at most ${L.plansMax} plans`));
     else {

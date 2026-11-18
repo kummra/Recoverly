@@ -91,6 +91,7 @@ describe("the English policy states what the code does", () => {
     expect(body).toMatch(/cannot be taken back/);
     expect(body).toMatch(/ask the team to contact you/);
     expect(body).toMatch(/not an emergency service/);
+    expect(body).toMatch(/answer any of them; only the answers you write are sent/);
     expect(body).toContain("112");
     expect(body).toContain("14416");
   });

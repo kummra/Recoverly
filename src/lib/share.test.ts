@@ -262,3 +262,14 @@ describe("buildSnapshot with a contact request", () => {
     expect(hasContent(buildSnapshot(facts, [], { now: NOW, contact: {} }))).toBe(true);
   });
 });
+
+describe("check-in answers", () => {
+  it("keep only question and answer pairs that are both written, at most three, cleaned and cut", () => {
+    const out = sanitiseSnapshot({ v: 1, createdAt: NOW.toISOString(), checkin: [{ q: "Sleep?", a: "ok\nish" }, { q: "Empty", a: "" }, { q: "", a: "x" }, "junk", { q: "Q2", a: "y".repeat(500) }, { q: "Q3", a: "z" }, { q: "Q4", a: "w" }] });
+    expect(out?.checkin?.map((c) => c.q)).toEqual(["Sleep?", "Q2", "Q3"]);
+    expect(out?.checkin?.[0].a).toBe("ok ish");
+    expect(out?.checkin?.[1].a).toHaveLength(120);
+    expect(sanitiseSnapshot({ v: 1, createdAt: NOW.toISOString(), checkin: [] })?.checkin).toBeUndefined();
+    expect(hasContent(sanitiseSnapshot({ v: 1, createdAt: NOW.toISOString(), checkin: [{ q: "a", a: "b" }] }) as never)).toBe(true);
+  });
+});

@@ -42,6 +42,10 @@ export const SHARE_LIMITS = {
   plansMax: 3,
   /** A short note on how and when to reach someone, with a request to be contacted. */
   contactNoteMax: 120,
+  /** Answers to a clinic's check-in questions: how many, and how long each question and answer may be. */
+  checkinMax: 3,
+  checkinQuestionMax: 100,
+  checkinAnswerMax: 120,
   planTextMax: 120,
   patternsMax: 3,
   moodMax: 40
@@ -90,6 +94,8 @@ export type ShareSnapshot = {
   plans?: SharePlan[];
   /** "Please contact me." Only ever made by the team workspace card, never by a summary link. */
   contact?: { note: string };
+  /** Answers to the team's short check-in questions (only those the person wrote an answer to). Workspace only. */
+  checkin?: Array<{ q: string; a: string }>;
 };
 
 /** The only pattern labels a summary may carry: the app's own, so a stranger's link cannot make the page say anything. */
@@ -243,12 +249,25 @@ export function sanitiseSnapshot(input: unknown): ShareSnapshot | null {
   const contact = record(raw.contact);
   if (contact) out.contact = { note: line(contact.note, SHARE_LIMITS.contactNoteMax) };
 
+  if (Array.isArray(raw.checkin)) {
+    const checkin: Array<{ q: string; a: string }> = [];
+    for (const item of raw.checkin) {
+      const entry = record(item);
+      if (!entry) continue;
+      const q = line(entry.q, SHARE_LIMITS.checkinQuestionMax);
+      const a = line(entry.a, SHARE_LIMITS.checkinAnswerMax);
+      if (q && a) checkin.push({ q, a });
+      if (checkin.length >= SHARE_LIMITS.checkinMax) break;
+    }
+    if (checkin.length) out.checkin = checkin;
+  }
+
   return out;
 }
 
 /** Does this summary carry anything a reader could see? (A link with nothing in it is a mistake.) */
 export function hasContent(snapshot: ShareSnapshot): boolean {
-  return Boolean(snapshot.progress || snapshot.audit || snapshot.cravings || snapshot.patterns || snapshot.why || snapshot.note || snapshot.plans || snapshot.contact);
+  return Boolean(snapshot.progress || snapshot.audit || snapshot.cravings || snapshot.patterns || snapshot.why || snapshot.note || snapshot.plans || snapshot.contact || snapshot.checkin);
 }
 
 // ─── Building ─────────────────────────────────────────────────────────────
@@ -284,7 +303,7 @@ function isoDay(date: Date): string {
  * function the viewer uses, so what is made and what is shown cannot drift.
  * The account is never an input: there is no email or display name here to leak.
  */
-export function buildSnapshot(facts: ShareFacts, sections: readonly ShareSection[], options: { label?: string; now?: Date; contact?: { note?: string } } = {}): ShareSnapshot {
+export function buildSnapshot(facts: ShareFacts, sections: readonly ShareSection[], options: { label?: string; now?: Date; contact?: { note?: string }; checkin?: Array<{ q: string; a: string }> } = {}): ShareSnapshot {
   const picked = new Set(sections);
   const draft: Record<string, unknown> = { v: 1, createdAt: (options.now ?? new Date()).toISOString() };
   if (options.label) draft.label = options.label;
@@ -314,6 +333,7 @@ export function buildSnapshot(facts: ShareFacts, sections: readonly ShareSection
   if (picked.has("notes") && facts.note.trim()) draft.note = facts.note;
   if (picked.has("plans") && facts.plans.length) draft.plans = facts.plans;
   if (options.contact) draft.contact = { note: options.contact.note ?? "" };
+  if (options.checkin?.length) draft.checkin = options.checkin;
 
   // The draft is built from known shapes, so this cannot be null.
   return sanitiseSnapshot(draft) as ShareSnapshot;

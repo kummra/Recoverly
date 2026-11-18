@@ -34,6 +34,8 @@
  *   - `group: "Name"`     roll this programme into a `GROUPS` entry (an NGO network's districts); make the group's
  *                       private link with `node scripts/make-report-key.mjs` and add `{ name, keyHash }` to `GROUPS`.
  *                       The roll-up (`/partners/group/<key>`) sums only districts that reach 20 on their own.
+ *   - `questions: ["..."]` up to three short check-in questions for a clinic's workspace; answers go only inside
+ *                       the person's encrypted summary, if they write one.
  *   - `plans: [{ when, then }]` up to three ready-made plans (a clinic's aftercare) a person may copy
  *                       into their own device-only plans when they join. Nothing flows back. No `report` needed.
  *   - `figures: true`   anonymous progress-figure averages (lib/progress-figures.ts), shown on the

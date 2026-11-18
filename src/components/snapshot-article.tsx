@@ -54,6 +54,20 @@ export function SnapshotArticle({ snapshot, meta }: { snapshot: ShareSnapshot; m
         </section>
       )}
 
+      {snapshot.checkin && (
+        <section>
+          <h2 className={heading}>{t("report.checkinHeading")}</h2>
+          <dl className="space-y-2 text-sm">
+            {snapshot.checkin.map((item, index) => (
+              <div key={index}>
+                <dt className="text-xs text-muted-foreground">{item.q}</dt>
+                <dd className="break-words text-body">{item.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
       {progress && (
         <section>
           <h2 className={heading}>{t("report.consumption")}</h2>
