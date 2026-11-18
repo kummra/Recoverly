@@ -8,6 +8,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { clearPlans } from "@/lib/plans";
 import { clearPendingCode, clearProgramme } from "@/lib/programme-membership";
 import { clearPerson } from "@/lib/support-person";
+import { clearRiskDates } from "@/lib/risk-dates";
+import { clearPrice } from "@/lib/savings";
 import { clearWorkspacePrefs } from "@/lib/workspace-prefs";
 import { useT } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
@@ -52,6 +54,8 @@ export function DeleteAccount() {
         clearPerson(user.uid);
         clearProgramme(user.uid);
         clearWorkspacePrefs(user.uid);
+        clearRiskDates(user.uid);
+        clearPrice(user.uid);
       }
       clearPendingCode();
       await signOutUser();

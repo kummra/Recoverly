@@ -14,10 +14,11 @@ import { ProgrammeCard, ProgrammePrompt } from "@/components/programme-card";
 import { ProtectedRoute } from "@/components/protected-route";
 import { MedicalDisclaimer } from "@/components/safety-notice";
 import { SlipMomentDialog } from "@/components/slip-moment";
+import { MilestoneNote, RiskDatesCard, SavingsCard } from "@/components/personal-tools";
 import { WeeklyReviewCard } from "@/components/weekly-review-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { type SlipMoment, buildProgress, buildSlipMoment } from "@/lib/analytics";
+import { type SlipMoment, buildAnalytics, buildProgress, buildSlipMoment } from "@/lib/analytics";
 import { type CravingEvent, type DrinkRecord, getCravingEvents, getDrinkRecords, getUserProfile } from "@/lib/firestore";
 import { buildWeeklyReview } from "@/lib/weekly-review";
 
@@ -72,6 +73,7 @@ function DashboardContent() {
   const weeklyProgress = weeklyGoal > 0 ? Math.min((weeklyTotal / weeklyGoal) * 100, 100) : 0;
   const recentRecords = useMemo(() => [...records].reverse().slice(0, 5), [records]);
   const progress = useMemo(() => buildProgress(records), [records]);
+  const analytics = useMemo(() => buildAnalytics(records), [records]);
   const weeklyReview = useMemo(() => buildWeeklyReview(records, cravings), [records, cravings]);
 
   // Runs when a drink has just been saved. `records` has not been re-read yet,
@@ -153,6 +155,8 @@ function DashboardContent() {
       {user && <ProgrammePrompt userId={user.uid} />}
 
       <DailyNudge reminderTime={reminderTime} />
+
+      <MilestoneNote streakDays={progress.currentStreakDays} />
 
       {/* Uses the patterns already computed from their own logs to offer help
           before a historically harder stretch, not just describe it after. */}
@@ -264,6 +268,9 @@ function DashboardContent() {
       </Card>
 
       {weeklyReview && !loadFailed && <WeeklyReviewCard review={weeklyReview} />}
+
+      {user && <RiskDatesCard userId={user.uid} />}
+      {user && progress.hasHistory && <SavingsCard userId={user.uid} monthMl={analytics.currentMonthTotal} previousMonthMl={analytics.previousMonthTotal} />}
 
       {/* The organisation's name and support contacts, for someone who joined its programme. */}
       {user && <ProgrammeCard userId={user.uid} />}
