@@ -165,7 +165,8 @@ describe("what a team is handed", () => {
     expect(result.value.copies.map((c) => c.ct)).toEqual(["D".repeat(60), "C".repeat(60)]);
     // The sender's account, and which team's it is, never reach the team: only an opaque id and the times.
     for (const copy of result.value.copies) expect(Object.keys(copy).sort()).toEqual(["createdAt", "ct", "expiresAt", "id", "iv", "updatedAt", "wk"]);
-    expect(JSON.stringify(result.value)).not.toMatch(/u1|u2|u3|uid|CLINICA26/);
+    // (The opaque id is random text, so it is left out of this scan: by chance it can contain "u1" or "uid", which made this test fail now and then.)
+    expect(JSON.stringify({ ...result.value, copies: result.value.copies.map(({ id, ...rest }) => (void id, rest)) })).not.toMatch(/u1|u2|u3|uid|CLINICA26/);
   });
 
   it("leaves out copies that have ended, and ones made for a key the team no longer has", async () => {
