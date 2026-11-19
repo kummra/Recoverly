@@ -11,15 +11,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/hooks/use-auth";
 import { useProgramme } from "@/hooks/use-programme";
 import { type Programme, isSample, welcomeFor } from "@/lib/programme";
+import { monthKey } from "@/lib/programme-count";
+import { PULSE_ANSWERS, type PulseAnswer } from "@/lib/programme-pulse";
+import { sendPulse } from "@/lib/programme-pulse-client";
 import { getDrinkRecords } from "@/lib/firestore";
 import { tickIfDue } from "@/lib/programme-headcount";
 import { addProgrammePlans, newPlanId } from "@/lib/programme-plans";
 import { buildProgressFigures } from "@/lib/progress-figures";
 import {
+  PROGRAMME_CHANGED_EVENT,
   clearPendingCode,
+  loadMembership,
   loadPendingCode,
   loadProgramme,
   lookupProgramme,
+  markPulseMonth,
   saveProgramme
 } from "@/lib/programme-membership";
 
@@ -119,6 +125,76 @@ export function ProgrammeReferrals({ programme }: { programme: Programme }) {
 }
 
 /**
+ * The monthly question, for a person who ticked it. One fixed question, written by us and the same for every programme, answered from 1 to 5 or not
+ * at all: "not this month" sends nothing. An answer is sent as a number and the programme code, added into a count that the organisation sees only for
+ * 20 or more answers (`lib/programme-pulse.ts`). It asks once a month, and not at all for someone who has not ticked it.
+ */
+export function PulsePrompt({ userId, programme }: { userId: string; programme: Programme }) {
+  const { t } = useI18n();
+  const { getIdToken } = useAuth();
+  const [due, setDue] = useState(false);
+  const [state, setState] = useState<"idle" | "sending" | "thanks" | "failed">("idle");
+
+  useEffect(() => {
+    const read = () => {
+      const membership = loadMembership(userId);
+      setDue(Boolean(membership?.pulse && programme.pulse && membership.pulseMonth !== monthKey(new Date())));
+    };
+    read();
+    window.addEventListener(PROGRAMME_CHANGED_EVENT, read);
+    return () => window.removeEventListener(PROGRAMME_CHANGED_EVENT, read);
+  }, [userId, programme.pulse]);
+
+  const answer = async (value: PulseAnswer) => {
+    if (state === "sending") return;
+    setState("sending");
+    const token = await getIdToken();
+    if (token && (await sendPulse(programme.code, value, token))) {
+      markPulseMonth(userId, monthKey(new Date()));
+      setDue(false);
+      setState("thanks");
+    } else {
+      setState("failed");
+    }
+  };
+
+  const skip = () => {
+    markPulseMonth(userId, monthKey(new Date()));
+    setDue(false);
+  };
+
+  if (state === "thanks") return <p role="status" className="rounded-xl bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-700 dark:text-emerald-300">{t("programme.pulseThanks")}</p>;
+  if (!due) return null;
+
+  return (
+    <div className="space-y-3 rounded-xl border border-border bg-surface-muted/50 p-3" role="group" aria-labelledby="pulse-question">
+      <p id="pulse-question" className="text-sm font-medium text-foreground">
+        {t("programme.pulseQuestion", { name: programme.name })}
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        {PULSE_ANSWERS.map((value) => (
+          <Button key={value} type="button" variant="outline" size="sm" className="h-10 w-10 px-0" disabled={state === "sending"} onClick={() => void answer(value)} aria-label={String(value)}>
+            {value}
+          </Button>
+        ))}
+      </div>
+      <div className="flex justify-between text-xs text-subtle">
+        <span>1 · {t("programme.pulseLow")}</span>
+        <span>5 · {t("programme.pulseHigh")}</span>
+      </div>
+      {state === "failed" && (
+        <p role="alert" className="text-xs text-red-700 dark:text-red-300">
+          {t("programme.pulseFailed")}
+        </p>
+      )}
+      <Button type="button" variant="ghost" size="sm" onClick={skip} disabled={state === "sending"}>
+        {t("programme.pulseSkip")}
+      </Button>
+    </div>
+  );
+}
+
+/**
  * The joined programme, on the dashboard. Shows nothing for someone who has not
  * joined one. The organisation's details are re-read from the server when the
  * card appears, so a number that changed (or was withdrawn) does not sit on a
@@ -197,6 +273,7 @@ export function ProgrammeCard({ userId }: { userId: string }) {
             {isSample(programme) && <p className="text-xs leading-relaxed text-subtle">{t("programme.sample")}</p>}
             <ProgrammeContacts programme={programme} />
             <ProgrammeReferrals programme={programme} />
+            <PulsePrompt userId={userId} programme={programme} />
             <p className="text-xs leading-relaxed text-subtle">{privacy(programme)}</p>
           </>
         )}
@@ -219,6 +296,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   const [figures, setFigures] = useState(false);
   const [plans, setPlans] = useState(false);
   const [challenge, setChallenge] = useState(false);
+  const [pulse, setPulse] = useState(false);
 
   useEffect(() => {
     const code = loadPendingCode();
@@ -240,7 +318,7 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
   if (!pending) return null;
 
   const join = () => {
-    if (saveProgramme(userId, pending, { counted, figures, challenge })) {
+    if (saveProgramme(userId, pending, { counted, figures, challenge, pulse })) {
       if (plans && !addProgrammePlans(userId, pending, newPlanId).ok) setFailed(true);
       clearPendingCode();
       setPending(null);
@@ -271,12 +349,15 @@ export function ProgrammePrompt({ userId }: { userId: string }) {
             if (!next) {
               setFigures(false);
               setChallenge(false);
+              setPulse(false);
             }
           }}
           figures={figures}
           onFiguresChange={setFigures}
           challenge={challenge}
           onChallengeChange={setChallenge}
+          pulse={pulse}
+          onPulseChange={setPulse}
         />
         <ProgrammePlansChoice programme={pending} checked={plans} onChange={setPlans} />
         {failed && (

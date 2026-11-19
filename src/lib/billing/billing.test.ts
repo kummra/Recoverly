@@ -203,7 +203,7 @@ describe("what the plans claim", () => {
     const notBuilt: string[] = [];
     for (const id of PLAN_IDS) {
       for (const feature of notBuilt) expect(PLANS[id].features, `${id} must not claim ${feature} yet`).not.toContain(feature);
-      for (const built of ["referrals", "logo", "emailReports"] as const) expect(PLANS[id].features, id).toContain(built);
+      for (const built of ["referrals", "logo", "emailReports", "pulse"] as const) expect(PLANS[id].features, id).toContain(built);
     }
   });
 });

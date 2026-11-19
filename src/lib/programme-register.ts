@@ -66,13 +66,15 @@ import { type Programme, normaliseCode } from "@/lib/programme";
 import { WORKSPACE_LIMITS, type WorkspaceTeam, cleanPublicKey, publicKeyText, workspaceAllowedFor } from "@/lib/workspace";
 
 /** An organisation in the register: what its people see, plus (server-side only) how it reads its headcount. */
-export type RegisterEntry = Omit<Programme, "headcount" | "figures" | "workspace" | "challenge"> & {
+export type RegisterEntry = Omit<Programme, "headcount" | "figures" | "workspace" | "challenge" | "pulse"> & {
   /** Present when the organisation receives the anonymous monthly headcount: the SHA-256 (hex) of its private report key. */
   report?: { keyHash: string };
   /** Also receives anonymous progress-figure averages (needs `report`). */
   figures?: true;
   /** Also runs the anonymous dry-month challenge count (needs `report`). */
   challenge?: true;
+  /** Also asks the fixed anonymous monthly question (needs `report`). */
+  pulse?: true;
   /**
    * Has a private team workspace where people can share their progress by name. Needs `report`
    * (which also guards the team's page) and a kind that is not a workplace or a college
@@ -110,13 +112,14 @@ export const PROGRAMMES: readonly RegisterEntry[] = [
  * (`recordTick` in `programme-count-service.ts`).
  */
 export function publicProgramme(entry: RegisterEntry): Programme {
-  const { report, figures, workspace, group, challenge, ...rest } = entry;
+  const { report, figures, workspace, group, challenge, pulse, ...rest } = entry;
   void group;
   const programme: Programme = { ...rest };
   const demo = entry.kind === "sample";
   if (report || demo) programme.headcount = true;
   if ((report && figures) || demo) programme.figures = true;
   if ((report && challenge) || demo) programme.challenge = true;
+  if ((report && pulse) || demo) programme.pulse = true;
   if (demo || workspaceKeyFor(entry)) programme.workspace = true;
   return programme;
 }

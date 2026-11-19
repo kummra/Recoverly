@@ -19,6 +19,7 @@ export function useProgramme(userId: string | undefined) {
   const [counted, setCounted] = useState(false);
   const [figures, setFigures] = useState(false);
   const [challenge, setChallenge] = useState(false);
+  const [pulse, setPulse] = useState(false);
 
   useEffect(() => {
     const read = () => {
@@ -27,6 +28,7 @@ export function useProgramme(userId: string | undefined) {
       setCounted(membership?.counted ?? false);
       setFigures(membership?.figures ?? false);
       setChallenge(membership?.challenge ?? false);
+      setPulse(membership?.pulse ?? false);
     };
     read();
     if (!userId) return;
@@ -44,5 +46,5 @@ export function useProgramme(userId: string | undefined) {
     };
   }, [userId]);
 
-  return [programme, setProgramme, counted, figures, challenge] as const;
+  return [programme, setProgramme, counted, figures, challenge, pulse] as const;
 }

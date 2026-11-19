@@ -80,12 +80,24 @@ describe("a paying organisation's programme", () => {
   it("offers the anonymous counts only while they are switched on and in the plan, and never hands out the report key", async () => {
     const off = await directoryWith([org()], [programme()]);
     expect(await off.directory.findProgramme("ACME2345XY")).not.toHaveProperty("headcount");
-    const on = await directoryWith([org()], [reporting({ features: { headcount: true, figures: true, challenge: true, workspace: false } })]);
+    const on = await directoryWith([org()], [reporting({ features: { headcount: true, figures: true, challenge: true, workspace: false, pulse: false } })]);
     const found = await on.directory.findProgramme("ACME2345XY");
     expect(found).toMatchObject({ headcount: true, figures: true, challenge: true });
     expect(JSON.stringify(found)).not.toContain(hashReportKey(REPORT));
-    const orphan = await directoryWith([org()], [programme({ features: { headcount: true, figures: false, challenge: false, workspace: false } })]);
+    const orphan = await directoryWith([org()], [programme({ features: { headcount: true, figures: false, challenge: false, workspace: false, pulse: false } })]);
     expect(await orphan.directory.findProgramme("ACME2345XY")).not.toHaveProperty("headcount");
+  });
+});
+
+describe("the monthly one-question survey", () => {
+  it("is offered to people only while it is on, the report is on, and the plan has it", async () => {
+    const on = await directoryWith([org()], [reporting({ features: { headcount: true, figures: false, challenge: false, workspace: false, pulse: true } })]);
+    expect(await on.directory.findProgramme("ACME2345XY")).toMatchObject({ headcount: true, pulse: true });
+    expect((await on.directory.findProgrammeByReportKey(REPORT))?.pulse).toBe(true);
+    const off = await directoryWith([org()], [reporting()]);
+    expect(await off.directory.findProgramme("ACME2345XY")).not.toHaveProperty("pulse");
+    const noReport = await directoryWith([org()], [programme({ features: { headcount: false, figures: false, challenge: false, workspace: false, pulse: true } })]);
+    expect(await noReport.directory.findProgramme("ACME2345XY")).not.toHaveProperty("pulse");
   });
 });
 
@@ -125,7 +137,7 @@ describe("the logo", () => {
 
 describe("the team workspace", () => {
   const clinic = (over: Partial<OrgRecord> = {}) => org({ kind: "clinic", kindVerified: true, subscription: sub("clinic"), ...over });
-  const workspace = (key?: JsonWebKey) => reporting({ features: { headcount: true, figures: false, challenge: false, workspace: true }, ...(key ? { workspacePublicKey: key } : {}) });
+  const workspace = (key?: JsonWebKey) => reporting({ features: { headcount: true, figures: false, challenge: false, workspace: true, pulse: false }, ...(key ? { workspacePublicKey: key } : {}) });
 
   it("is offered to people only once a verified clinic's team has a key on file", async () => {
     const noKey = await directoryWith([clinic()], [workspace()]);

@@ -420,6 +420,13 @@ its Firestore and in-memory versions, `service.ts` for every rule, `directory.ts
   launched commercially and has no paying customers; that is true today and must be changed the day it stops being
   true (never imply customers or revenue that do not exist).
 
+**The monthly question** (`lib/programme-pulse*.ts`, `POST /api/programme/pulse`, `PulsePrompt` on the dashboard card, the report's "The monthly
+question" table, policy section 17 in nine languages pinned by `privacy-policy.test.ts`): a plan feature (`pulse`) the organisation switches on per programme
+beside the report. **The question is fixed** ("At {name}, I feel I could ask for help with drinking without being judged", 1 to 5): never let an
+organisation write its own, because a question about someone's drinking or health asked on an employer's behalf is exactly what rule 4 forbids. It
+only asks the person who ticked it, once a month, and "Not this month" sends nothing. The request is the code and the number and nothing else.
+Like the headcount, one person on two devices can answer twice; the policy and the report say so for the headcount and the same limit applies here.
+
 **The other plan features, built 19 Nov 2026** (each is in every plan; the catalogue names a feature in a plan only in the change that builds it,
 and `billing.test.ts` pins that, so a pricing page can never promise what does not exist):
 - **Referrals** (`Programme.referrals`, `cleanReferral`, `ProgrammeReferrals` on the dashboard card): up to eight nearby places or services an
@@ -702,7 +709,12 @@ The app builds and renders without these, but auth and the AI coach are inert un
    sharing, readable for 30 days after they last sent it (nothing is sent in the background), stoppable at
    any time, and deleted when they leave the programme or delete their account. The optional **dry-month
    challenge** (`privacy.s16*`) is a variant of (b): a second anonymous count under the same rules (ticked,
-   20 or more, rounded to 5, no list), kept beside the headcount as `{CODE}:DRY`. **No employer, college, insurer, TPA or government body ever
+   20 or more, rounded to 5, no list), kept beside the headcount as `{CODE}:DRY`. The **monthly question**
+   (`privacy.s17*`, built 19 Nov 2026 at the owner's request) is a variant of (b) and (c) too: one fixed question written by us (an
+   organisation cannot change it or add its own), answered 1 to 5, only if the person is counted and ticks a further box that is off by default,
+   skippable any month; the device sends the number and the code only, the server adds one to a per-month, per-answer count (`programmePulse`, no
+   uid, no timestamp, no list), and the organisation sees a month only at 20 or more answers (answers rounded to 5, share who agree rounded to 5%,
+   average to a tenth). **No employer, college, insurer, TPA or government body ever
    receives individual-level data, with or without consent**: consent given to your own employer,
    institution or insurer is not freely given, so the workspace cannot be switched on for a workplace or a
    college (`workspaceAllowedFor`, pinned by tests) whatever the register says, and for an organisation

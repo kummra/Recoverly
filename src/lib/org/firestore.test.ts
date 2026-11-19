@@ -194,9 +194,9 @@ describe("firestoreOrgStore: programmes", () => {
   it("turns off every count when a stored report has no key, and drops a key when the report is off", async () => {
     const { db, table } = fakeFirestore();
     const store = firestoreOrgStore(db);
-    table(PROGRAMMES_COLLECTION).set("NOKEY22222", { ...JSON.parse(JSON.stringify(programme({ code: "NOKEY22222" }))), features: { headcount: true, figures: true, challenge: true, workspace: true } });
+    table(PROGRAMMES_COLLECTION).set("NOKEY22222", { ...JSON.parse(JSON.stringify(programme({ code: "NOKEY22222" }))), features: { headcount: true, figures: true, challenge: true, workspace: true, pulse: false } });
     table(PROGRAMMES_COLLECTION).set("OFFKEY2222", { ...JSON.parse(JSON.stringify(programme({ code: "OFFKEY2222" }))), features: { headcount: false, figures: true }, reportKeyHash: "d".repeat(64) });
-    expect((await store.getProgramme("NOKEY22222"))?.features).toEqual({ headcount: false, figures: false, challenge: false, workspace: false });
+    expect((await store.getProgramme("NOKEY22222"))?.features).toEqual({ headcount: false, figures: false, challenge: false, workspace: false, pulse: false });
     const off = await store.getProgramme("OFFKEY2222");
     expect(off?.reportKeyHash).toBeUndefined();
     expect(off?.features.figures).toBe(false);

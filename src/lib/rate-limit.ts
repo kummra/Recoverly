@@ -95,6 +95,8 @@ export const LIMITS = {
   // The once-a-month "I used it" tick for an organisation's anonymous total. A
   // device sends one a month, so a dozen an hour per person is already generous.
   programmeCount: { limit: 12, windowMs: 60 * 60_000 },
+  // The once-a-month answer to the anonymous question. One a month per device; a dozen an hour is generous.
+  programmePulse: { limit: 12, windowMs: 60 * 60_000 },
   // An organisation's private report page.
   reportView: { limit: 60, windowMs: 60 * 60_000 },
   // The team workspace. A person sends a copy when they choose to and looks at the screen now

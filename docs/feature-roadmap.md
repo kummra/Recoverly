@@ -99,8 +99,16 @@ individual's information.
 Trust and procurement pages, a toolkit expansion (campaign kit, disclosure protocol, help-a-friend, orientation pack, clinic handout,
 regional partners), report CSV, an appointment calendar file, clinic aftercare plans and check-in questions, "ask my team to contact me",
 a supporter message, gentle milestones, a savings estimate, risk dates, an optional dry-month challenge count and district roll-up
-reports. Limits are in CLAUDE.md. Still not built: a self-serve organisation portal, owner dashboard, scheduled report emails, an
-anonymous pulse survey, offline/voice mode, shift-aware quiet hours, co-branding logos, a referral directory, pricing.
+reports. Limits are in CLAUDE.md.
+
+### Seventh round (19 November 2026): organisations pay, and the deferred features
+
+A self-serve organisation portal (`/portal`) and owner page (`/owner`); plans, a paywall for the toolkit documents and programme codes, Stripe
+Checkout and webhooks (never run against Stripe itself) and a manual invoice route; a pricing page; draft organisation terms and refund terms; a
+list of local referrals; a co-branding logo served from our own address; the monthly report by email (never run against Resend itself); an
+anonymous monthly one-question survey; shift-aware quiet hours; and a shared-phone page for field workers (`/field`). Details and the rules that
+must stay true are in CLAUDE.md "Organisation plans, the paywall and Stripe". **Still not built:** offline-first mode and voice input for field
+workers beyond what the app already has (read aloud, voice input), which needs a field test with an NGO.
 
 ## 3. Capacity: the number to plan around
 

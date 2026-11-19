@@ -71,6 +71,11 @@ export type Programme = {
    */
   challenge?: boolean;
   /**
+   * The organisation also asks one fixed anonymous question a month (`lib/programme-pulse.ts`): people who tick it answer from 1 to 5, and
+   * the answers are added into counts, shown only for 20 or more. Only offered alongside the headcount.
+   */
+  pulse?: boolean;
+  /**
    * The organisation has a private team workspace where people who chose to can share their
    * own progress with its team, by name, end-to-end encrypted (`lib/workspace.ts`). Offered
    * only where the owner has set it up; a person is never asked unless it is on.
@@ -281,6 +286,7 @@ export function sanitiseProgramme(input: unknown): Programme | null {
   if (raw.headcount === true) programme.headcount = true;
   if (raw.figures === true && programme.headcount) programme.figures = true;
   if (raw.challenge === true && programme.headcount) programme.challenge = true;
+  if (raw.pulse === true && programme.headcount) programme.pulse = true;
   if (raw.workspace === true) programme.workspace = true;
   if (raw.logo === true) programme.logo = true;
   return programme;
@@ -333,6 +339,7 @@ export function validateProgramme(programme: Programme): string[] {
   if (programme.figures !== undefined && typeof programme.figures !== "boolean") problems.push(at("figures must be true or false"));
   if (programme.figures && !programme.headcount) problems.push(at("figures are only offered together with the headcount"));
   if (programme.challenge && !programme.headcount) problems.push(at("the challenge is only offered together with the headcount"));
+  if (programme.pulse && !programme.headcount) problems.push(at("the monthly question is only offered together with the headcount"));
   if (programme.workspace !== undefined && typeof programme.workspace !== "boolean") problems.push(at("workspace must be true or false"));
   if (programme.questions !== undefined) {
     if (!Array.isArray(programme.questions) || programme.questions.length > L.questionsMax || programme.questions.some((q) => typeof q !== "string" || cleanText(q, L.questionMax) !== q || q === "")) {

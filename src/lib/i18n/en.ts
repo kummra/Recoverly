@@ -486,6 +486,9 @@ export const en: Dictionary = {
   "privacy.s16Title": "The dry-month challenge",
   "privacy.s16Body":
     "Some organisations that receive the monthly total also run an optional dry-month challenge. This happens only if the programme offers it, you are counted, and you tick that box, and you can untick it at any time in Settings. Once a month, in the same signed-in request as the monthly total, your device adds one to a count of people taking part, and we keep no name, no account and no list. The organisation sees how many are taking part only when at least 20 are, rounded to the nearest 5, and never who they are or how they are doing. We do not check or reward taking part. Counts already added cannot be taken back, but they identify nobody.",
+  "privacy.s17Title": "The monthly question",
+  "privacy.s17Body":
+    "Some organisations that receive the monthly total also ask one fixed question once a month: whether you feel you could ask for help with drinking without being judged, answered from 1 to 5. We write the question, and an organisation cannot change it or add its own. This happens only if the programme offers it, you are counted, and you tick that box, and you can untick it at any time in Settings. You can also skip any month, and then nothing is sent. When you answer, your device sends only the number and the programme's code, in a signed-in request, and we add one to a count for that answer and that month. We keep no name, no account, no time and no list of who answered. The organisation sees the results only when at least 20 people answered that month, as the number of answers rounded to the nearest 5, the share who answered 4 or 5 rounded to the nearest 5 per cent, and the average to one decimal place, and never who answered or what any one person said. Answers already added cannot be taken back, but they identify nobody.",
   "privacy.lastUpdated": "Last updated: November 2026",
   "privacy.s8Title": "Enquiries from organisations",
   "privacy.s8Body":
@@ -952,6 +955,15 @@ export const en: Dictionary = {
   "programme.challengeLabel": "Also count me in the dry-month challenge",
   "programme.challengeHelp":
     "Once a month, along with being counted, your device adds one to a number of people taking part in {name}'s dry-month challenge. No name, account or list is kept, and {name} sees how many are taking part only when at least 20 are, rounded to the nearest 5. Taking part is not checked or rewarded, and you can turn this off any time in Settings.",
+  "programme.pulseLabel": "Also ask me one question each month, without my name",
+  "programme.pulseHelp":
+    "Once a month the app can ask you one question about {name}, answered from 1 to 5. Only the number is sent, added into a total: no name, no account, nothing else. {name} sees the results only when at least 20 people have answered, as rounded figures, and never who answered. You can skip any month and turn this off in Settings.",
+  "programme.pulseQuestion": "At {name}, I feel I could ask for help with drinking without being judged.",
+  "programme.pulseLow": "Strongly disagree",
+  "programme.pulseHigh": "Strongly agree",
+  "programme.pulseSkip": "Not this month",
+  "programme.pulseThanks": "Thank you. Your answer was added, with no name.",
+  "programme.pulseFailed": "That could not be sent just now. You can try again.",
   "programme.plansLabel": "Add {name}'s suggested plans to my plans",
   "programme.plansHelp":
     "Ready-made plans for hard moments, written by {name}. They are saved in your own plans, on this device only, and you can change or remove them at any time. {name} is not told whether you add them.",

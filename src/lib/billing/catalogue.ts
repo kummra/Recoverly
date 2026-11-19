@@ -16,13 +16,14 @@ export const KIND_LABELS: Record<OrgKind, string> = {
   community: "NGO, community or government programme"
 };
 
-export const FEATURES = ["reports", "figures", "challenge", "workspace", "toolkit", "csv", "rollup", "logo", "referrals", "emailReports"] as const;
+export const FEATURES = ["reports", "figures", "challenge", "pulse", "workspace", "toolkit", "csv", "rollup", "logo", "referrals", "emailReports"] as const;
 export type Feature = (typeof FEATURES)[number];
 
 export const FEATURE_LABELS: Record<Feature, string> = {
   reports: "Private monthly report (anonymous headcount)",
   figures: "Anonymous progress averages",
   challenge: "Dry-month challenge count",
+  pulse: "Anonymous monthly one-question survey",
   workspace: "Private team workspace (clinics and community services only)",
   toolkit: "Full toolkit: posters with your own code, session outline, manager guide, campaign kit, orientation pack, clinic handout",
   csv: "Report download as CSV",
@@ -53,7 +54,7 @@ export type Plan = {
  * the portal list exactly this, so a feature named here that does not exist would be a false claim to a paying customer.
  * (Every declared feature is now built.)
  */
-const COMMON: readonly Feature[] = ["reports", "figures", "challenge", "toolkit", "csv", "referrals", "logo", "emailReports"];
+const COMMON: readonly Feature[] = ["reports", "figures", "challenge", "pulse", "toolkit", "csv", "referrals", "logo", "emailReports"];
 
 export const PLANS: Readonly<Record<PlanId, Plan>> = {
   clinic: {

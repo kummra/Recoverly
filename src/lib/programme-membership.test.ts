@@ -10,8 +10,10 @@ import {
   loadProgramme,
   lookupProgramme,
   markCountedMonth,
+  markPulseMonth,
   setFigures,
   setChallenge,
+  setPulse,
   parseStoredMembership,
   parseStoredProgramme,
   programmeStorageKey,
@@ -158,6 +160,56 @@ describe("lookupProgramme", () => {
 });
 
 
+describe("the monthly question choice", () => {
+  beforeEach(() => vi.stubGlobal("window", { localStorage: fakeStorage(), dispatchEvent: () => true }));
+  afterEach(() => vi.unstubAllGlobals());
+  const OFFERS_PULSE: Programme = { ...PROGRAMME, headcount: true, pulse: true };
+
+  it("is off unless ticked, on only while counted in a programme that offers it, and can be turned off", () => {
+    saveProgramme("q0", OFFERS_PULSE, { counted: true });
+    expect(loadMembership("q0")?.pulse).toBe(false);
+    saveProgramme("q1", OFFERS_PULSE, { counted: true, pulse: true });
+    expect(loadMembership("q1")).toMatchObject({ counted: true, pulse: true, pulseMonth: null });
+    expect(setPulse("q1", false)).toBe(true);
+    expect(loadMembership("q1")?.pulse).toBe(false);
+    saveProgramme("q2", OFFERS_PULSE, { counted: false, pulse: true });
+    expect(loadMembership("q2")?.pulse).toBe(false);
+    saveProgramme("q3", { ...PROGRAMME, headcount: true }, { counted: true, pulse: true });
+    expect(loadMembership("q3")?.pulse).toBe(false);
+    expect(setPulse("q3", true)).toBe(false);
+    expect(setPulse("nobody", true)).toBe(false);
+  });
+
+  it("goes off, and forgets the month it was answered, when the count is turned off", () => {
+    saveProgramme("q4", OFFERS_PULSE, { counted: true, pulse: true });
+    markPulseMonth("q4", "2026-11");
+    expect(loadMembership("q4")?.pulseMonth).toBe("2026-11");
+    setCounted("q4", false);
+    expect(loadMembership("q4")).toMatchObject({ counted: false, pulse: false, pulseMonth: null });
+  });
+
+  it("remembers the month it was answered or skipped, so it is asked once a month, and only while it is on", () => {
+    saveProgramme("q5", OFFERS_PULSE, { counted: true, pulse: true });
+    expect(markPulseMonth("q5", "2026-11")).toBe(true);
+    expect(loadMembership("q5")?.pulseMonth).toBe("2026-11");
+    saveProgramme("q5", { ...OFFERS_PULSE, name: "Acme Logistics Ltd" });
+    expect(loadMembership("q5")).toMatchObject({ pulse: true, pulseMonth: "2026-11" });
+    saveProgramme("q5", OFFERS_PULSE, { counted: true, pulse: true });
+    expect(loadMembership("q5")?.pulseMonth).toBeNull();
+    saveProgramme("q6", OFFERS_PULSE, { counted: true });
+    expect(markPulseMonth("q6", "2026-11")).toBe(false);
+  });
+
+  it("does not trust a hand-edited month or a pulse flag the programme does not offer", () => {
+    const edited = (extra: object) => JSON.stringify({ programme: OFFERS_PULSE, counted: true, ...extra });
+    expect(parseStoredMembership(edited({ pulse: true, pulseMonth: "2026-11" }))).toMatchObject({ pulse: true, pulseMonth: "2026-11" });
+    expect(parseStoredMembership(edited({ pulse: true, pulseMonth: "yesterday" }))?.pulseMonth).toBeNull();
+    expect(parseStoredMembership(edited({ pulseMonth: "2026-11" }))?.pulseMonth).toBeNull();
+    expect(parseStoredMembership(JSON.stringify({ programme: { ...PROGRAMME, headcount: true }, counted: true, pulse: true }))?.pulse).toBe(false);
+    expect(parseStoredMembership(JSON.stringify({ programme: OFFERS_PULSE, counted: false, pulse: true }))?.pulse).toBe(false);
+  });
+});
+
 describe("the choice to be counted in an organisation's monthly total", () => {
   const OFFERS: Programme = { ...PROGRAMME, headcount: true };
 
@@ -170,7 +222,7 @@ describe("the choice to be counted in an organisation's monthly total", () => {
 
   it("is off unless the person turns it on, however they join", () => {
     saveProgramme("u1", OFFERS);
-    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, challenge: false, countedMonth: null });
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, challenge: false, pulse: false, countedMonth: null, pulseMonth: null });
     saveProgramme("u2", OFFERS, { counted: false });
     expect(loadMembership("u2")?.counted).toBe(false);
   });
@@ -198,7 +250,7 @@ describe("the choice to be counted in an organisation's monthly total", () => {
     markCountedMonth("u1", "2026-11");
     expect(loadMembership("u1")?.countedMonth).toBe("2026-11");
     expect(setCounted("u1", false)).toBe(true);
-    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, challenge: false, countedMonth: null });
+    expect(loadMembership("u1")).toEqual({ programme: OFFERS, counted: false, figures: false, challenge: false, pulse: false, countedMonth: null, pulseMonth: null });
     setCounted("u1", true);
     expect(loadMembership("u1")?.countedMonth).toBeNull();
   });

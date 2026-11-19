@@ -30,8 +30,8 @@ export const ORG_LIMITS = {
 export type ReviewState = "pending" | "approved" | "rejected";
 export const REVIEW_STATES: readonly ReviewState[] = ["pending", "approved", "rejected"];
 
-export type ProgrammeFeatures = { headcount: boolean; figures: boolean; challenge: boolean; workspace: boolean };
-export const NO_FEATURES: Readonly<ProgrammeFeatures> = { headcount: false, figures: false, challenge: false, workspace: false };
+export type ProgrammeFeatures = { headcount: boolean; figures: boolean; challenge: boolean; workspace: boolean; pulse: boolean };
+export const NO_FEATURES: Readonly<ProgrammeFeatures> = { headcount: false, figures: false, challenge: false, workspace: false, pulse: false };
 
 export type Purchase = { item: string; at: number; ref: string };
 
@@ -136,7 +136,7 @@ export function parseFeatures(value: unknown): ProgrammeFeatures {
   const raw = isObject(value) ? value : {};
   const headcount = raw.headcount === true;
   // Everything else hangs off the monthly report: without it there is nothing to show them in.
-  return { headcount, figures: headcount && raw.figures === true, challenge: headcount && raw.challenge === true, workspace: headcount && raw.workspace === true };
+  return { headcount, figures: headcount && raw.figures === true, challenge: headcount && raw.challenge === true, workspace: headcount && raw.workspace === true, pulse: headcount && raw.pulse === true };
 }
 
 export function parseProgramme(code: string, data: Record<string, unknown> | undefined): OrgProgrammeRecord | null {

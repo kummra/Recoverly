@@ -88,7 +88,7 @@ describe("programmes need a plan, and a plan has a limit", () => {
     const { service } = await orgWith("workplace", "workplace");
     const programme = await service.createProgramme("u1", good);
     expect(programme.code).toMatch(/^CODE/);
-    expect(programme).toMatchObject({ reviewState: "pending", live: null, features: { headcount: false, figures: false, challenge: false, workspace: false }, reportLinkOn: false });
+    expect(programme).toMatchObject({ reviewState: "pending", live: null, features: { headcount: false, figures: false, challenge: false, workspace: false, pulse: false }, reportLinkOn: false });
     expect(programme.draft.name).toBe("Acme depot");
   });
 
@@ -351,7 +351,7 @@ describe("the anonymous counts", () => {
     const { code } = await service.createProgramme("u1", good);
     await service.setFeatures("u1", code, { headcount: true, figures: true, challenge: true });
     const off = await service.setFeatures("u1", code, { headcount: false });
-    expect(off.programme.features).toEqual({ headcount: false, figures: false, challenge: false, workspace: false });
+    expect(off.programme.features).toEqual({ headcount: false, figures: false, challenge: false, workspace: false, pulse: false });
     expect((await store.getProgramme(code))?.reportKeyHash).toBeUndefined();
   });
 
@@ -359,7 +359,7 @@ describe("the anonymous counts", () => {
     const { service } = await orgWith("workplace", "workplace");
     const { code } = await service.createProgramme("u1", good);
     const result = await service.setFeatures("u1", code, { figures: true, challenge: true });
-    expect(result.programme.features).toEqual({ headcount: false, figures: false, challenge: false, workspace: false });
+    expect(result.programme.features).toEqual({ headcount: false, figures: false, challenge: false, workspace: false, pulse: false });
     expect(result.reportKey).toBeUndefined();
   });
 
@@ -372,6 +372,30 @@ describe("the anonymous counts", () => {
     expect(second).not.toBe(first);
     expect((await store.getProgramme(code))?.reportKeyHash).toBe(hashReportKey(second));
     expect(await store.programmeByReportHash(hashReportKey(first!))).toBeNull();
+  });
+});
+
+describe("the monthly one-question survey", () => {
+  it("is switched on with the report and off with it, and needs a plan that has it", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", good);
+    const off = await service.setFeatures("u1", code, { pulse: true });
+    expect(off.programme.features.pulse).toBe(false);
+    const on = await service.setFeatures("u1", code, { headcount: true, pulse: true });
+    expect(on.programme.features).toMatchObject({ headcount: true, pulse: true });
+    expect((await store.getProgramme(code))?.features.pulse).toBe(true);
+    const gone = await service.setFeatures("u1", code, { headcount: false });
+    expect(gone.programme.features).toMatchObject({ headcount: false, pulse: false });
+
+    const catalogue = await import("@/lib/billing/catalogue");
+    const original = catalogue.PLANS.workplace.features;
+    (catalogue.PLANS.workplace as { features: readonly string[] }).features = original.filter((f) => f !== "pulse");
+    try {
+      await service.setFeatures("u1", code, { headcount: true });
+      await expectError(service.setFeatures("u1", code, { pulse: true }), "invalid", /does not include the monthly one-question survey/);
+    } finally {
+      (catalogue.PLANS.workplace as { features: readonly string[] }).features = original;
+    }
   });
 });
 

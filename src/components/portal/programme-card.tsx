@@ -266,6 +266,18 @@ export function ProgrammeCard({ programme, overview, origin, getToken, reload }:
                     </div>
                   </div>
                 )}
+                {can("pulse") && (
+                  <div className="flex gap-2">
+                    <input id={`${programme.code}-pulse`} type="checkbox" className={CHECK} checked={features.pulse} onChange={(e) => void toggle("pulse", e.target.checked)} />
+                    <div>
+                      <Label htmlFor={`${programme.code}-pulse`}>Monthly one-question survey</Label>
+                      <p className={NOTE}>
+                        One fixed question a month, the same for everyone and written by us: &ldquo;I feel I could ask for help with drinking without being judged&rdquo;, answered from 1 to 5 by people who choose to. You see only the share who agree and
+                        the average, and only at 20 or more answers. You cannot change the question.
+                      </p>
+                    </div>
+                  </div>
+                )}
                 {overview.workspaceEligible && can("workspace") && (
                   <div className="flex gap-2">
                     <input id={`${programme.code}-workspace`} type="checkbox" className={CHECK} checked={features.workspace} disabled={!overview.org.kindVerified && !features.workspace} onChange={(e) => void toggle("workspace", e.target.checked)} />

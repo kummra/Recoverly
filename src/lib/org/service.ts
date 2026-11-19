@@ -59,7 +59,7 @@ export function generateKey(bytes: () => Buffer = () => randomBytes(32)): string
   return bytes().toString("base64url");
 }
 
-const FEATURE_KEYS = ["headcount", "figures", "challenge", "workspace"] as const;
+const FEATURE_KEYS = ["headcount", "figures", "challenge", "workspace", "pulse"] as const;
 const sameContent = (a: ProgrammeContent | null, b: ProgrammeContent | null) => JSON.stringify(a) === JSON.stringify(b);
 
 export type OrgServiceDeps = {
@@ -266,10 +266,12 @@ export function createOrgService(deps: OrgServiceDeps) {
           next.figures = false;
           next.challenge = false;
           next.workspace = false;
+          next.pulse = false;
         }
         if (next.headcount && !planAllows(plan, "reports")) throw new OrgError("invalid", "Your plan does not include the monthly report.");
         if (next.figures && !planAllows(plan, "figures")) throw new OrgError("invalid", "Your plan does not include the progress averages.");
         if (next.challenge && !planAllows(plan, "challenge")) throw new OrgError("invalid", "Your plan does not include the dry-month challenge.");
+        if (next.pulse && !planAllows(plan, "pulse")) throw new OrgError("invalid", "Your plan does not include the monthly one-question survey.");
         if (next.workspace && !current.features.workspace) {
           const refusal = workspaceRefusal(org, plan);
           if (refusal) throw refusal;

@@ -46,6 +46,8 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
   const [storeFailed, setStoreFailed] = useState(false);
   const [counted, setCounted] = useState(false);
   const [figures, setFigures] = useState(false);
+  const [challenge, setChallenge] = useState(false);
+  const [pulse, setPulse] = useState(false);
 
   const load = useCallback(() => {
     if (!code) {
@@ -117,7 +119,7 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
 
   const join = () => {
     if (!user) return;
-    if (saveProgramme(user.uid, programme, { counted, figures })) {
+    if (saveProgramme(user.uid, programme, { counted, figures, challenge, pulse })) {
       setJoinedNow(true);
       setStoreFailed(false);
     } else {
@@ -167,10 +169,18 @@ export function JoinContent({ rawCode }: { rawCode: string }) {
                   checked={counted}
                   onChange={(next) => {
                     setCounted(next);
-                    if (!next) setFigures(false);
+                    if (!next) {
+                      setFigures(false);
+                      setChallenge(false);
+                      setPulse(false);
+                    }
                   }}
                   figures={figures}
                   onFiguresChange={setFigures}
+                  challenge={challenge}
+                  onChallengeChange={setChallenge}
+                  pulse={pulse}
+                  onPulseChange={setPulse}
                 />
                 {storeFailed && (
                   <p role="alert" className="rounded-xl bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300">

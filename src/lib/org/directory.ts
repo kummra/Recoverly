@@ -68,6 +68,7 @@ export function createDirectory(deps: DirectoryDeps) {
       entry.report = { keyHash: record.reportKeyHash };
       if (record.features.figures && planAllows(plan, "figures")) entry.figures = true;
       if (record.features.challenge && planAllows(plan, "challenge")) entry.challenge = true;
+      if (record.features.pulse && planAllows(plan, "pulse")) entry.pulse = true;
       if (record.features.workspace && planAllows(plan, "workspace") && org.kindVerified && workspaceAllowedFor(org.kind)) {
         entry.workspace = record.workspacePublicKey ? { publicKey: record.workspacePublicKey } : {};
       }

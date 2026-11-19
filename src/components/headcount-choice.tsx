@@ -31,7 +31,9 @@ export function HeadcountChoice({
   figures = false,
   onFiguresChange,
   challenge = false,
-  onChallengeChange
+  onChallengeChange,
+  pulse = false,
+  onPulseChange
 }: {
   programme: Programme;
   checked: boolean;
@@ -42,11 +44,15 @@ export function HeadcountChoice({
   /** Also take part in the anonymous dry-month challenge: only offered when the programme runs one and the person is counted. */
   challenge?: boolean;
   onChallengeChange?: (challenge: boolean) => void;
+  /** Also be asked one fixed anonymous question a month: only offered when the programme asks it and the person is counted. */
+  pulse?: boolean;
+  onPulseChange?: (pulse: boolean) => void;
 }) {
   const t = useT();
   const helpId = useId();
   const figuresHelpId = useId();
   const challengeHelpId = useId();
+  const pulseHelpId = useId();
   if (!programme.headcount) return null;
   return (
     <div className="space-y-1.5 rounded-xl border border-border bg-surface-muted/50 p-3">
@@ -96,6 +102,24 @@ export function HeadcountChoice({
           </label>
           <p id={challengeHelpId} className="-mt-1 pl-[1.625rem] text-xs leading-relaxed text-subtle">
             {t("programme.challengeHelp", { name: programme.name })}
+          </p>
+        </div>
+      )}
+      {programme.pulse && onPulseChange && (
+        <div className="space-y-1 border-t border-border pt-2">
+          <label className={`flex min-h-9 items-start gap-2.5 py-1 text-sm font-medium ${checked ? "text-foreground" : "text-muted-foreground"}`}>
+            <input
+              type="checkbox"
+              checked={checked && pulse}
+              disabled={!checked}
+              aria-describedby={pulseHelpId}
+              onChange={(event) => onPulseChange(event.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-600"
+            />
+            {t("programme.pulseLabel")}
+          </label>
+          <p id={pulseHelpId} className="-mt-1 pl-[1.625rem] text-xs leading-relaxed text-subtle">
+            {t("programme.pulseHelp", { name: programme.name })}
           </p>
         </div>
       )}

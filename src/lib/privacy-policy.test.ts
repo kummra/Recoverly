@@ -83,6 +83,20 @@ describe("the English policy states what the code does", () => {
     expect(body).toMatch(/do not check or reward taking part/);
   });
 
+  it("states the monthly question: fixed and ours, optional, one number, no identity kept, shown only for groups and rounded, never who answered", () => {
+    const body = en["privacy.s17Body"];
+    expect(body).toMatch(/We write the question, and an organisation cannot change it or add its own/);
+    expect(body).toMatch(/only if the programme offers it, you are counted, and you tick that box/);
+    expect(body).toMatch(/untick it at any time/);
+    expect(body).toMatch(/skip any month, and then nothing is sent/);
+    expect(body).toMatch(/sends only the number and the programme's code/);
+    expect(body).toMatch(/We keep no name, no account, no time and no list of who answered/);
+    expect(body).toContain(`at least ${MIN_GROUP} people answered`);
+    expect(body).toContain(`nearest ${ROUND_TO}`);
+    expect(body).toMatch(/never who answered or what any one person said/);
+    expect(body).toMatch(/identify nobody/);
+  });
+
   it("states the team workspace: only a clinic or community service, never a workplace or a college, off until turned on, scrambled so we cannot read it, ends, and can be stopped", () => {
     const body = en["privacy.s15Body"];
     expect(WORKSPACE_KINDS).toEqual(["clinic", "community"]);
@@ -148,6 +162,11 @@ describe("every translation of the policy states the same numbers", () => {
       }
       // The dry-month challenge: group size and rounding, here and beside the tick.
       for (const key of ["privacy.s16Body", "programme.challengeHelp"]) {
+        expect(dict[key], `${locale} ${key}`).toContain(String(MIN_GROUP));
+        expect(dict[key], `${locale} ${key}`).toMatch(new RegExp(`(^|[^0-9])${ROUND_TO}([^0-9]|$)`));
+      }
+      // The monthly question: group size and a rounding figure, here and beside the tick.
+      for (const key of ["privacy.s17Body", "programme.pulseHelp"]) {
         expect(dict[key], `${locale} ${key}`).toContain(String(MIN_GROUP));
         expect(dict[key], `${locale} ${key}`).toMatch(new RegExp(`(^|[^0-9])${ROUND_TO}([^0-9]|$)`));
       }

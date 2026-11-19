@@ -2,6 +2,7 @@ import { PrintButton } from "@/components/print-button";
 import { ReportCsvButton } from "@/components/report-csv-button";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { MIN_GROUP, ROUND_TO, type ReportRow, monthLabel } from "@/lib/programme-count";
+import type { PulseRow } from "@/lib/programme-pulse";
 import type { OutcomeRow, PercentDisplay } from "@/lib/programme-outcomes";
 import { reportCsv } from "@/lib/report-csv";
 
@@ -17,7 +18,23 @@ const percent = (p: PercentDisplay) => (p.shown ? `about ${p.percent}%` : <span 
  *
  * Plain and server-rendered: no script, and nothing here knows a person.
  */
-export function ProgrammeReport({ name, rows, outcomes, example = false, groupNote, challengeRows }: { name: string; rows: ReportRow[]; outcomes?: OutcomeRow[]; example?: boolean; groupNote?: string; challengeRows?: ReportRow[] }) {
+export function ProgrammeReport({
+  name,
+  rows,
+  outcomes,
+  example = false,
+  groupNote,
+  challengeRows,
+  pulseRows
+}: {
+  name: string;
+  rows: ReportRow[];
+  outcomes?: OutcomeRow[];
+  example?: boolean;
+  groupNote?: string;
+  challengeRows?: ReportRow[];
+  pulseRows?: PulseRow[];
+}) {
   return (
     <div lang="en" className="mx-auto max-w-3xl space-y-8">
       {example && (
@@ -93,6 +110,54 @@ export function ProgrammeReport({ name, rows, outcomes, example = false, groupNo
                   <td className="py-2 text-right font-medium tabular-nums">
                     {row.display.shown ? `about ${row.display.value}` : <span className="font-normal text-muted-foreground">fewer than {MIN_GROUP}</span>}
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {pulseRows && (
+        <section aria-labelledby="pulse" className="space-y-3">
+          <h2 id="pulse" className="text-lg font-semibold">
+            The monthly question
+          </h2>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            People who ticked it are asked one fixed question once a month: &ldquo;At {name}, I feel I could ask for help with drinking without being judged&rdquo;, answered from 1 (strongly disagree) to 5 (strongly agree). We write the
+            question; you cannot change it. A month is shown only when at least {MIN_GROUP} people answered. The share who agree is people who answered 4 or 5, rounded to the nearest {ROUND_TO} per cent. It says how people feel, not who they are.
+          </p>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-muted-foreground">
+                <th scope="col" className="py-2 pr-4 font-medium">
+                  Month
+                </th>
+                <th scope="col" className="py-2 pr-4 text-right font-medium">
+                  Answers
+                </th>
+                <th scope="col" className="py-2 pr-4 text-right font-medium">
+                  Agree (4 or 5)
+                </th>
+                <th scope="col" className="py-2 text-right font-medium">
+                  Average (out of 5)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {pulseRows.map((row) => (
+                <tr key={row.month} className="border-b border-border/60 last:border-0">
+                  <td className="py-2 pr-4 text-body">{monthLabel(row.month)}</td>
+                  {row.display.shown ? (
+                    <>
+                      <td className="py-2 pr-4 text-right font-medium tabular-nums">about {row.display.answers}</td>
+                      <td className="py-2 pr-4 text-right font-medium tabular-nums">about {row.display.agreePercent}%</td>
+                      <td className="py-2 text-right font-medium tabular-nums">{row.display.average.toFixed(1)}</td>
+                    </>
+                  ) : (
+                    <td colSpan={3} className="py-2 text-right font-normal text-muted-foreground">
+                      fewer than {MIN_GROUP} answers
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

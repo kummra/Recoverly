@@ -9,6 +9,8 @@ import { directory } from "@/lib/org/server";
 import { CHALLENGE_SUFFIX, buildReportRows } from "@/lib/programme-count";
 import { buildOutcomeRows } from "@/lib/programme-outcomes";
 import { firestoreCountStore } from "@/lib/programme-count-firestore";
+import { type PulseRow, buildPulseRows } from "@/lib/programme-pulse";
+import { firestorePulseStore } from "@/lib/programme-pulse-firestore";
 import { LIMITS, rateLimit } from "@/lib/rate-limit";
 import { callerKey } from "@/lib/request-guards";
 
@@ -47,6 +49,7 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
   let counts: Record<string, number> | null = null;
   let challenge: Record<string, number> | null = null;
   let figures: Awaited<ReturnType<ReturnType<typeof firestoreCountStore>["readFigures"]>> | null = null;
+  let pulseRows: PulseRow[] | null = null;
   try {
     if (adminDb) {
       const store = firestoreCountStore(adminDb);
@@ -55,6 +58,8 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
       if (entry.figures) figures = await store.readFigures(entry.code);
       // The optional dry-month challenge count, kept beside the headcount.
       if (entry.challenge) challenge = await store.read(`${entry.code}${CHALLENGE_SUFFIX}`);
+      // The optional monthly question: counts of answers, shown only for 20 or more.
+      if (entry.pulse) pulseRows = buildPulseRows(await firestorePulseStore(adminDb).read(entry.code), new Date());
     }
   } catch {
     counts = null;
@@ -72,5 +77,5 @@ export default async function ProgrammeReportPage({ params }: { params: Params }
   }
 
   const now = new Date();
-  return <ProgrammeReport name={entry.name} rows={buildReportRows(counts, now)} outcomes={figures ? buildOutcomeRows(figures, now) : undefined} challengeRows={challenge ? buildReportRows(challenge, now) : undefined} />;
+  return <ProgrammeReport name={entry.name} rows={buildReportRows(counts, now)} outcomes={figures ? buildOutcomeRows(figures, now) : undefined} challengeRows={challenge ? buildReportRows(challenge, now) : undefined} pulseRows={pulseRows ?? undefined} />;
 }
