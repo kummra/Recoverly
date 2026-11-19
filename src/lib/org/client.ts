@@ -47,6 +47,19 @@ export const setFeatures = (token: string | null, code: string, features: Partia
 export const rotateReportKey = (token: string | null, code: string, f?: Fetch) => call<{ reportKey: string }>(token, "PATCH", `/api/org/programmes/${encodeURIComponent(code)}`, { rotateReportKey: true }, f);
 export const setWorkspaceKey = (token: string | null, code: string, workspaceKey: unknown, f?: Fetch) => call<{ keyId: string }>(token, "PATCH", `/api/org/programmes/${encodeURIComponent(code)}`, { workspaceKey }, f);
 export const deleteProgramme = (token: string | null, code: string, f?: Fetch) => call<{ ok: true }>(token, "DELETE", `/api/org/programmes/${encodeURIComponent(code)}`, undefined, f);
+export const setLogo = (token: string | null, code: string, logo: { type: string; data: string }, f?: Fetch) => call<{ programme: PortalProgramme }>(token, "PUT", `/api/org/programmes/${encodeURIComponent(code)}/logo`, logo, f);
+export const removeLogo = (token: string | null, code: string, f?: Fetch) => call<{ programme: PortalProgramme }>(token, "DELETE", `/api/org/programmes/${encodeURIComponent(code)}/logo`, undefined, f);
+
+/** A logo as an address a picture tag can show (a temporary blob address), fetched with the person's sign-in; `null` if there is none. */
+export async function fetchLogoPreview(token: string | null, path: string, f: Fetch = fetch): Promise<string | null> {
+  if (!token) return null;
+  try {
+    const response = await f(path, { headers: { Authorization: `Bearer ${token}` } });
+    return response.ok ? URL.createObjectURL(await response.blob()) : null;
+  } catch {
+    return null;
+  }
+}
 export const makeRollupKey = (token: string | null, f?: Fetch) => call<{ rollupKey: string }>(token, "POST", "/api/org/rollup", undefined, f);
 export const startCheckout = (token: string | null, item: { plan: string } | { product: string }, f?: Fetch) => call<{ url: string }>(token, "POST", "/api/billing/checkout", item, f);
 export const openBillingPortal = (token: string | null, f?: Fetch) => call<{ url: string }>(token, "POST", "/api/billing/portal", undefined, f);

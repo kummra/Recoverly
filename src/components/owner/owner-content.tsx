@@ -20,6 +20,28 @@ type State = { status: "loading" } | { status: "closed" } | { status: "error"; m
 const SELECT_CLASS = "flex h-11 w-full rounded-2xl border border-input bg-surface-muted px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 const when = (ms: number | null) => (ms === null ? "no end date" : format(new Date(ms), "d MMM yyyy"));
 
+/** A logo fetched with the owner's sign-in, for the owner to look at. */
+function OwnerLogo({ code, which, getToken }: { code: string; which: "draft" | "live"; getToken: () => Promise<string | null> }) {
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    let url: string | null = null;
+    let cancelled = false;
+    void (async () => {
+      const token = await getToken();
+      const response = await fetch(`/api/owner/logo?code=${encodeURIComponent(code)}&which=${which}`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!response.ok || cancelled) return;
+      url = URL.createObjectURL(await response.blob());
+      setSrc(url);
+    })();
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [code, which, getToken]);
+  // eslint-disable-next-line @next/next/no-img-element
+  return src ? <img src={src} alt={`${which === "draft" ? "New" : "Live"} logo`} className="h-16 w-16 rounded-lg border border-border bg-white object-contain" /> : <span className="text-xs text-muted-foreground">Loading…</span>;
+}
+
 /** The words an organisation submitted, laid out so the owner can check every number and link before anyone sees it. */
 function Words({ title, content }: { title: string; content: ProgrammeContent | null }) {
   if (!content) return <p className="text-sm text-muted-foreground">{title}: nothing is live yet.</p>;
@@ -156,6 +178,22 @@ export function OwnerContent() {
               </div>
               <Words title="Submitted" content={item.draft} />
               <Words title="Live now" content={item.live} />
+              {(item.logoDraft || item.logoLive) && (
+                <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border p-3 text-sm">
+                  {item.logoDraft && (
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">New logo (is it really theirs?)</p>
+                      <OwnerLogo code={item.code} which="draft" getToken={getIdToken} />
+                    </div>
+                  )}
+                  {item.logoLive && (
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Live logo</p>
+                      <OwnerLogo code={item.code} which="live" getToken={getIdToken} />
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="space-y-1">
                 <Label htmlFor={`note-${item.code}`}>Reason (needed to reject; shown to the organisation)</Label>
                 <Input id={`note-${item.code}`} value={notes[item.code] ?? ""} onChange={(e) => setNotes((n) => ({ ...n, [item.code]: e.target.value }))} maxLength={300} />

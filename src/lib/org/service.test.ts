@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { DAY_MS, type Subscription } from "@/lib/billing/entitlement";
 import { memoryOrgStore } from "@/lib/org/memory-store";
 import { OrgError, createOrgService, generateCode, generateKey } from "@/lib/org/service";
+import { b64, jpeg, png } from "@/lib/org/test-images";
 import { hashReportKey } from "@/lib/programme-register";
 
 const NOW = 1_800_000_000_000;
@@ -109,6 +110,109 @@ describe("programmes need a plan, and a plan has a limit", () => {
     expect(error.details.join(" ")).toMatch(/Contact 1.*3 to 15 digits/);
     expect(error.details.join(" ")).toMatch(/Contact 2.*https/);
     expect(store.programmes.size).toBe(0);
+  });
+});
+
+describe("the logo", () => {
+  const logo = { type: "png", data: b64(png(96, 96)) };
+
+  it("is checked from its own bytes, kept as a draft that needs review, and shown to people only once approved", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", good);
+    await service.reviewProgramme(code, "approve");
+    const sent = await service.setLogo("u1", code, logo);
+    expect(sent.logo).toEqual({ live: false, draft: true });
+    expect(sent.reviewState).toBe("pending");
+    expect((await store.getProgramme(code))?.logo).toBeUndefined();
+    await service.reviewProgramme(code, "approve");
+    const record = await store.getProgramme(code);
+    expect(record?.logo).toMatchObject({ type: "png", width: 96, height: 96 });
+    expect(record?.draftLogo).toBeUndefined();
+    expect(record?.reviewState).toBe("approved");
+  });
+
+  it("refuses a picture that is not one, a type that is not allowed, and one that is too big, saying why", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", good);
+    await expectError(service.setLogo("u1", code, { type: "png", data: b64(jpeg(100, 100)) }), "invalid", /not a real PNG or JPEG/);
+    await expectError(service.setLogo("u1", code, { type: "svg", data: b64(Buffer.from("<svg></svg>")) }), "invalid", /PNG or a JPEG/);
+    await expectError(service.setLogo("u1", code, { type: "png", data: b64(png(900, 900)) }), "invalid", /between 16 and 512/);
+    expect((await store.getProgramme(code))?.draftLogo).toBeUndefined();
+  });
+
+  it("keeps showing the approved logo while a new one waits, and sending the live one again asks for nothing", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", good);
+    await service.setLogo("u1", code, logo);
+    await service.reviewProgramme(code, "approve");
+    await service.setLogo("u1", code, { type: "png", data: b64(png(64, 64)) });
+    expect((await store.getProgramme(code))?.logo?.width).toBe(96);
+    expect((await store.getProgramme(code))?.draftLogo?.width).toBe(64);
+    await service.reviewProgramme(code, "reject", "That is not your logo.");
+    expect((await store.getProgramme(code))?.logo?.width).toBe(96);
+    await service.removeLogo("u1", code);
+    await service.setLogo("u1", code, logo);
+    await service.reviewProgramme(code, "approve");
+    const before = await store.getProgramme(code);
+    await service.setLogo("u1", code, logo);
+    expect((await store.getProgramme(code))?.reviewState).toBe(before?.reviewState);
+    expect((await store.getProgramme(code))?.draftLogo).toBeUndefined();
+  });
+
+  it("is taken away at once by its owner, with no review, and is gone with a take-down", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", good);
+    await service.reviewProgramme(code, "approve");
+    await service.setLogo("u1", code, logo);
+    expect((await store.getProgramme(code))?.reviewState).toBe("pending");
+    const removed = await service.removeLogo("u1", code);
+    expect(removed.logo).toEqual({ live: false, draft: false });
+    expect(removed.reviewState).toBe("approved");
+
+    await service.setLogo("u1", code, logo);
+    await service.reviewProgramme(code, "approve");
+    await service.reviewProgramme(code, "unpublish", "Taken down.");
+    const down = await store.getProgramme(code);
+    expect(down?.logo).toBeUndefined();
+    expect(down?.draftLogo).toBeUndefined();
+  });
+
+  it("is each organisation's own: nobody can send, remove or read another's", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    await service.createOrg(user("u2"), { name: "Rival", kind: "workplace", acceptTerms: true });
+    await store.updateOrg("u2", (o) => (o ? { ...o, subscription: active("workplace") } : null));
+    const { code } = await service.createProgramme("u1", good);
+    await service.setLogo("u1", code, logo);
+    await expectError(service.setLogo("u2", code, logo), "not_found");
+    await expectError(service.removeLogo("u2", code), "not_found");
+    await expectError(service.readLogo("u2", code), "not_found");
+    expect(await service.readLogo("u1", code)).toMatchObject({ type: "png" });
+    expect(await service.readLogo("u1", code, "live")).toBeNull();
+    expect(await service.ownerReadLogo(code, "draft")).toMatchObject({ type: "png" });
+    expect(await service.ownerReadLogo("NOSUCHCODE22", "draft")).toBeNull();
+  });
+
+  it("needs a plan, and a plan that has logos", async () => {
+    const none = await orgWith("workplace", null);
+    await expectError(none.service.setLogo("u1", "ANYCODE222", logo), "no_access");
+    const { service } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", good);
+    const catalogue = await import("@/lib/billing/catalogue");
+    const original = catalogue.PLANS.workplace.features;
+    (catalogue.PLANS.workplace as { features: readonly string[] }).features = original.filter((f) => f !== "logo");
+    try {
+      await expectError(service.setLogo("u1", code, logo), "invalid", /does not include a logo/);
+    } finally {
+      (catalogue.PLANS.workplace as { features: readonly string[] }).features = original;
+    }
+  });
+
+  it("shows the owner that a logo is waiting, and never puts the picture in what the portal is sent", async () => {
+    const { service } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", good);
+    await service.setLogo("u1", code, logo);
+    expect((await service.ownerOverview()).pending[0]).toMatchObject({ code, logoDraft: true, logoLive: false });
+    expect(JSON.stringify(await service.overview("u1"))).not.toContain(logo.data);
   });
 });
 

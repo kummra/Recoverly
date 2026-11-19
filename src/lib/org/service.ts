@@ -18,6 +18,8 @@ import { PLANS, type PlanId, isOrgKind, isPlanId, planAllows, planFitsKind, plan
 import { type Subscription, accessSummary, hasAccess } from "@/lib/billing/entitlement";
 import { checkProgrammeContent } from "@/lib/org/content";
 import { OrgError } from "@/lib/org/errors";
+import { checkLogo } from "@/lib/org/logo";
+import type { StoredLogo } from "@/lib/org/logo-model";
 import {
   NO_FEATURES,
   ORG_LIMITS,
@@ -97,6 +99,7 @@ export function createOrgService(deps: OrgServiceDeps) {
       features: record.features,
       reportLinkOn: record.features.headcount && Boolean(record.reportKeyHash),
       workspaceKeyId: key ? workspaceKeyId(key) : null,
+      logo: { live: Boolean(record.logo), draft: Boolean(record.draftLogo) },
       createdAt: record.createdAt,
       updatedAt: record.updatedAt
     };
@@ -216,7 +219,7 @@ export function createOrgService(deps: OrgServiceDeps) {
         if (!current || current.ownerUid !== uid) return null;
         // Saving what is already live changes nothing and needs no review.
         if (sameContent(current.content, content) && current.reviewState === "approved") return null;
-        const next: OrgProgrammeRecord = { ...current, draft: content, reviewState: sameContent(current.content, content) ? "approved" : "pending", updatedAt: now() };
+        const next: OrgProgrammeRecord = { ...current, draft: content, reviewState: sameContent(current.content, content) && !current.draftLogo ? "approved" : "pending", updatedAt: now() };
         delete next.reviewNote;
         delete next.reviewedAt;
         return next;
@@ -265,6 +268,58 @@ export function createOrgService(deps: OrgServiceDeps) {
       });
       if (!saved || saved.ownerUid !== uid) throw new OrgError("not_found", "That programme was not found.");
       return { programme: portalProgramme(saved), ...(reportKey ? { reportKey } : {}) };
+    },
+
+    /**
+     * Send a logo. It is checked (a real small PNG or JPEG, read from its own bytes) and kept as a draft: people are shown the last
+     * approved logo until the owner approves this one.
+     */
+    async setLogo(uid: string, code: string, input: unknown): Promise<PortalProgramme> {
+      const { plan } = await requireActive(uid);
+      if (!planAllows(plan, "logo")) throw new OrgError("invalid", "Your plan does not include a logo.");
+      const checked = checkLogo(input);
+      if (!checked.logo) throw new OrgError("invalid", checked.error);
+      const logo = checked.logo;
+      await ownProgramme(uid, code);
+      const saved = await store.updateProgramme(code, (current) => {
+        if (!current || current.ownerUid !== uid) return null;
+        // Sending the logo that is already live changes nothing.
+        if (current.logo?.data === logo.data && !current.draftLogo) return null;
+        return { ...current, draftLogo: logo, reviewState: "pending", updatedAt: now() };
+      });
+      if (!saved || saved.ownerUid !== uid) throw new OrgError("not_found", "That programme was not found.");
+      return portalProgramme(saved);
+    },
+
+    /** Take the logo away, live and draft. Always allowed: removing a picture needs no review. */
+    async removeLogo(uid: string, code: string): Promise<PortalProgramme> {
+      await ownProgramme(uid, code);
+      const saved = await store.updateProgramme(code, (current) => {
+        if (!current || current.ownerUid !== uid) return null;
+        const next: OrgProgrammeRecord = { ...current, updatedAt: now() };
+        delete next.logo;
+        delete next.draftLogo;
+        // Waiting for review only because of the picture: nothing is waiting any more.
+        if (current.reviewState === "pending" && sameContent(current.content, current.draft)) next.reviewState = "approved";
+        return next;
+      });
+      if (!saved || saved.ownerUid !== uid) throw new OrgError("not_found", "That programme was not found.");
+      return portalProgramme(saved);
+    },
+
+    /** The organisation's own look at its logo: the one waiting for review if there is one, the live one otherwise (or the one asked for). */
+    async readLogo(uid: string, code: string, which: "live" | "draft" | "latest" = "latest"): Promise<StoredLogo | null> {
+      const record = await ownProgramme(uid, code);
+      if (which === "live") return record.logo ?? null;
+      if (which === "draft") return record.draftLogo ?? null;
+      return record.draftLogo ?? record.logo ?? null;
+    },
+
+    /** The owner's look at a logo before approving it. */
+    async ownerReadLogo(code: string, which: "live" | "draft"): Promise<StoredLogo | null> {
+      const record = await store.getProgramme(code);
+      if (!record) return null;
+      return (which === "draft" ? record.draftLogo : record.logo) ?? null;
     },
 
     /** A new private report link, replacing the old one (which stops working). Shown once. */
@@ -319,7 +374,7 @@ export function createOrgService(deps: OrgServiceDeps) {
       const byId = new Map(orgs.map((org) => [org.id, org]));
       const summarise = async (record: OrgProgrammeRecord): Promise<ProgrammeSummary> => {
         const org = byId.get(record.ownerUid) ?? (await store.getOrg(record.ownerUid));
-        return { code: record.code, ownerUid: record.ownerUid, orgName: org?.name ?? "(unknown)", orgKind: org?.kind ?? "workplace", kindVerified: org?.kindVerified ?? false, draft: record.draft, live: record.content, reviewState: record.reviewState, ...(record.reviewNote ? { reviewNote: record.reviewNote } : {}), updatedAt: record.updatedAt };
+        return { code: record.code, ownerUid: record.ownerUid, orgName: org?.name ?? "(unknown)", orgKind: org?.kind ?? "workplace", kindVerified: org?.kindVerified ?? false, draft: record.draft, live: record.content, reviewState: record.reviewState, ...(record.reviewNote ? { reviewNote: record.reviewNote } : {}), logoLive: Boolean(record.logo), logoDraft: Boolean(record.draftLogo), updatedAt: record.updatedAt };
       };
       const pending = await Promise.all((await store.programmesByReview("pending", 100)).map(summarise));
       const rejected = await Promise.all((await store.programmesByReview("rejected", 50)).map(summarise));
@@ -339,6 +394,8 @@ export function createOrgService(deps: OrgServiceDeps) {
         const next: OrgProgrammeRecord = { ...current, reviewedAt: now(), updatedAt: current.updatedAt };
         if (decision === "approve") {
           next.content = current.draft;
+          if (current.draftLogo) next.logo = current.draftLogo;
+          delete next.draftLogo;
           next.reviewState = "approved";
           delete next.reviewNote;
         } else if (decision === "reject") {
@@ -346,6 +403,8 @@ export function createOrgService(deps: OrgServiceDeps) {
           next.reviewNote = text;
         } else {
           next.content = null;
+          delete next.logo;
+          delete next.draftLogo;
           next.reviewState = "rejected";
           next.reviewNote = text || "This programme was taken down. Contact us.";
         }

@@ -5,6 +5,7 @@ import { DAY_MS, type Subscription } from "@/lib/billing/entitlement";
 import { createDirectory } from "@/lib/org/directory";
 import { memoryOrgStore } from "@/lib/org/memory-store";
 import { NO_FEATURES, type OrgProgrammeRecord, type OrgRecord } from "@/lib/org/model";
+import { b64, png } from "@/lib/org/test-images";
 import { hashReportKey } from "@/lib/programme-register";
 
 const NOW = 1_800_000_000_000;
@@ -85,6 +86,40 @@ describe("a paying organisation's programme", () => {
     expect(JSON.stringify(found)).not.toContain(hashReportKey(REPORT));
     const orphan = await directoryWith([org()], [programme({ features: { headcount: true, figures: false, challenge: false, workspace: false } })]);
     expect(await orphan.directory.findProgramme("ACME2345XY")).not.toHaveProperty("headcount");
+  });
+});
+
+describe("the logo", () => {
+  const logo = { type: "png" as const, data: b64(png(64, 64)), width: 64, height: 64 };
+
+  it("is flagged on the programme and served only while the programme is live on a plan that has logos", async () => {
+    const live = await directoryWith([org()], [programme({ logo })]);
+    expect(await live.directory.findProgramme("ACME2345XY")).toMatchObject({ logo: true });
+    expect(await live.directory.findLogo("acme-2345-xy")).toEqual(logo);
+
+    const none = await directoryWith([org()], [programme()]);
+    expect(await none.directory.findProgramme("ACME2345XY")).not.toHaveProperty("logo");
+    expect(await none.directory.findLogo("ACME2345XY")).toBeNull();
+  });
+
+  it("is never shown while only a draft, before approval, after a lapse, or for a code that is not one", async () => {
+    const draftOnly = await directoryWith([org()], [programme({ draftLogo: logo })]);
+    expect(await draftOnly.directory.findLogo("ACME2345XY")).toBeNull();
+    expect(await draftOnly.directory.findProgramme("ACME2345XY")).not.toHaveProperty("logo");
+    const unapproved = await directoryWith([org()], [programme({ logo, content: null, reviewState: "pending" })]);
+    expect(await unapproved.directory.findLogo("ACME2345XY")).toBeNull();
+    const lapsed = await directoryWith([org({ subscription: sub("workplace", { status: "canceled" }) })], [programme({ logo })]);
+    expect(await lapsed.directory.findLogo("ACME2345XY")).toBeNull();
+    const served = await directoryWith([org()], [programme({ logo })]);
+    expect(await served.directory.findLogo("no")).toBeNull();
+    expect(await served.directory.findLogo(42)).toBeNull();
+    expect(await createDirectory({ store: null }).findLogo("ACME2345XY")).toBeNull();
+    expect(await createDirectory({ store: memoryOrgStore() }).findLogo("ACME2345XY")).toBeNull();
+  });
+
+  it("is not part of the team's private pages, which need only a name", async () => {
+    const { directory } = await directoryWith([org()], [reporting({ logo })]);
+    expect((await directory.findProgrammeByReportKey(REPORT))?.logo).toBeUndefined();
   });
 });
 

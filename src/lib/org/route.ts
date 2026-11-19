@@ -6,6 +6,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { ORG_ERROR_STATUS, OrgError } from "@/lib/org/errors";
+import { LOGO_MIME, type StoredLogo } from "@/lib/org/logo-model";
 import { isOwner } from "@/lib/org/owner";
 import { type RateLimitResult, LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { fromOurOwnPages } from "@/lib/request-guards";
@@ -42,6 +43,22 @@ export async function readJson(request: NextRequest, maxBytes: number): Promise<
   } catch {
     return { response: json({ error: "invalid" }, 400) };
   }
+}
+
+/**
+ * A stored logo as an image. The type is the one the bytes were checked as, `nosniff` stops a browser guessing another, and the
+ * rest says that this response is only ever a picture: no script, no framing, no use by another site.
+ */
+export function imageResponse(logo: StoredLogo, cache: string): Response {
+  return new Response(new Uint8Array(Buffer.from(logo.data, "base64")), {
+    headers: {
+      "Content-Type": LOGO_MIME[logo.type],
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "default-src 'none'; sandbox",
+      "Cross-Origin-Resource-Policy": "same-origin",
+      "Cache-Control": cache
+    }
+  });
 }
 
 /** A refusal from the portal code becomes its status and message; anything else is a plain 500 that says nothing about why. */

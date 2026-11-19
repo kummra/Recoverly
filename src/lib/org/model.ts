@@ -13,6 +13,7 @@
  */
 import { type OrgKind, type Plan, isOrgKind, isPlanId } from "@/lib/billing/catalogue";
 import { type AccessSummary, type Subscription, normaliseStatus } from "@/lib/billing/entitlement";
+import { type StoredLogo, parseLogo } from "@/lib/org/logo-model";
 import { type ProgrammeContent, normaliseCode, sanitiseProgrammeContent } from "@/lib/programme";
 
 /** The version of the organisation terms a person accepted. Bump it when the terms change materially. */
@@ -70,6 +71,10 @@ export type OrgProgrammeRecord = {
   reportKeyHash?: string;
   /** The team's public key (never a private part), once the organisation has sent it. */
   workspacePublicKey?: JsonWebKey;
+  /** The logo people are shown: the last one the owner approved. */
+  logo?: StoredLogo;
+  /** A logo the organisation has sent that is waiting for the owner. */
+  draftLogo?: StoredLogo;
 };
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
@@ -150,6 +155,10 @@ export function parseProgramme(code: string, data: Record<string, unknown> | und
   if (typeof data.reviewedAt === "number") record.reviewedAt = data.reviewedAt;
   if (typeof data.reportKeyHash === "string" && /^[0-9a-f]{64}$/.test(data.reportKeyHash)) record.reportKeyHash = data.reportKeyHash;
   if (isObject(data.workspacePublicKey)) record.workspacePublicKey = data.workspacePublicKey as JsonWebKey;
+  const logo = parseLogo(data.logo);
+  const draftLogo = parseLogo(data.draftLogo);
+  if (logo) record.logo = logo;
+  if (draftLogo) record.draftLogo = draftLogo;
   // A report switched off has no key; a report switched on always has one.
   if (!record.features.headcount) delete record.reportKeyHash;
   else if (!record.reportKeyHash) record.features = { ...NO_FEATURES };
@@ -166,6 +175,8 @@ export type PortalProgramme = {
   features: ProgrammeFeatures;
   reportLinkOn: boolean;
   workspaceKeyId: string | null;
+  /** Whether there is a logo people see (`live`) and one waiting for review (`draft`). The pictures themselves are fetched separately. */
+  logo: { live: boolean; draft: boolean };
   createdAt: number;
   updatedAt: number;
 };
@@ -197,6 +208,8 @@ export type ProgrammeSummary = {
   live: ProgrammeContent | null;
   reviewState: OrgProgrammeRecord["reviewState"];
   reviewNote?: string;
+  logoLive: boolean;
+  logoDraft: boolean;
   updatedAt: number;
 };
 

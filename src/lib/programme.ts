@@ -90,6 +90,11 @@ export type Programme = {
    * list: nothing is sent back, and a person is never asked whether they went.
    */
   referrals?: ProgrammeReferral[];
+  /**
+   * The organisation has a logo, served from our own address (`GET /api/programme/logo?code=`), never from anyone else's. Set only
+   * for a programme made in the portal on a plan that has logos; a hand-made register entry has none (`validateProgramme`).
+   */
+  logo?: boolean;
 };
 
 export type ProgrammePlan = { when: string; then: string };
@@ -277,6 +282,7 @@ export function sanitiseProgramme(input: unknown): Programme | null {
   if (raw.figures === true && programme.headcount) programme.figures = true;
   if (raw.challenge === true && programme.headcount) programme.challenge = true;
   if (raw.workspace === true) programme.workspace = true;
+  if (raw.logo === true) programme.logo = true;
   return programme;
 }
 
@@ -342,6 +348,7 @@ export function validateProgramme(programme: Programme): string[] {
     }
   }
 
+  if (programme.logo !== undefined) problems.push(at("a logo is only for a programme made in the portal, not a register entry"));
   if (programme.referrals !== undefined) {
     if (!Array.isArray(programme.referrals) || programme.referrals.length > L.referralsMax) problems.push(at(`at most ${L.referralsMax} referrals`));
     else {

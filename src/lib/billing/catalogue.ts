@@ -51,9 +51,9 @@ export type Plan = {
 /**
  * What every plan includes. A feature is added here in the same change that builds it, never before: the pricing page and
  * the portal list exactly this, so a feature named here that does not exist would be a false claim to a paying customer.
- * (`logo` and `emailReports` are declared above and not yet in any plan.)
+ * (`emailReports` is declared above and not yet in any plan.)
  */
-const COMMON: readonly Feature[] = ["reports", "figures", "challenge", "toolkit", "csv", "referrals"];
+const COMMON: readonly Feature[] = ["reports", "figures", "challenge", "toolkit", "csv", "referrals", "logo"];
 
 export const PLANS: Readonly<Record<PlanId, Plan>> = {
   clinic: {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 
@@ -13,7 +13,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { planAllows } from "@/lib/billing/catalogue";
-import { type ApiResult, deleteProgramme, privateLink, rotateReportKey, setFeatures, setWorkspaceKey, updateProgramme } from "@/lib/org/client";
+import { type ApiResult, deleteProgramme, fetchLogoPreview, privateLink, removeLogo, rotateReportKey, setFeatures, setLogo, setWorkspaceKey, updateProgramme } from "@/lib/org/client";
+import { prepareLogo } from "@/lib/org/logo-client";
 import type { PortalOverview, PortalProgramme, ProgrammeFeatures } from "@/lib/org/model";
 import { joinUrl, posterHref } from "@/lib/toolkit";
 import { formatKeyId } from "@/lib/workspace";
@@ -32,6 +33,8 @@ export function ProgrammeCard({ programme, overview, origin, getToken, reload }:
   const [secret, setSecret] = useState<Secret | null>(null);
   const [keyText, setKeyText] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const plan = overview.access.active ? overview.access.plan : null;
   const can = (feature: Parameters<typeof planAllows>[1]) => planAllows(plan, feature);
@@ -52,6 +55,46 @@ export function ProgrammeCard({ programme, overview, origin, getToken, reload }:
     setBusy(null);
     return result.data;
   }
+
+  // The logo for the preview is fetched with the owner's sign-in, as a temporary address in this browser.
+  const logoFlags = `${programme.logo.live}-${programme.logo.draft}-${programme.updatedAt}`;
+  useEffect(() => {
+    let url: string | null = null;
+    let cancelled = false;
+    if (programme.logo.live || programme.logo.draft) {
+      void (async () => {
+        const made = await fetchLogoPreview(await getToken(), `/api/org/programmes/${encodeURIComponent(programme.code)}/logo`);
+        if (cancelled) {
+          if (made) URL.revokeObjectURL(made);
+          return;
+        }
+        url = made;
+        setPreview(made);
+      })();
+    } else {
+      setPreview(null);
+    }
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [programme.code, logoFlags]);
+
+  const chooseLogo = async (file: File | undefined) => {
+    if (!file) return;
+    setMessage(null);
+    setBusy("logo");
+    const prepared = await prepareLogo(file);
+    if ("error" in prepared) {
+      setBusy(null);
+      setMessage({ tone: "error", text: prepared.error });
+      return;
+    }
+    setBusy(null);
+    await run("logo", (token) => setLogo(token, programme.code, prepared));
+    if (fileInput.current) fileInput.current.value = "";
+  };
 
   const toggle = async (feature: keyof ProgrammeFeatures, value: boolean) => {
     const data = await run(feature, (token) => setFeatures(token, programme.code, { [feature]: value }));
@@ -149,6 +192,45 @@ export function ProgrammeCard({ programme, overview, origin, getToken, reload }:
           <Button type="button" variant="outline" size="sm" onClick={() => setEditing(true)} disabled={!overview.access.active}>
             Edit the words
           </Button>
+        )}
+
+        {overview.access.active && can("logo") && (
+          <div className="space-y-2 rounded-xl border border-border p-4">
+            <p className="text-sm font-medium">Your logo</p>
+            <div className="flex flex-wrap items-center gap-3">
+              {preview ? (
+                // A temporary address in this browser, for the owner's own preview.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={preview} alt="Your logo" className="h-14 w-14 rounded-lg border border-border bg-white object-contain" />
+              ) : (
+                <span className="text-xs text-muted-foreground">No logo yet.</span>
+              )}
+              <div className="space-y-1">
+                <Label htmlFor={`${programme.code}-logo`} className="sr-only">
+                  Choose a logo picture
+                </Label>
+                <input
+                  id={`${programme.code}-logo`}
+                  ref={fileInput}
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  disabled={busy !== null}
+                  onChange={(event) => void chooseLogo(event.target.files?.[0])}
+                  className="block text-xs file:mr-3 file:rounded-xl file:border file:border-input file:bg-transparent file:px-3 file:py-1.5 file:text-sm"
+                />
+                {(programme.logo.live || programme.logo.draft) && (
+                  <Button type="button" variant="ghost" size="sm" disabled={busy !== null} onClick={() => void run("logo", (token) => removeLogo(token, programme.code))}>
+                    Remove the logo
+                  </Button>
+                )}
+              </div>
+            </div>
+            <p className={NOTE}>
+              A PNG or JPEG picture of your own logo, shrunk to a small size here. People see it beside your name on their dashboard, served from Recoverly so nobody else learns who looked. We look at every new logo before it is shown, to make sure it
+              really is yours.
+              {programme.logo.draft && " Your new logo is waiting for that review."}
+            </p>
+          </div>
         )}
 
         {overview.access.active && (

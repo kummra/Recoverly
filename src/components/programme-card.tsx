@@ -170,7 +170,23 @@ export function ProgrammeCard({ userId }: { userId: string }) {
           <Building2 className="h-3.5 w-3.5" aria-hidden />
           {t("programme.yours")}
         </CardDescription>
-        <CardTitle className="text-base">{programme.name}</CardTitle>
+        <div className="flex items-center gap-3">
+          {programme.logo && !gone && (
+            // Our own address, so no other site learns that this person looked. The name beside it says what it is.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`/api/programme/logo?code=${encodeURIComponent(programme.code)}`}
+              alt=""
+              width={40}
+              height={40}
+              className="h-10 w-10 shrink-0 rounded-lg border border-border bg-white object-contain"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
+            />
+          )}
+          <CardTitle className="text-base">{programme.name}</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {gone ? (

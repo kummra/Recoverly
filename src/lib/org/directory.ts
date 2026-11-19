@@ -20,6 +20,7 @@
  */
 import { planAllows, planFitsKind } from "@/lib/billing/catalogue";
 import { hasAccess } from "@/lib/billing/entitlement";
+import type { StoredLogo } from "@/lib/org/logo-model";
 import type { OrgProgrammeRecord, OrgRecord } from "@/lib/org/model";
 import type { OrgStore } from "@/lib/org/store";
 import { type Programme, normaliseCode } from "@/lib/programme";
@@ -61,6 +62,7 @@ export function createDirectory(deps: DirectoryDeps) {
     if (content.plans) entry.plans = content.plans;
     if (content.questions) entry.questions = content.questions;
     if (content.referrals && planAllows(plan, "referrals")) entry.referrals = content.referrals;
+    if (audience === "people" && record.logo && planAllows(plan, "logo")) entry.logo = true;
 
     if (record.features.headcount && record.reportKeyHash && planAllows(plan, "reports")) {
       entry.report = { keyHash: record.reportKeyHash };
@@ -79,6 +81,17 @@ export function createDirectory(deps: DirectoryDeps) {
     if (!record) return null;
     const org = await store.getOrg(record.ownerUid);
     return org ? entryFor(record, org, audience) : null;
+  }
+
+  /** The logo of a programme people are shown, only while the programme itself is served and its plan has logos. */
+  async function findLogo(input: unknown): Promise<StoredLogo | null> {
+    const code = normaliseCode(input);
+    if (!code || !store) return null;
+    const record = await store.getProgramme(code);
+    if (!record?.logo) return null;
+    const org = await store.getOrg(record.ownerUid);
+    const entry = org ? entryFor(record, org, "people") : null;
+    return entry?.logo ? record.logo : null;
   }
 
   /** The programme for a code a person typed or scanned, or `null`. */
@@ -151,7 +164,7 @@ export function createDirectory(deps: DirectoryDeps) {
     return org && !hasAccess(org.subscription, now()) ? { name: org.name } : null;
   }
 
-  return { findProgramme, findWorkspaceTeam, findProgrammeByReportKey, findWorkspaceByReportKey, findGroupByKey, findLapsedByKey };
+  return { findProgramme, findLogo, findWorkspaceTeam, findProgrammeByReportKey, findWorkspaceByReportKey, findGroupByKey, findLapsedByKey };
 }
 
 export type Directory = ReturnType<typeof createDirectory>;
