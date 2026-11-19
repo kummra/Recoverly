@@ -604,6 +604,12 @@ export const hi: Dictionary = {
   "settings.reminderTime": "पसंदीदा रिमाइंडर समय",
   "settings.reminderHint":
     "इस समय के बाद, दिन में एक बार आपके डैशबोर्ड पर एक कोमल चेक-इन संकेत दिखेगा।",
+  "settings.quietHours": "शांत घंटे (वैकल्पिक)",
+  "settings.quietHoursHint":
+    "नींद या रात की शिफ्ट के लिए। इन घंटों में आने वाला रिमाइंडर उनके खत्म होने तक रुका रहता है। केवल इसी डिवाइस पर रखा जाता है।",
+  "settings.quietFrom": "शांत समय से",
+  "settings.quietTo": "तक",
+  "settings.quietClear": "शांत घंटे हटाएँ",
   "settings.loadFailed":
     "आपकी मौजूदा प्राथमिकताएँ लोड नहीं हो सकीं। सहेजने से पहले पेज रिफ़्रेश करें, ताकि वे मिट न जाएँ।",
   "settings.saved": "प्राथमिकताएँ सफलतापूर्वक सहेजी गईं।",

@@ -66,6 +66,7 @@ const ENGLISH_ONLY: Route[] = [
   { path: "accessibility", priority: 0.3, changeFrequency: "yearly", lastModified: PARTNERS_UPDATED },
   { path: "partners/faq", priority: 0.4, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
   { path: "pricing", priority: 0.5, changeFrequency: "monthly", lastModified: BILLING_UPDATED },
+  { path: "field", priority: 0.4, changeFrequency: "monthly", lastModified: BILLING_UPDATED },
   { path: "partners/terms", priority: 0.2, changeFrequency: "yearly", lastModified: BILLING_UPDATED },
   { path: "partners/refunds", priority: 0.2, changeFrequency: "yearly", lastModified: BILLING_UPDATED }
 ];

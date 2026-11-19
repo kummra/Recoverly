@@ -1,5 +1,7 @@
 "use client";
 
+import { outsideQuiet, readQuietHours } from "@/lib/quiet-hours";
+
 /**
  * Browser notification support for the daily check-in.
  *
@@ -41,7 +43,8 @@ export function msUntilNext(timeHHMM: string, now: Date = new Date()): number | 
 
 export async function scheduleDailyReminder(timeHHMM: string): Promise<boolean> {
   if (getNotificationSupport() !== "granted") return false;
-  const delayMs = msUntilNext(timeHHMM);
+  // A reminder that would land in the person's quiet hours (device only) waits until they end.
+  const delayMs = msUntilNext(outsideQuiet(timeHHMM, readQuietHours()));
   if (delayMs == null) return false;
   try {
     const reg = await navigator.serviceWorker.ready;

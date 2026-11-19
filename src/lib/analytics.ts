@@ -8,6 +8,7 @@ import {
 } from "date-fns";
 
 import type { DrinkRecord } from "@/lib/firestore";
+import { type QuietHours, isQuiet, outsideQuiet } from "@/lib/quiet-hours";
 
 export type AnalyticsSummary = {
   currentMonthTotal: number;
@@ -380,6 +381,8 @@ export function shouldShowReminder(opts: {
   reminderTime?: string; // "HH:MM"
   lastDismissedDayKey?: string | null;
   now?: Date;
+  /** The person's quiet hours (device only): no nudge during them, and a reminder inside them waits for them to end. */
+  quiet?: QuietHours | null;
 }): boolean {
   const { reminderTime, lastDismissedDayKey } = opts;
   const now = opts.now ?? new Date();
@@ -389,9 +392,11 @@ export function shouldShowReminder(opts: {
   if (!match) return false;
 
   if (lastDismissedDayKey === dayKey(now)) return false;
+  if (isQuiet(opts.quiet, now)) return false;
 
   const minutesNow = now.getHours() * 60 + now.getMinutes();
-  const minutesTarget = Number(match[1]) * 60 + Number(match[2]);
+  const target = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(outsideQuiet(reminderTime, opts.quiet)) ?? match;
+  const minutesTarget = Number(target[1]) * 60 + Number(target[2]);
   return minutesNow >= minutesTarget;
 }
 

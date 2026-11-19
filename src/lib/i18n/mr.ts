@@ -587,6 +587,12 @@ export const mr: Dictionary = {
   "settings.reminderTime": "पसंतीची स्मरण वेळ",
   "settings.reminderHint":
     "या वेळेनंतर, दिवसातून एकदा तुमच्या डॅशबोर्डवर एक सौम्य चेक-इन सूचना दिसेल.",
+  "settings.quietHours": "शांत वेळ (ऐच्छिक)",
+  "settings.quietHoursHint":
+    "झोपेसाठी किंवा रात्रपाळीसाठी. या वेळेत येणारे स्मरण ती संपेपर्यंत थांबते. फक्त याच डिव्हाइसवर ठेवले जाते.",
+  "settings.quietFrom": "शांत वेळ सुरू",
+  "settings.quietTo": "पर्यंत",
+  "settings.quietClear": "शांत वेळ काढा",
   "settings.loadFailed":
     "तुमची सध्याची प्राधान्ये लोड होऊ शकली नाहीत. जतन करण्यापूर्वी पेज रिफ्रेश करा, म्हणजे ती पुसली जाणार नाहीत.",
   "settings.saved": "प्राधान्ये यशस्वीरित्या जतन झाली.",

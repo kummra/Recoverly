@@ -11,6 +11,7 @@ import { LanguageSettings } from "@/components/language-settings";
 import { NotificationOptIn } from "@/components/notification-optin";
 import { PlanEditor } from "@/components/plan-editor";
 import { PrivacyLock } from "@/components/privacy-lock";
+import { QuietHoursEditor } from "@/components/quiet-hours-editor";
 import { ProgrammeEditor } from "@/components/programme-editor";
 import { SupportPersonEditor } from "@/components/support-person-editor";
 import { DeleteAccount } from "@/components/delete-account";
@@ -195,6 +196,7 @@ function SettingsContent() {
                 </p>
                 <NotificationOptIn reminderTime={reminderTime || undefined} />
               </div>
+              <QuietHoursEditor reminderTime={reminderTime || undefined} />
 
               {message && (
                 <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm ${

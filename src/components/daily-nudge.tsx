@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { dayKey, shouldShowReminder } from "@/lib/analytics";
 import { getNotificationSupport, scheduleDailyReminder } from "@/lib/notifications";
+import { readQuietHours } from "@/lib/quiet-hours";
 
 const STORAGE_KEY = "recoverly:reminderDismissedOn";
 
@@ -35,7 +36,7 @@ export function DailyNudge({ reminderTime }: { reminderTime?: string }) {
     } catch {
       dismissedOn = null;
     }
-    setVisible(shouldShowReminder({ reminderTime, lastDismissedDayKey: dismissedOn }));
+    setVisible(shouldShowReminder({ reminderTime, lastDismissedDayKey: dismissedOn, quiet: readQuietHours() }));
 
     // If they've allowed notifications, also queue the OS-level one so the
     // reminder reaches them when the app isn't open.

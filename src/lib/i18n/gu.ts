@@ -587,6 +587,12 @@ export const gu: Dictionary = {
   "settings.reminderTime": "પસંદગીનો રિમાઇન્ડર સમય",
   "settings.reminderHint":
     "આ સમય પછી, દિવસમાં એક વાર તમારા ડેશબોર્ડ પર એક હળવી ચેક-ઇન સૂચના દેખાશે.",
+  "settings.quietHours": "શાંત કલાકો (વૈકલ્પિક)",
+  "settings.quietHoursHint":
+    "ઊંઘ અથવા રાત્રિ શિફ્ટ માટે. આ કલાકોમાં આવનાર રિમાઇન્ડર તે પૂરા થાય ત્યાં સુધી રાહ જુએ છે. ફક્ત આ ઉપકરણ પર જ રાખવામાં આવે છે.",
+  "settings.quietFrom": "શાંત સમય શરૂ",
+  "settings.quietTo": "સુધી",
+  "settings.quietClear": "શાંત કલાકો દૂર કરો",
   "settings.loadFailed":
     "તમારી હાલની પસંદગીઓ લોડ થઈ શકી નહીં. સાચવતાં પહેલાં પેજ રિફ્રેશ કરો, જેથી તે ભૂંસાઈ ન જાય.",
   "settings.saved": "પસંદગીઓ સફળતાપૂર્વક સાચવાઈ.",

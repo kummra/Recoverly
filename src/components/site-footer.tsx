@@ -162,6 +162,9 @@ export function SiteFooter() {
           <Link href="/partners/compliance" className={LINK}>
             Compliance checklist
           </Link>
+          <Link href="/field" className={LINK}>
+            Shared-phone mode (field workers)
+          </Link>
           <Link href="/partners/regional" className={LINK}>
             Regional partners
           </Link>

@@ -748,6 +748,12 @@ export const en: Dictionary = {
   "settings.reminderTime": "Preferred reminder time",
   "settings.reminderHint":
     "After this time, a gentle check-in prompt appears on your dashboard, once a day.",
+  "settings.quietHours": "Quiet hours (optional)",
+  "settings.quietHoursHint":
+    "For sleep or night shifts. A reminder that would come in these hours waits until they end. Kept on this device only.",
+  "settings.quietFrom": "Quiet from",
+  "settings.quietTo": "until",
+  "settings.quietClear": "Clear quiet hours",
   "settings.loadFailed":
     "Could not load your current preferences. Refresh before saving, so you don't overwrite them.",
   "settings.saved": "Preferences saved successfully.",
