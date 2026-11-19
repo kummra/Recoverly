@@ -735,6 +735,7 @@ export const mr: Dictionary = {
   "programme.private":
     "तुम्ही सहभागी झालात हे, तुम्ही काय नोंदवता हे किंवा तुमच्याबद्दल इतर काहीही {name} ला दिसत नाही. सहभागी झाल्याने या डिव्हाइसवर फक्त त्यांचे नाव आणि मदतीचे संपर्क दिसतात.",
   "programme.contacts": "{name} कडून मदत",
+  "programme.referrals": "{name} ने सुचवलेली जवळची मदत",
   "programme.leave": "कार्यक्रम सोडा",
   "programme.left": "तुम्ही कार्यक्रम सोडला आहे. कोणालाही कळवले गेले नाही.",
   "programme.sample":

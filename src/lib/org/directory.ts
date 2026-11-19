@@ -60,6 +60,7 @@ export function createDirectory(deps: DirectoryDeps) {
     if (content.locale) entry.locale = content.locale;
     if (content.plans) entry.plans = content.plans;
     if (content.questions) entry.questions = content.questions;
+    if (content.referrals && planAllows(plan, "referrals")) entry.referrals = content.referrals;
 
     if (record.features.headcount && record.reportKeyHash && planAllows(plan, "reports")) {
       entry.report = { keyHash: record.reportKeyHash };

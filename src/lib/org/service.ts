@@ -115,6 +115,11 @@ export function createOrgService(deps: OrgServiceDeps) {
     return { name: org.name, kind: org.kind, contactEmail: org.contactEmail, kindVerified: org.kindVerified, createdAt: org.createdAt, termsVersion: org.termsVersion, purchases: org.purchases, rollupOn: Boolean(org.rollupKeyHash) };
   }
 
+  /** Words that use a feature the plan does not include are refused, not quietly dropped: the organisation should know they are not shown. */
+  function refuseWhatThePlanLacks(content: ProgrammeContent, plan: PlanId): void {
+    if (content.referrals?.length && !planAllows(plan, "referrals")) throw new OrgError("invalid", "Your plan does not include the list of local referrals.");
+  }
+
   /** Why the team workspace cannot be switched on for this organisation on this plan, or `null` if it can. */
   function workspaceRefusal(org: OrgRecord, plan: PlanId): OrgError | null {
     if (!planAllows(plan, "workspace")) return new OrgError("invalid", "Your plan does not include the team workspace.");
@@ -186,6 +191,7 @@ export function createOrgService(deps: OrgServiceDeps) {
       }
       const check = checkProgrammeContent(input);
       if (!check.content) throw new OrgError("invalid", check.errors[0] ?? "Check the form.", check.errors);
+      refuseWhatThePlanLacks(check.content, plan);
 
       const at = now();
       for (let attempt = 0; attempt < 5; attempt++) {
@@ -200,9 +206,10 @@ export function createOrgService(deps: OrgServiceDeps) {
 
     /** Save new words as a draft. Until the owner approves them, people keep seeing the last approved version. */
     async updateProgramme(uid: string, code: string, input: unknown): Promise<PortalProgramme> {
-      await requireActive(uid);
+      const { plan } = await requireActive(uid);
       const check = checkProgrammeContent(input);
       if (!check.content) throw new OrgError("invalid", check.errors[0] ?? "Check the form.", check.errors);
+      refuseWhatThePlanLacks(check.content, plan);
       const content = check.content;
       await ownProgramme(uid, code);
       const saved = await store.updateProgramme(code, (current) => {

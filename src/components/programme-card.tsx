@@ -79,6 +79,46 @@ export function ProgrammeContacts({ programme }: { programme: Programme }) {
 }
 
 /**
+ * Places and services nearby that the organisation suggests (a de-addiction centre, a counsellor, a meeting). Plain information it
+ * chose to list, cleaned like the contacts; nothing is sent back and the person is never asked whether they went.
+ */
+export function ProgrammeReferrals({ programme }: { programme: Programme }) {
+  const { t } = useI18n();
+  const referrals = programme.referrals ?? [];
+  if (referrals.length === 0) return null;
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("programme.referrals", { name: programme.name })}</p>
+      <ul className="space-y-2">
+        {referrals.map((referral) => (
+          <li key={`${referral.name}|${referral.place ?? ""}|${referral.phone ?? ""}|${referral.url ?? ""}`} className="rounded-xl border border-border p-3 text-sm">
+            <p className="font-medium text-foreground">{referral.name}</p>
+            {referral.place && <p className="text-xs text-muted-foreground">{referral.place}</p>}
+            {referral.hours && <p className="text-xs text-muted-foreground">{referral.hours}</p>}
+            {(referral.phone || referral.url) && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {referral.phone && (
+                  <a href={`tel:${referral.phone}`} className={CHIP}>
+                    <Phone className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    {referral.phone}
+                  </a>
+                )}
+                {referral.url && (
+                  <a href={referral.url} target="_blank" rel="noopener noreferrer" className={CHIP}>
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    {hostOf(referral.url)}
+                  </a>
+                )}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/**
  * The joined programme, on the dashboard. Shows nothing for someone who has not
  * joined one. The organisation's details are re-read from the server when the
  * card appears, so a number that changed (or was withdrawn) does not sit on a
@@ -140,6 +180,7 @@ export function ProgrammeCard({ userId }: { userId: string }) {
             <p className="text-sm leading-relaxed text-body">{welcomeFor(programme, locale)}</p>
             {isSample(programme) && <p className="text-xs leading-relaxed text-subtle">{t("programme.sample")}</p>}
             <ProgrammeContacts programme={programme} />
+            <ProgrammeReferrals programme={programme} />
             <p className="text-xs leading-relaxed text-subtle">{privacy(programme)}</p>
           </>
         )}

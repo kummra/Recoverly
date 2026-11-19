@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  PROGRAMME_LIMITS,
   type Programme,
   cleanContactPhone,
   cleanHttpsUrl,
@@ -204,6 +205,35 @@ describe("the register", () => {
     expect(findProgramme(" s-a-m-p-l-e ")?.code).toBe("SAMPLE");
     expect(findProgramme("NOTACODE")).toBeNull();
     expect(findProgramme("")).toBeNull();
+  });
+});
+
+describe("local referrals", () => {
+  const base = { code: "ACMELOGI26", name: "Acme", kind: "workplace", welcome: { en: "Welcome to the Acme programme." }, contacts: [] };
+
+  it("are rebuilt from anything: a name and a place, number or https page, cleaned, at most eight", () => {
+    const programme = sanitiseProgramme({
+      ...base,
+      referrals: [
+        { name: "  District   centre ", place: "Civil Lines", phone: "020 2555 0100", url: "https://centre.example/", hours: "Mon to Sat", extra: "dropped" },
+        { name: "Nowhere" },
+        { name: "Bad link", url: "javascript:alert(1)" },
+        { name: "Bad phone", phone: "12" },
+        "not an object",
+        ...Array.from({ length: 12 }, (_, i) => ({ name: `Place ${i}`, place: "Somewhere" }))
+      ]
+    });
+    expect(programme?.referrals).toHaveLength(PROGRAMME_LIMITS.referralsMax);
+    expect(programme?.referrals?.[0]).toEqual({ name: "District centre", place: "Civil Lines", phone: "02025550100", url: "https://centre.example/", hours: "Mon to Sat" });
+    expect(programme?.referrals?.every((r) => r.place || r.phone || r.url)).toBe(true);
+    expect(JSON.stringify(programme)).not.toMatch(/javascript|extra|Nowhere|Bad phone/);
+  });
+
+  it("are absent when there are none, and the register checker refuses a badly written one", () => {
+    expect(sanitiseProgramme({ ...base, referrals: [] })).not.toHaveProperty("referrals");
+    expect(validateProgramme({ ...base, kind: "workplace", referrals: [{ name: "Centre", place: "Pune" }] } as Programme)).toEqual([]);
+    expect(validateProgramme({ ...base, kind: "workplace", referrals: [{ name: "Centre" }] } as Programme).join(" ")).toMatch(/referral 1 needs a name and a place/);
+    expect(validateProgramme({ ...base, kind: "workplace", referrals: [{ name: "Centre", phone: "+91 20 2555" }] } as Programme).join(" ")).toMatch(/referral 1/);
   });
 });
 

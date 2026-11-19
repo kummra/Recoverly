@@ -736,6 +736,7 @@ export const gu: Dictionary = {
   "programme.private":
     "તમે જોડાયા છો, તમે શું નોંધો છો, કે તમારા વિશે બીજું કંઈ પણ {name} જોઈ શકતા નથી. જોડાવાથી આ ડિવાઇસ પર ફક્ત તેમનું નામ અને મદદના સંપર્કો દેખાય છે.",
   "programme.contacts": "{name} તરફથી મદદ",
+  "programme.referrals": "{name} દ્વારા સૂચવેલી નજીકની મદદ",
   "programme.leave": "કાર્યક્રમ છોડો",
   "programme.left": "તમે કાર્યક્રમ છોડી દીધો છે. કોઈને જણાવવામાં આવ્યું નથી.",
   "programme.sample":

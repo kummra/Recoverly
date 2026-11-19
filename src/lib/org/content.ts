@@ -11,6 +11,11 @@ import { PROGRAMME_LIMITS as L, type ProgrammeContent, cleanContactPhone, cleanE
 /** The helpline number that was retired in 2024. Built from parts so no source file carries it as one run of digits. */
 const RETIRED_HELPLINE_DIGITS = ["1800", "599", "0019"].join("");
 
+const isRetired = (phone: string): boolean => {
+  const digits = phone.replace(/\D/g, "");
+  return digits === RETIRED_HELPLINE_DIGITS || digits.endsWith(RETIRED_HELPLINE_DIGITS);
+};
+
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const given = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
 const tooLong = (value: unknown, max: number): boolean => given(value).length > max;
@@ -47,7 +52,7 @@ export function checkProgrammeContent(input: unknown): ContentCheck {
     if (given(contact.phone)) {
       const phone = cleanContactPhone(contact.phone);
       if (!phone) errors.push(`${where}: the phone number must be 3 to 15 digits, with an optional + at the start.`);
-      else if (phone.replace(/\D/g, "") === RETIRED_HELPLINE_DIGITS || phone.replace(/\D/g, "").endsWith(RETIRED_HELPLINE_DIGITS)) {
+      else if (isRetired(phone)) {
         errors.push(`${where}: that helpline was retired. Tele-MANAS (14416) is the national line and is already shown to everyone.`);
       } else reachable = true;
     }
@@ -72,6 +77,34 @@ export function checkProgrammeContent(input: unknown): ContentCheck {
     else if (tooLong(plan.when, L.planTextMax) || tooLong(plan.then, L.planTextMax)) errors.push(`Plan ${index + 1} is too long: at most ${L.planTextMax} characters for each part.`);
   });
 
+  const referralRows = Array.isArray(input.referrals) ? input.referrals : [];
+  const referrals = referralRows.filter((row) => isObject(row) && (given(row.name) || given(row.place) || given(row.phone) || given(row.url) || given(row.hours)));
+  if (referrals.length > L.referralsMax) errors.push(`At most ${L.referralsMax} local referrals.`);
+  referrals.forEach((row, index) => {
+    const referral = row as Record<string, unknown>;
+    const where = `Referral ${index + 1}`;
+    if (!given(referral.name)) errors.push(`${where} needs a name, such as "District de-addiction centre".`);
+    else if (tooLong(referral.name, L.labelMax)) errors.push(`${where}: the name is too long (at most ${L.labelMax} characters).`);
+
+    let findable = false;
+    if (given(referral.place)) {
+      if (tooLong(referral.place, L.placeMax)) errors.push(`${where}: the place is too long (at most ${L.placeMax} characters).`);
+      else findable = true;
+    }
+    if (given(referral.phone)) {
+      const phone = cleanContactPhone(referral.phone);
+      if (!phone) errors.push(`${where}: the phone number must be 3 to 15 digits, with an optional + at the start.`);
+      else if (isRetired(phone)) errors.push(`${where}: that helpline was retired. Tele-MANAS (14416) is the national line and is already shown to everyone.`);
+      else findable = true;
+    }
+    if (given(referral.url)) {
+      if (!cleanHttpsUrl(referral.url)) errors.push(`${where}: the link must be a complete address starting with https://.`);
+      else findable = true;
+    }
+    if (tooLong(referral.hours, L.hoursMax)) errors.push(`${where}: the hours are too long (at most ${L.hoursMax} characters).`);
+    if (given(referral.name) && !findable && !errors.some((e) => e.startsWith(`${where}:`))) errors.push(`${where} needs a place, a phone number or a link, so people can find it.`);
+  });
+
   const questionRows = (Array.isArray(input.questions) ? input.questions : []).filter((q) => given(q));
   if (questionRows.length > L.questionsMax) errors.push(`At most ${L.questionsMax} check-in questions.`);
   if (questionRows.some((q) => tooLong(q, L.questionMax))) errors.push(`A check-in question is too long: at most ${L.questionMax} characters.`);
@@ -83,7 +116,8 @@ export function checkProgrammeContent(input: unknown): ContentCheck {
     contacts: contacts,
     locale: isLocale(input.locale) ? input.locale : undefined,
     plans,
-    questions: questionRows
+    questions: questionRows,
+    referrals
   });
   return content ? { content, errors: [] } : { content: null, errors: ["That could not be saved. Check the name and welcome."] };
 }

@@ -84,9 +84,26 @@ export type Programme = {
   plans?: ProgrammePlan[];
   /** Up to three short check-in questions a clinic team asks the people who share with it. Answers go only inside the encrypted workspace summary, if written. */
   questions?: string[];
+  /**
+   * Up to eight places and services nearby that the organisation suggests (a district de-addiction centre, a counsellor, a
+   * meeting), shown on the person's dashboard beside the support contacts. Plain information the organisation chose to
+   * list: nothing is sent back, and a person is never asked whether they went.
+   */
+  referrals?: ProgrammeReferral[];
 };
 
 export type ProgrammePlan = { when: string; then: string };
+
+/** A place or service near the person. A name and at least one way to find it: where it is, a number, or a page. */
+export type ProgrammeReferral = {
+  name: string;
+  /** Where: "Civil Lines, Pune". Free text, one line. */
+  place?: string;
+  phone?: string;
+  /** https only. */
+  url?: string;
+  hours?: string;
+};
 
 export const PROGRAMME_LIMITS = {
   codeMin: 4,
@@ -102,6 +119,8 @@ export const PROGRAMME_LIMITS = {
   urlMax: 200,
   contactsMax: 4,
   plansMax: 3,
+  referralsMax: 8,
+  placeMax: 80,
   questionsMax: 3,
   questionMax: 100,
   planTextMax: 120,
@@ -173,10 +192,28 @@ function cleanContact(input: unknown): ProgrammeContact | null {
 }
 
 /** What an organisation writes for its people: everything about a programme except its code, its kind and which anonymous counts it offers. */
-export type ProgrammeContent = Pick<Programme, "name" | "welcome" | "contacts" | "locale" | "plans" | "questions">;
+export type ProgrammeContent = Pick<Programme, "name" | "welcome" | "contacts" | "locale" | "plans" | "questions" | "referrals">;
+
+/** A referral rebuilt from anything: a name and at least one of a place, a number or an https page. Otherwise `null`. */
+export function cleanReferral(input: unknown): ProgrammeReferral | null {
+  if (typeof input !== "object" || input === null) return null;
+  const raw = input as Record<string, unknown>;
+  const name = cleanText(raw.name, PROGRAMME_LIMITS.labelMax);
+  if (!name) return null;
+  const referral: ProgrammeReferral = { name };
+  const place = cleanText(raw.place, PROGRAMME_LIMITS.placeMax);
+  const phone = cleanContactPhone(raw.phone);
+  const url = cleanHttpsUrl(raw.url);
+  const hours = cleanText(raw.hours, PROGRAMME_LIMITS.hoursMax);
+  if (place) referral.place = place;
+  if (phone) referral.phone = phone;
+  if (url) referral.url = url;
+  if (hours) referral.hours = hours;
+  return referral.place || referral.phone || referral.url ? referral : null;
+}
 
 /**
- * Rebuild an organisation's own words (name, welcome, contacts, plans, questions) from anything, keeping only
+ * Rebuild an organisation's own words (name, welcome, contacts, plans, questions, referrals) from anything, keeping only
  * known fields, cleaning text and limiting links to what a phone or browser can safely open. `null` when there
  * is no usable name or English welcome.
  */
@@ -209,6 +246,11 @@ export function sanitiseProgrammeContent(input: unknown): ProgrammeContent | nul
   if (plans.length) content.plans = plans;
   const questions = (Array.isArray(raw.questions) ? raw.questions : []).map((q) => cleanText(q, PROGRAMME_LIMITS.questionMax)).filter(Boolean).slice(0, PROGRAMME_LIMITS.questionsMax);
   if (questions.length) content.questions = questions;
+  const referrals = (Array.isArray(raw.referrals) ? raw.referrals : [])
+    .map(cleanReferral)
+    .filter((r): r is ProgrammeReferral => r !== null)
+    .slice(0, PROGRAMME_LIMITS.referralsMax);
+  if (referrals.length) content.referrals = referrals;
   return content;
 }
 
@@ -297,6 +339,18 @@ export function validateProgramme(programme: Programme): string[] {
       for (const plan of programme.plans) {
         if (cleanPlan(plan)?.when !== plan?.when || cleanPlan(plan)?.then !== plan?.then) problems.push(at(`each plan needs a "when" and a "then", 1 to ${L.planTextMax} characters on one line`));
       }
+    }
+  }
+
+  if (programme.referrals !== undefined) {
+    if (!Array.isArray(programme.referrals) || programme.referrals.length > L.referralsMax) problems.push(at(`at most ${L.referralsMax} referrals`));
+    else {
+      programme.referrals.forEach((referral, i) => {
+        const clean = cleanReferral(referral);
+        if (!clean || JSON.stringify(clean) !== JSON.stringify(referral)) {
+          problems.push(at(`referral ${i + 1} needs a name and a place, a phone number or an https link, each written the way the checker would clean it`));
+        }
+      });
     }
   }
 

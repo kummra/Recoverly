@@ -68,6 +68,14 @@ describe("a paying organisation's programme", () => {
     expect(await lapsed.directory.findProgramme("ACME2345XY")).not.toBeNull();
   });
 
+  it("passes the organisation's list of local referrals through to its people, cleaned, with the words that were approved", async () => {
+    const referral = { name: "District de-addiction centre", place: "Civil Lines, Pune", phone: "02025550100" };
+    const { directory } = await directoryWith([org()], [programme({ content: { ...content, referrals: [referral] }, draft: { ...content, referrals: [referral, { name: "Unapproved", place: "Elsewhere" }] } })]);
+    expect((await directory.findProgramme("ACME2345XY"))?.referrals).toEqual([referral]);
+    const plain = await directoryWith([org()], [programme()]);
+    expect(await plain.directory.findProgramme("ACME2345XY")).not.toHaveProperty("referrals");
+  });
+
   it("offers the anonymous counts only while they are switched on and in the plan, and never hands out the report key", async () => {
     const off = await directoryWith([org()], [programme()]);
     expect(await off.directory.findProgramme("ACME2345XY")).not.toHaveProperty("headcount");

@@ -751,6 +751,7 @@ export const hi: Dictionary = {
   "programme.private":
     "{name} यह नहीं देख सकते कि आप जुड़े हैं, आप क्या दर्ज करते हैं, या आपके बारे में कुछ भी और। जुड़ने से इस डिवाइस पर सिर्फ़ उनका नाम और सहायता के संपर्क दिखते हैं।",
   "programme.contacts": "{name} से सहायता",
+  "programme.referrals": "{name} द्वारा सुझाई गई पास की मदद",
   "programme.leave": "कार्यक्रम छोड़ें",
   "programme.left": "आपने कार्यक्रम छोड़ दिया है। किसी को नहीं बताया गया।",
   "programme.sample":

@@ -112,6 +112,37 @@ describe("programmes need a plan, and a plan has a limit", () => {
   });
 });
 
+describe("local referrals", () => {
+  const withReferrals = { ...good, referrals: [{ name: "District de-addiction centre", place: "Civil Lines, Pune", phone: "02025550100" }] };
+
+  it("are saved with the words and wait for review like everything else", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    const { code } = await service.createProgramme("u1", withReferrals);
+    expect((await store.getProgramme(code))?.draft.referrals).toEqual([{ name: "District de-addiction centre", place: "Civil Lines, Pune", phone: "02025550100" }]);
+    expect((await store.getProgramme(code))?.content).toBeNull();
+    await service.reviewProgramme(code, "approve");
+    await service.updateProgramme("u1", code, { ...good, referrals: [] });
+    expect((await store.getProgramme(code))?.content?.referrals).toHaveLength(1);
+    expect((await store.getProgramme(code))?.draft.referrals).toBeUndefined();
+  });
+
+  it("are refused, not quietly dropped, on a plan that does not include them", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    // Simulate a plan that has everything but the referral list.
+    const catalogue = await import("@/lib/billing/catalogue");
+    const original = catalogue.PLANS.workplace.features;
+    (catalogue.PLANS.workplace as { features: readonly string[] }).features = original.filter((f) => f !== "referrals");
+    try {
+      await expectError(service.createProgramme("u1", withReferrals), "invalid", /does not include the list of local referrals/);
+      const { code } = await service.createProgramme("u1", good);
+      await expectError(service.updateProgramme("u1", code, withReferrals), "invalid", /does not include the list of local referrals/);
+      expect(store.programmes.size).toBe(1);
+    } finally {
+      (catalogue.PLANS.workplace as { features: readonly string[] }).features = original;
+    }
+  });
+});
+
 describe("what people see is only what the owner approved", () => {
   it("keeps showing the approved words while a new draft waits, and shows nothing until a first approval", async () => {
     const { service, store } = await orgWith("workplace", "workplace");

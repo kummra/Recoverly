@@ -204,6 +204,7 @@ export function PortalContent() {
             <CardContent className="py-5">
               <h3 className="mb-3 font-semibold">New programme</h3>
               <ContentForm
+                referralsAllowed={planAllows(plan, "referrals")}
                 submitLabel="Create the programme"
                 onCancel={() => setAdding(false)}
                 onSubmit={async (content) => {

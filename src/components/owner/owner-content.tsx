@@ -45,6 +45,22 @@ function Words({ title, content }: { title: string; content: ProgrammeContent | 
         ))}
         {content.contacts.length === 0 && <li className="text-muted-foreground">No contacts.</li>}
       </ul>
+      {content.referrals && content.referrals.length > 0 && (
+        <div>
+          <p className="font-medium">Referrals</p>
+          <ul className="list-disc space-y-0.5 pl-5">
+            {content.referrals.map((referral, index) => (
+              <li key={index}>
+                <span className="font-medium">{referral.name}</span>
+                {referral.place && <> · {referral.place}</>}
+                {referral.phone && <> · phone <span className="font-mono">{referral.phone}</span></>}
+                {referral.url && <> · <span className="break-all">{referral.url}</span></>}
+                {referral.hours && <> · {referral.hours}</>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {content.plans && <p>Plans: {content.plans.map((p) => `when ${p.when}, then ${p.then}`).join("; ")}</p>}
       {content.questions && <p>Questions: {content.questions.join(" / ")}</p>}
     </div>

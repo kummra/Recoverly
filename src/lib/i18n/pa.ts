@@ -736,6 +736,7 @@ export const pa: Dictionary = {
   "programme.private":
     "{name} ਇਹ ਨਹੀਂ ਵੇਖ ਸਕਦੇ ਕਿ ਤੁਸੀਂ ਜੁੜੇ ਹੋ, ਤੁਸੀਂ ਕੀ ਦਰਜ ਕਰਦੇ ਹੋ, ਜਾਂ ਤੁਹਾਡੇ ਬਾਰੇ ਹੋਰ ਕੁਝ ਵੀ। ਜੁੜਨ ਨਾਲ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਦਾ ਨਾਮ ਅਤੇ ਸਹਾਰੇ ਦੇ ਸੰਪਰਕ ਦਿਸਦੇ ਹਨ।",
   "programme.contacts": "{name} ਵੱਲੋਂ ਸਹਾਰਾ",
+  "programme.referrals": "{name} ਵੱਲੋਂ ਸੁਝਾਈ ਨੇੜਲੀ ਮਦਦ",
   "programme.leave": "ਪ੍ਰੋਗਰਾਮ ਛੱਡੋ",
   "programme.left": "ਤੁਸੀਂ ਪ੍ਰੋਗਰਾਮ ਛੱਡ ਦਿੱਤਾ ਹੈ। ਕਿਸੇ ਨੂੰ ਨਹੀਂ ਦੱਸਿਆ ਗਿਆ।",
   "programme.sample":

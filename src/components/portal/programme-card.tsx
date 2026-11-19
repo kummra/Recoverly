@@ -134,6 +134,7 @@ export function ProgrammeCard({ programme, overview, origin, getToken, reload }:
         {editing ? (
           <ContentForm
             initial={programme.draft}
+            referralsAllowed={can("referrals")}
             submitLabel="Save and send for review"
             onCancel={() => setEditing(false)}
             onSubmit={async (content) => {

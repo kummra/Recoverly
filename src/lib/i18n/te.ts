@@ -735,6 +735,7 @@ export const te: Dictionary = {
   "programme.private":
     "మీరు చేరినట్లు, మీరు నమోదు చేసేవి, లేదా మీ గురించి మరేదైనా {name} చూడలేరు. చేరడం వల్ల ఈ పరికరంలో వారి పేరు, సహాయ సంప్రదింపులు మాత్రమే కనిపిస్తాయి.",
   "programme.contacts": "{name} నుండి సహాయం",
+  "programme.referrals": "{name} సూచించే దగ్గరలోని సహాయం",
   "programme.leave": "కార్యక్రమం నుండి వైదొలగండి",
   "programme.left": "మీరు కార్యక్రమం నుండి వైదొలగారు. ఎవరికీ తెలియజేయలేదు.",
   "programme.sample":

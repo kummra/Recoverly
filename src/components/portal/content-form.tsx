@@ -13,8 +13,10 @@ import { PROGRAMME_LIMITS as L, type ProgrammeContent } from "@/lib/programme";
 
 type ContactRow = { label: string; phone: string; email: string; url: string; hours: string };
 type PlanRow = { when: string; then: string };
+type ReferralRow = { name: string; place: string; phone: string; url: string; hours: string };
 
 const emptyContact = (): ContactRow => ({ label: "", phone: "", email: "", url: "", hours: "" });
+const emptyReferral = (): ReferralRow => ({ name: "", place: "", phone: "", url: "", hours: "" });
 const pad = <T,>(items: T[], size: number, make: () => T): T[] => [...items, ...Array.from({ length: Math.max(0, size - items.length) }, make)].slice(0, size);
 
 const SELECT_CLASS = "flex h-11 w-full rounded-2xl border border-input bg-surface-muted px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -26,7 +28,20 @@ const SUMMARY = "cursor-pointer rounded text-sm font-medium focus-visible:outlin
  * (`checkProgrammeContent`) and says exactly what is wrong. Saving sends the words for review: nobody is shown them
  * until they are approved.
  */
-export function ContentForm({ initial, submitLabel, onSubmit, onCancel }: { initial?: ProgrammeContent; submitLabel: string; onSubmit: (content: ProgrammeContent) => Promise<string[] | null>; onCancel?: () => void }) {
+export function ContentForm({
+  initial,
+  submitLabel,
+  onSubmit,
+  onCancel,
+  referralsAllowed = false
+}: {
+  initial?: ProgrammeContent;
+  submitLabel: string;
+  onSubmit: (content: ProgrammeContent) => Promise<string[] | null>;
+  onCancel?: () => void;
+  /** The plan includes the list of local referrals. */
+  referralsAllowed?: boolean;
+}) {
   const id = useId();
   const [name, setName] = useState(initial?.name ?? "");
   const [locale, setLocale] = useState<string>(initial?.locale ?? "");
@@ -34,6 +49,7 @@ export function ContentForm({ initial, submitLabel, onSubmit, onCancel }: { init
   const [contacts, setContacts] = useState<ContactRow[]>(pad((initial?.contacts ?? []).map((c) => ({ label: c.label, phone: c.phone ?? "", email: c.email ?? "", url: c.url ?? "", hours: c.hours ?? "" })), L.contactsMax, emptyContact));
   const [plans, setPlans] = useState<PlanRow[]>(pad(initial?.plans ?? [], L.plansMax, () => ({ when: "", then: "" })));
   const [questions, setQuestions] = useState<string[]>(pad(initial?.questions ?? [], L.questionsMax, () => ""));
+  const [referrals, setReferrals] = useState<ReferralRow[]>(pad((initial?.referrals ?? []).map((r) => ({ name: r.name, place: r.place ?? "", phone: r.phone ?? "", url: r.url ?? "", hours: r.hours ?? "" })), 1, emptyReferral));
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
@@ -42,7 +58,7 @@ export function ContentForm({ initial, submitLabel, onSubmit, onCancel }: { init
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (busy) return;
-    const check = checkProgrammeContent({ name, locale, welcome, contacts, plans, questions });
+    const check = checkProgrammeContent({ name, locale, welcome, contacts, plans, questions, referrals: referralsAllowed ? referrals : [] });
     if (!check.content) {
       setErrors(check.errors);
       return;
@@ -114,6 +130,47 @@ export function ContentForm({ initial, submitLabel, onSubmit, onCancel }: { init
         ))}
         <p className="text-xs text-muted-foreground">Fill in a phone, an email or a page for each contact you use. Say &ldquo;24 hours&rdquo; only if it is true.</p>
       </fieldset>
+
+      {referralsAllowed && (
+        <details className="rounded-xl border border-border p-3" open={Boolean(initial?.referrals?.length)}>
+          <summary className={SUMMARY}>Local referrals: places near your people (optional)</summary>
+          <div className="mt-3 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Up to {L.referralsMax} places or services you suggest: a government de-addiction centre, a counsellor, a meeting. They are shown beside your support contacts. Check that each one is real, current and open to the people you
+              serve: we review them before anyone sees them. Nothing is sent back to you, and nobody is asked whether they went.
+            </p>
+            {referrals.map((row, index) => (
+              <div key={index} className="grid gap-2 rounded-xl border border-border p-3 sm:grid-cols-2">
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor={`${id}-r${index}-name`}>Place {index + 1}: its name</Label>
+                  <Input id={`${id}-r${index}-name`} value={row.name} onChange={(e) => setReferrals((rs) => rs.map((r, i) => (i === index ? { ...r, name: e.target.value } : r)))} maxLength={L.labelMax + 20} placeholder="District de-addiction centre" />
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor={`${id}-r${index}-place`}>Where it is</Label>
+                  <Input id={`${id}-r${index}-place`} value={row.place} onChange={(e) => setReferrals((rs) => rs.map((r, i) => (i === index ? { ...r, place: e.target.value } : r)))} maxLength={L.placeMax + 20} placeholder="Civil Lines, Pune" />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor={`${id}-r${index}-phone`}>Phone</Label>
+                  <Input id={`${id}-r${index}-phone`} type="tel" value={row.phone} onChange={(e) => setReferrals((rs) => rs.map((r, i) => (i === index ? { ...r, phone: e.target.value } : r)))} />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor={`${id}-r${index}-url`}>Web page (https)</Label>
+                  <Input id={`${id}-r${index}-url`} type="url" value={row.url} onChange={(e) => setReferrals((rs) => rs.map((r, i) => (i === index ? { ...r, url: e.target.value } : r)))} placeholder="https://" />
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor={`${id}-r${index}-hours`}>Hours</Label>
+                  <Input id={`${id}-r${index}-hours`} value={row.hours} onChange={(e) => setReferrals((rs) => rs.map((r, i) => (i === index ? { ...r, hours: e.target.value } : r)))} maxLength={L.hoursMax + 20} />
+                </div>
+              </div>
+            ))}
+            {referrals.length < L.referralsMax && (
+              <Button type="button" variant="outline" size="sm" onClick={() => setReferrals((rs) => [...rs, emptyReferral()])}>
+                Add another place
+              </Button>
+            )}
+          </div>
+        </details>
+      )}
 
       <details className="rounded-xl border border-border p-3">
         <summary className={SUMMARY}>Ready-made plans for your people (optional, a clinic&rsquo;s aftercare for example)</summary>

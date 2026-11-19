@@ -921,6 +921,7 @@ export const en: Dictionary = {
   "programme.private":
     "{name} cannot see that you joined, what you log, or anything else about you. Joining only shows their name and support contacts on this device.",
   "programme.contacts": "Support from {name}",
+  "programme.referrals": "Help near you, suggested by {name}",
   "programme.leave": "Leave programme",
   "programme.left": "You have left the programme. Nobody was told.",
   "programme.sample":
