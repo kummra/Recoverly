@@ -197,3 +197,11 @@ describe("verifying a webhook", () => {
     expect(subscriptionFromObject({ status: "active" })).toBeNull();
   });
 });
+
+describe("what the plans claim", () => {
+  it("lists only features that are built: the three still to come are in no plan", () => {
+    for (const id of PLAN_IDS) {
+      for (const notBuilt of ["logo", "referrals", "emailReports"] as const) expect(PLANS[id].features, `${id} must not claim ${notBuilt} yet`).not.toContain(notBuilt);
+    }
+  });
+});

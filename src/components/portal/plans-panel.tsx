@@ -27,7 +27,8 @@ const isStripeAddress = (value: string): boolean => {
  * Pressing a button goes to Stripe's own payment page: no card detail is typed here or reaches us. A plan or service whose
  * price is not set up says to ask us, and we send an invoice and switch the plan on when it is paid.
  */
-export function PlansPanel({ overview, prices, getToken, showServices = true }: { overview: PortalOverview; prices: Prices; getToken: () => Promise<string | null>; showServices?: boolean }) {
+/** `plans` shows only the plans, `services` only the one-off services, `all` both. */
+export function PlansPanel({ overview, prices, getToken, part = "all" }: { overview: PortalOverview; prices: Prices; getToken: () => Promise<string | null>; part?: "all" | "plans" | "services" }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,65 +44,72 @@ export function PlansPanel({ overview, prices, getToken, showServices = true }: 
     setError(result.ok ? "We could not start the payment. Please try again, or contact us." : result.message);
   };
 
+  const showPlans = part !== "services";
+  const showServices = part !== "plans";
+
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-2">
-        {overview.plans.map((plan) => {
-          const price = prices[plan.id];
-          const features = plan.features.filter((feature) => feature !== "workspace" || overview.workspaceEligible);
-          return (
-            <Card key={plan.id}>
-              <CardContent className="space-y-3 py-5">
-                <div>
-                  <h3 className="font-semibold">{plan.name}</h3>
-                  <p className="text-sm text-muted-foreground">{plan.audience}</p>
-                </div>
-                <p className="text-lg font-semibold">{price ? price.text : "Price on request"}</p>
-                <p className="text-sm text-body">
-                  Covers up to {plan.programmes} programme code{plan.programmes === 1 ? "" : "s"} (a site, depot, campus or district each).
-                </p>
-                <ul className="space-y-1 text-sm">
-                  {features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
-                      <span>{FEATURE_LABELS[feature]}</span>
-                    </li>
-                  ))}
-                </ul>
-                {price ? (
-                  <Button type="button" onClick={() => void buy(plan.id, { plan: plan.id })} disabled={busy !== null}>
-                    {busy === plan.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />}
-                    Subscribe with a card
-                  </Button>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Online payment is not set up for this plan yet.{" "}
-                    <Link href="/partners#enquire" className={LINK}>
-                      Ask us for an invoice
-                    </Link>
-                    .
+      {showPlans && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {overview.plans.map((plan) => {
+            const price = prices[plan.id];
+            const features = plan.features.filter((feature) => feature !== "workspace" || overview.workspaceEligible);
+            return (
+              <Card key={plan.id}>
+                <CardContent className="space-y-3 py-5">
+                  <div>
+                    <h3 className="font-semibold">{plan.name}</h3>
+                    <p className="text-sm text-muted-foreground">{plan.audience}</p>
+                  </div>
+                  <p className="text-lg font-semibold">{price ? price.text : "Price on request"}</p>
+                  <p className="text-sm text-body">
+                    Covers up to {plan.programmes} programme code{plan.programmes === 1 ? "" : "s"} (a site, depot, campus or district each).
                   </p>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-      <p className="text-sm leading-relaxed text-muted-foreground">
-        Pay by invoice, bank transfer or UPI instead? Tell us on the{" "}
-        <Link href="/partners#enquire" className={LINK}>
-          organisations page
-        </Link>
-        . We switch your plan on when the payment arrives and it ends on the date we agree. See the{" "}
-        <Link href="/partners/refunds" className={LINK}>
-          cancellation and refund terms
-        </Link>
-        .
-      </p>
+                  <ul className="space-y-1 text-sm">
+                    {features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                        <span>{FEATURE_LABELS[feature]}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {price ? (
+                    <Button type="button" onClick={() => void buy(plan.id, { plan: plan.id })} disabled={busy !== null}>
+                      {busy === plan.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />}
+                      Subscribe with a card
+                    </Button>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Online payment is not set up for this plan yet.{" "}
+                      <Link href="/partners#enquire" className={LINK}>
+                        Ask us for an invoice
+                      </Link>
+                      .
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+      {showPlans && (
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Pay by invoice, bank transfer or UPI instead? Tell us on the{" "}
+          <Link href="/partners#enquire" className={LINK}>
+            organisations page
+          </Link>
+          . We switch your plan on when the payment arrives and it ends on the date we agree. See the{" "}
+          <Link href="/partners/refunds" className={LINK}>
+            cancellation and refund terms
+          </Link>
+          .
+        </p>
+      )}
 
       {showServices && (
         <div className="space-y-2">
-          <h3 className="font-semibold">Services</h3>
+          {part === "all" && <h3 className="font-semibold">Services</h3>}
           {PRODUCTS.map((product) => {
             const price = prices[product.id];
             return (

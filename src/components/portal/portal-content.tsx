@@ -161,7 +161,7 @@ export function PortalContent() {
                 </Button>
               )}
               <p className="text-xs text-muted-foreground">
-                Change plan or cancel in Manage billing. See the{" "}
+                {access.source === "stripe" ? "Change plan or cancel in Manage billing." : "To change or end this plan, contact us."} See the{" "}
                 <Link href="/partners/refunds" className={LINK}>
                   cancellation and refund terms
                 </Link>
@@ -176,7 +176,7 @@ export function PortalContent() {
                 ? "Choose a plan to open programme codes, posters, the monthly report and the rest of the toolkit. Recoverly stays free for individuals, always."
                 : "Your plan is not active, so programmes and the toolkit are closed. Nothing has been deleted: they open again as soon as a plan is active."}
             </p>
-            <PlansPanel overview={overview} prices={prices} getToken={getIdToken} />
+            <PlansPanel overview={overview} prices={prices} getToken={getIdToken} part="all" />
           </div>
         )}
       </section>
@@ -244,7 +244,7 @@ export function PortalContent() {
           <h2 id="services-heading" className="text-xl font-semibold">
             Services
           </h2>
-          <PlansPanel overview={{ ...overview, plans: [] }} prices={prices} getToken={getIdToken} />
+          <PlansPanel overview={overview} prices={prices} getToken={getIdToken} part="services" />
         </section>
       )}
 
