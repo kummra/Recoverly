@@ -55,6 +55,9 @@ Organisation plans (section 9 says how to get each one):
 - [ ] *(for card payments)* `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_CLINIC`, `STRIPE_PRICE_WORKPLACE`,
       `STRIPE_PRICE_NETWORK`, and optionally `STRIPE_PRICE_WORKSHOP`. Without them the portal says "ask us for an invoice".
 - [ ] *(optional)* `SITE_URL` — only for a preview deployment, so Stripe returns people to that preview.
+- [ ] *(for the monthly report email)* `CRON_SECRET` (at least 16 random characters: Vercel Cron sends it as `Authorization: Bearer ...` to
+      `/api/cron/monthly-reports` on the 2nd of each month), `RESEND_API_KEY`, and `REPORTS_FROM_EMAIL` (an address on a domain you have verified in
+      Resend, e.g. `Recoverly <reports@recoverly.co.in>`). Without all three the job does nothing and says so.
 
 > Future (Block 4 — breathalyser): you'll also add `NEXT_PUBLIC_FIREBASE_DATABASE_URL`.
 
@@ -208,6 +211,14 @@ curl -s -o /dev/null -w "%{http_code}\n" https://recoverly.co.in/api/owner      
 curl -s https://recoverly.co.in/partners/toolkit/manager-guide | grep -c "organisations with a plan"   # the door, not the document
 curl -s -o /dev/null -w "%{http_code}\n" https://recoverly.co.in/partners/toolkit/disclosure-protocol   # 200: the safety documents stay open
 ```
+**The report email** (needs `CRON_SECRET`, `RESEND_API_KEY`, `REPORTS_FROM_EMAIL`; never run against Resend itself):
+- [ ] Verify your sending domain in Resend, set the three variables, redeploy. In the portal switch on "Email me last month's figures" for
+      a test organisation (it needs a confirmed sign-in address and a programme with its report on).
+- [ ] Run it once by hand to see it work without waiting for the 2nd: `curl -s -H "Authorization: Bearer $CRON_SECRET" https://recoverly.co.in/api/cron/monthly-reports`
+      answers counts only, e.g. `{"considered":1,"sent":1,"skipped":0,"failed":0}`. A second call the same month sends nothing (`skipped`).
+      Without the secret it is a 401; with no email settings it says `{"skipped":"email is not set up"}`.
+- [ ] Check the email: last month's rounded figure or "fewer than 20", no names, no private link (the link cannot be repeated).
+
 **When the first real payment arrives:** change the "no paying customers" wording on `/press` and `/partners/faq`, and the
 "has not launched commercially" wording wherever it appears, to say only what is then true. Never imply customers or revenue
 that do not exist. Have a lawyer read `/partners/terms` and `/partners/refunds` (both say they are drafts) before the first

@@ -420,6 +420,31 @@ its Firestore and in-memory versions, `service.ts` for every rule, `directory.ts
   launched commercially and has no paying customers; that is true today and must be changed the day it stops being
   true (never imply customers or revenue that do not exist).
 
+**The other plan features, built 19 Nov 2026** (each is in every plan; the catalogue names a feature in a plan only in the change that builds it,
+and `billing.test.ts` pins that, so a pricing page can never promise what does not exist):
+- **Referrals** (`Programme.referrals`, `cleanReferral`, `ProgrammeReferrals` on the dashboard card): up to eight nearby places or services an
+  organisation suggests, each a name plus a place, number or https page, shown under "Help near you, suggested by {name}" (nine-language
+  heading, `programme.referrals`). Plain information it chose to list; nothing flows back. Reviewed with the words; **refused, not
+  silently dropped, on a plan without it** (`refuseWhatThePlanLacks`); the retired helpline number is refused in them too.
+- **Co-branding logo** (`lib/org/logo*.ts`, `GET /api/programme/logo?code=`): a small PNG or JPEG stored in the organisation's record and
+  **served from our own address**, never linked from the organisation's site (an image loaded from someone else's server tells them who looked).
+  The portal shrinks and re-encodes it in the browser; the server reads the real bytes (signature, true size 16 to 512 px, at most 48 KB,
+  SVG refused outright). It is a **draft until the owner approves it** (a logo is the quickest way to pass for another organisation), is
+  served with its checked type, `nosniff`, a `default-src 'none'; sandbox` policy and same-origin resource policy, and stops being
+  served the moment the plan lapses or the programme is taken down.
+- **Monthly report by email** (`lib/org/reports.ts`, `mailer.ts`, `GET /api/cron/monthly-reports`, `vercel.json` cron `0 4 2 * *`): on the 2nd,
+  last month's figures for each programme whose report is on, **only what the report page shows** (rounded, 20 or more), **only to the owner's
+  confirmed sign-in address** (never a typed one), once a month (claimed in a transaction before sending, given back if sending fails). The
+  private link cannot be in the email (only its hash is kept). Needs `CRON_SECRET`, `RESEND_API_KEY`, `REPORTS_FROM_EMAIL`; without them it is off.
+  **Never run against Resend itself.**
+- **Quiet hours** (`lib/quiet-hours.ts`, Settings): a window, often across midnight, in which the in-app nudge and the scheduled reminder
+  do not fire; a reminder inside it waits for it to end. **Device only** (localStorage), like the privacy lock: it is a working pattern, so it is
+  never sent anywhere or kept in the account.
+- **Shared-phone page** (`/field`, `lib/field-mode.ts`): free and open to everyone, for field workers who help several people on one phone.
+  "Next person: clear this phone" signs out and removes every `recoverly:` key from the device (never anyone's account), picks the next person's
+  language and reads the sudden-stop warning and the crisis numbers aloud in it. **Every device-only key the app adds must start with
+  `recoverly:`**, or that page will leave it behind for the next person.
+
 **Environment** (set by the owner in Vercel; never paste secrets in chat or commit them): `STRIPE_SECRET_KEY`,
 `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_CLINIC`, `STRIPE_PRICE_WORKPLACE`, `STRIPE_PRICE_NETWORK`, optional
 `STRIPE_PRICE_WORKSHOP`, `SESSION_SECRET`, `OWNER_UIDS`, optional `SITE_URL` (for a preview), and later `CRON_SECRET` and
