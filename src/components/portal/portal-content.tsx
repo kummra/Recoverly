@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KIND_LABELS, ORG_KINDS, PLANS, planAllows } from "@/lib/billing/catalogue";
 import { useAuth } from "@/hooks/use-auth";
-import { type Prices, confirmCheckout, createOrg, createProgramme, getOverview, getPrices, makeRollupKey, openBillingPortal, privateLink } from "@/lib/org/client";
+import { type Prices, confirmCheckout, createOrg, createProgramme, getOverview, getPrices, makeRollupKey, openBillingPortal, privateLink, setEmailReports } from "@/lib/org/client";
 import type { PortalOverview } from "@/lib/org/model";
 
 type Load = { status: "loading" } | { status: "error"; message: string } | { status: "ready"; overview: PortalOverview | null };
@@ -116,6 +116,13 @@ export function PortalContent() {
     }
     setBusy(false);
     setBanner({ tone: "error", text: result.message });
+  };
+
+  const toggleEmailReports = async (on: boolean) => {
+    const result = await setEmailReports(await getIdToken(), on);
+    if (!result.ok) return setBanner({ tone: "error", text: result.details[0] ?? result.message });
+    setBanner({ tone: "ok", text: on ? "Done. You will be emailed last month's figures on the 2nd of each month." : "Done. The monthly email is off." });
+    await reload();
   };
 
   const rollup = async () => {
@@ -261,6 +268,20 @@ export function PortalContent() {
           .
         </p>
         <p>{org.contactEmail ? `Receipts and notices go to ${org.contactEmail}, the confirmed address on your sign-in.` : "Your sign-in has no confirmed email address. Confirm it in Settings so we can send receipts."}</p>
+        {access.active && planAllows(plan, "emailReports") && (
+          <div className="flex gap-2 pt-1">
+            <input id="email-reports" type="checkbox" checked={org.emailReports} disabled={!org.contactEmail && !org.emailReports} onChange={(e) => void toggleEmailReports(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 rounded border-input accent-emerald-600" />
+            <div>
+              <Label htmlFor="email-reports" className="font-normal">
+                Email me last month&rsquo;s figures on the 2nd of each month
+              </Label>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {org.contactEmail ? `Sent to ${org.contactEmail}.` : "Needs a confirmed email address on your sign-in, and yours is not confirmed yet. Confirm it in Settings."} The same anonymous numbers as the report page (rounded, and only at 20 or more people), for each programme whose report is
+                on. Switch it off here at any time.
+              </p>
+            </div>
+          </div>
+        )}
         {org.purchases.length > 0 && <p>One-off purchases: {org.purchases.map((p) => `${p.item} on ${date(p.at)}`).join("; ")}.</p>}
         <p className="text-muted-foreground">To change the kind of organisation, close it, or have its data deleted, contact us on the organisations page.</p>
       </section>

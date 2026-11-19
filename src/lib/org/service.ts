@@ -115,7 +115,7 @@ export function createOrgService(deps: OrgServiceDeps) {
   }
 
   function portalOrg(org: OrgRecord): PortalOrg {
-    return { name: org.name, kind: org.kind, contactEmail: org.contactEmail, kindVerified: org.kindVerified, createdAt: org.createdAt, termsVersion: org.termsVersion, purchases: org.purchases, rollupOn: Boolean(org.rollupKeyHash) };
+    return { name: org.name, kind: org.kind, contactEmail: org.contactEmail, kindVerified: org.kindVerified, createdAt: org.createdAt, termsVersion: org.termsVersion, purchases: org.purchases, rollupOn: Boolean(org.rollupKeyHash), emailReports: Boolean(org.emailReports?.on) };
   }
 
   /** Words that use a feature the plan does not include are refused, not quietly dropped: the organisation should know they are not shown. */
@@ -182,6 +182,23 @@ export function createOrgService(deps: OrgServiceDeps) {
       if (clean.length < ORG_LIMITS.nameMin) throw new OrgError("invalid", `Give your organisation a name of at least ${ORG_LIMITS.nameMin} characters.`);
       await requireOrg(uid);
       await store.updateOrg(uid, (org) => (org ? { ...org, name: clean, updatedAt: now() } : null));
+    },
+
+    /**
+     * Switch the monthly report email on or off. It goes only to the organisation's confirmed sign-in address, so turning it on
+     * needs one; and it needs a plan that has it. Turning it off needs neither.
+     */
+    async setEmailReports(uid: string, on: unknown): Promise<void> {
+      if (typeof on !== "boolean") throw new OrgError("invalid", "Say whether to switch it on or off.");
+      if (!on) {
+        await requireOrg(uid);
+        await store.updateOrg(uid, (org) => (org ? { ...org, emailReports: undefined, updatedAt: now() } : null));
+        return;
+      }
+      const { org, plan } = await requireActive(uid);
+      if (!planAllows(plan, "emailReports")) throw new OrgError("invalid", "Your plan does not include the monthly report by email.");
+      if (!org.contactEmail) throw new OrgError("invalid", "The report is sent to the confirmed email address on your sign-in, and yours has not been confirmed. Confirm it in Settings, then try again.");
+      await store.updateOrg(uid, (current) => (current ? { ...current, emailReports: { on: true, ...(current.emailReports?.lastSentMonth ? { lastSentMonth: current.emailReports.lastSentMonth } : {}) }, updatedAt: now() } : null));
     },
 
     // ─── Programmes ─────────────────────────────────────────────────

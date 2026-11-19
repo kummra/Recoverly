@@ -113,6 +113,32 @@ describe("programmes need a plan, and a plan has a limit", () => {
   });
 });
 
+describe("the monthly report email", () => {
+  it("is switched on and off by the organisation, needs a plan that has it and a confirmed address, and remembers nothing when off", async () => {
+    const { service, store } = await orgWith("workplace", "workplace");
+    await store.updateOrg("u1", (o) => (o ? { ...o, contactEmail: "owner@acme.example" } : null));
+    await service.setEmailReports("u1", true);
+    expect((await store.getOrg("u1"))?.emailReports).toEqual({ on: true });
+    expect((await service.overview("u1"))?.org.emailReports).toBe(true);
+    await store.updateOrg("u1", (o) => (o ? { ...o, emailReports: { on: true, lastSentMonth: "2026-10" } } : null));
+    await service.setEmailReports("u1", true);
+    expect((await store.getOrg("u1"))?.emailReports).toEqual({ on: true, lastSentMonth: "2026-10" });
+    await service.setEmailReports("u1", false);
+    expect((await store.getOrg("u1"))?.emailReports).toBeUndefined();
+    expect((await service.overview("u1"))?.org.emailReports).toBe(false);
+    await expectError(service.setEmailReports("u1", "yes"), "invalid");
+  });
+
+  it("is refused without a confirmed address or a plan, but can always be switched off", async () => {
+    const noAddress = await orgWith("workplace", "workplace");
+    await noAddress.store.updateOrg("u1", (o) => (o ? { ...o, contactEmail: null } : null));
+    await expectError(noAddress.service.setEmailReports("u1", true), "invalid", /confirmed email/);
+    const noPlan = await orgWith("workplace", null);
+    await expectError(noPlan.service.setEmailReports("u1", true), "no_access");
+    await expect(noPlan.service.setEmailReports("u1", false)).resolves.toBeUndefined();
+  });
+});
+
 describe("the logo", () => {
   const logo = { type: "png", data: b64(png(96, 96)) };
 

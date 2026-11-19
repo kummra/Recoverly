@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 /**
  * The organisation portal's own record, for the signed-in owner: GET what the portal shows (`null` if there is no
- * organisation yet), POST to make one, PATCH to rename it. Nothing here is public; an organisation's words reach
+ * organisation yet), POST to make one, PATCH to rename it or to switch the monthly report email on or off. Nothing here is public; an organisation's words reach
  * its people only through the directory, after the owner has approved them.
  */
 export async function GET(request: NextRequest) {
@@ -45,7 +45,8 @@ export async function PATCH(request: NextRequest) {
     if ("response" in auth) return auth.response;
     const parsed = await readJson(request, 2_000);
     if ("response" in parsed) return parsed.response;
-    await service.rename(auth.user.uid, parsed.body.name);
+    if (parsed.body.emailReports !== undefined) await service.setEmailReports(auth.user.uid, parsed.body.emailReports);
+    if (parsed.body.name !== undefined) await service.rename(auth.user.uid, parsed.body.name);
     return json({ ok: true });
   } catch (error) {
     return failure("PATCH /api/org", error);

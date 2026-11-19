@@ -52,6 +52,8 @@ export type OrgRecord = {
   purchases: Purchase[];
   /** SHA-256 of the private roll-up link, for a plan that has one. */
   rollupKeyHash?: string;
+  /** The monthly report by email: switched on by the owner of the organisation, and the last month it was sent for (so it is sent once). */
+  emailReports?: { on: boolean; lastSentMonth?: string };
 };
 
 export type OrgProgrammeRecord = {
@@ -123,6 +125,10 @@ export function parseOrg(id: string, data: Record<string, unknown> | undefined):
     purchases
   };
   if (typeof data.rollupKeyHash === "string" && /^[0-9a-f]{64}$/.test(data.rollupKeyHash)) org.rollupKeyHash = data.rollupKeyHash;
+  if (isObject(data.emailReports) && data.emailReports.on === true) {
+    org.emailReports = { on: true };
+    if (typeof data.emailReports.lastSentMonth === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(data.emailReports.lastSentMonth)) org.emailReports.lastSentMonth = data.emailReports.lastSentMonth;
+  }
   return org;
 }
 
@@ -181,7 +187,7 @@ export type PortalProgramme = {
   updatedAt: number;
 };
 
-export type PortalOrg = Pick<OrgRecord, "name" | "kind" | "contactEmail" | "kindVerified" | "createdAt" | "termsVersion" | "purchases"> & { rollupOn: boolean };
+export type PortalOrg = Pick<OrgRecord, "name" | "kind" | "contactEmail" | "kindVerified" | "createdAt" | "termsVersion" | "purchases"> & { rollupOn: boolean; emailReports: boolean };
 
 export type PlanOffer = Pick<Plan, "id" | "name" | "audience" | "programmes" | "features">;
 

@@ -40,6 +40,7 @@ async function call<T>(token: string | null, method: string, path: string, body?
 
 export const getOverview = (token: string | null, f?: Fetch) => call<{ overview: PortalOverview | null }>(token, "GET", "/api/org", undefined, f);
 export const createOrg = (token: string | null, body: { name: string; kind: string; acceptTerms: boolean }, f?: Fetch) => call<{ overview: PortalOverview }>(token, "POST", "/api/org", body, f);
+export const setEmailReports = (token: string | null, on: boolean, f?: Fetch) => call<{ ok: true }>(token, "PATCH", "/api/org", { emailReports: on }, f);
 export const renameOrg = (token: string | null, name: string, f?: Fetch) => call<{ ok: true }>(token, "PATCH", "/api/org", { name }, f);
 export const createProgramme = (token: string | null, content: unknown, f?: Fetch) => call<{ programme: PortalProgramme }>(token, "POST", "/api/org/programmes", { content }, f);
 export const updateProgramme = (token: string | null, code: string, content: unknown, f?: Fetch) => call<{ programme: PortalProgramme }>(token, "PUT", `/api/org/programmes/${encodeURIComponent(code)}`, { content }, f);
