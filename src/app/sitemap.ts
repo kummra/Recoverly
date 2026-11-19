@@ -20,6 +20,8 @@ const PRIVACY_UPDATED = "2026-11-12";
 /** The "For organisations" page was added, and then the toolkit beneath it. */
 const PARTNERS_UPDATED = "2026-11-12";
 const TOOLKIT_UPDATED = "2026-11-12";
+/** Plans and pricing, the organisation terms and the refund terms were added. */
+const BILLING_UPDATED = "2026-11-19";
 
 type Route = {
   path: string;
@@ -62,7 +64,10 @@ const ENGLISH_ONLY: Route[] = [
   { path: "trust", priority: 0.5, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
   { path: "press", priority: 0.3, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
   { path: "accessibility", priority: 0.3, changeFrequency: "yearly", lastModified: PARTNERS_UPDATED },
-  { path: "partners/faq", priority: 0.4, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED }
+  { path: "partners/faq", priority: 0.4, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
+  { path: "pricing", priority: 0.5, changeFrequency: "monthly", lastModified: BILLING_UPDATED },
+  { path: "partners/terms", priority: 0.2, changeFrequency: "yearly", lastModified: BILLING_UPDATED },
+  { path: "partners/refunds", priority: 0.2, changeFrequency: "yearly", lastModified: BILLING_UPDATED }
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

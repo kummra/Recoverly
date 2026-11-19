@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { useAuth } from "@/hooks/use-auth";
+import { loginPathFor } from "@/lib/safe-next";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -11,7 +12,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace("/login");
+      // The organisation pages come back here after sign-in; any other page goes to the usual place.
+      router.replace(loginPathFor(`${window.location.pathname}${window.location.search}`));
     }
   }, [loading, router, user]);
 

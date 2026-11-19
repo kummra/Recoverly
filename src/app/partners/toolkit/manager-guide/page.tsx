@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { MembersGate } from "@/components/members-gate";
 import { DocLink, DocList, DocSection, ToolkitDoc } from "@/components/toolkit-doc";
 import { HELPLINES } from "@/lib/safety";
 
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true }
 };
 
+// Per request: whether the page opens depends on who is asking (`MembersGate`). Never prerendered.
+export const dynamic = "force-dynamic";
+
 /**
  * Written for managers who are not clinicians and should not try to be. It never
  * asks them to judge whether someone has a drinking problem: it asks them to
@@ -17,7 +21,7 @@ export const metadata: Metadata = {
  * (stopping suddenly can be dangerous for heavy drinkers) is the app's standing
  * safety message, in short form.
  */
-export default function ManagerGuidePage() {
+function ManagerGuideDoc() {
   return (
     <ToolkitDoc
       title="Talking with a colleague you are worried about: a guide for managers and HR"
@@ -91,5 +95,14 @@ export default function ManagerGuidePage() {
         />
       </DocSection>
     </ToolkitDoc>
+  );
+}
+
+/** Part of the toolkit for organisations with an active plan: anyone else sees the door (`components/members-gate.tsx`). */
+export default function ManagerGuidePage() {
+  return (
+    <MembersGate path="/partners/toolkit/manager-guide" title="Talking with a colleague you are worried about" summary="A guide for managers and HR on starting a kind, practical conversation with someone whose drinking worries them.">
+      <ManagerGuideDoc />
+    </MembersGate>
   );
 }

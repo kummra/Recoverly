@@ -11,8 +11,8 @@
  *    stranger's number in front of someone looking for help (firm rule 2). Anonymous counts and the team
  *    workspace are switched on per programme (`features`) and only ever within what the plan and the kind allow.
  */
-import { type OrgKind, isOrgKind, isPlanId } from "@/lib/billing/catalogue";
-import { type Subscription, normaliseStatus } from "@/lib/billing/entitlement";
+import { type OrgKind, type Plan, isOrgKind, isPlanId } from "@/lib/billing/catalogue";
+import { type AccessSummary, type Subscription, normaliseStatus } from "@/lib/billing/entitlement";
 import { type ProgrammeContent, normaliseCode, sanitiseProgrammeContent } from "@/lib/programme";
 
 /** The version of the organisation terms a person accepted. Bump it when the terms change materially. */
@@ -168,4 +168,46 @@ export type PortalProgramme = {
   workspaceKeyId: string | null;
   createdAt: number;
   updatedAt: number;
+};
+
+export type PortalOrg = Pick<OrgRecord, "name" | "kind" | "contactEmail" | "kindVerified" | "createdAt" | "termsVersion" | "purchases"> & { rollupOn: boolean };
+
+export type PlanOffer = Pick<Plan, "id" | "name" | "audience" | "programmes" | "features">;
+
+/** Everything the portal shows its owner. Built on the server and sent as JSON; contains no key and no hash. */
+export type PortalOverview = {
+  org: PortalOrg;
+  access: AccessSummary;
+  programmes: PortalProgramme[];
+  /** How many programme codes the current plan covers, or `null` with no plan. */
+  programmeLimit: number | null;
+  plans: PlanOffer[];
+  /** Whether this organisation could use the team workspace at all (a clinic or community kind on a plan that has it). */
+  workspaceEligible: boolean;
+};
+
+/** What the owner sees of a programme waiting for review. */
+export type ProgrammeSummary = {
+  code: string;
+  ownerUid: string;
+  orgName: string;
+  orgKind: OrgRecord["kind"];
+  kindVerified: boolean;
+  draft: ProgrammeContent;
+  live: ProgrammeContent | null;
+  reviewState: OrgProgrammeRecord["reviewState"];
+  reviewNote?: string;
+  updatedAt: number;
+};
+
+export type OwnerOrgRow = {
+  id: string;
+  name: string;
+  kind: OrgRecord["kind"];
+  kindVerified: boolean;
+  contactEmail: string | null;
+  createdAt: number;
+  access: AccessSummary;
+  subscription: Subscription | null;
+  purchases: OrgRecord["purchases"];
 };

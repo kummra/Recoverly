@@ -283,11 +283,14 @@ must stay true:
   separately ticks (the exceptions below). **Do not add a list, a log of lookups, a per-person figure or a
   dashboard beyond those without the owner's decision on rule 4 and without changing that text and the
   policy first.**
-- **The register is server-only** (`programme-register.ts`; `programme.test.ts` fails if a client file
-  imports it) and `GET /api/programme?code=` answers one code at a time. It is code, not a database:
-  to add an organisation edit the register (its header says how), and the tests run
-  `validateProgramme` over every entry (code 6 to 16 letters and digits, https links only, phone
-  digits only, at most four contacts). Real codes are not guessable words.
+- **The register is server-only** (`programme-register.ts`; `programme.test.ts` fails if any file but
+  `lib/org/directory.ts` and `lib/org/service.ts` imports it) and `GET /api/programme?code=` answers one code
+  at a time. It is code, not a database: to add an organisation by hand (an owner's pilot, free of charge) edit
+  the register (its header says how), and the tests run `validateProgramme` over every entry (code 6 to 16
+  letters and digits, https links only, phone digits only, at most four contacts). Real codes are not
+  guessable words. **Paying organisations make their own programmes in the portal** and live in the
+  database; every lookup goes through the directory, which asks the register first and then the database
+  (see "Organisation plans, the paywall and Stripe" below).
 - **Device-only**, like plans and the saved person: `recoverly:programme:{uid}` and a pending code
   `recoverly:programme-pending` in `localStorage`. Account deletion clears both. Signing out does not
   (the privacy text says so). Everything read back goes through `sanitiseProgramme`, so a hand-edited
@@ -343,6 +346,93 @@ to tell or ask, and tick "include my plans for hard moments" (off by default). T
 page and in the printout, never saved or sent; the plans stay on the device unless the person puts them on
 the sheet they hand over. Below it, the **Share a summary** card can make an encrypted link instead of
 paper (next section): the notes and plans reach a link only if the person ticks them there.
+
+## Organisation plans, the paywall and Stripe
+
+Added 19 Nov 2026 at the owner's request ("add all the organisation features, but make them only accessible when paid
+for, add a paywall, connect to Stripe"). **Recoverly stays free for individuals, always** (the app, the helplines, the
+guides, the safety documents for managers and friends): only the organisation tools are behind a plan. **It has not been
+tested against Stripe's real API**: that needs the owner's Stripe account, keys, prices and webhook
+(`docs/deploy-checklist.md` section 7); everything else is covered by tests and was checked on the emulators.
+
+**What is for sale.** Three plans, each for certain kinds of organisation (`lib/billing/catalogue.ts`):
+`clinic` (clinic and community kinds, about 3 programme codes, includes the team workspace), `workplace` (employer,
+fleet, college; about 5 codes; no workspace) and `network` (every kind, about 50 codes, adds the roll-up report). A
+plan grants features (report, progress averages, challenge, workspace, toolkit documents, CSV, roll-up); the
+catalogue is the one place that says which. **No price is in the code**: each plan's Stripe Price id comes from an
+environment variable (`STRIPE_PRICE_CLINIC`, `..._WORKPLACE`, `..._NETWORK`, `..._WORKSHOP`), the pricing page and
+the portal read the amount from Stripe (cached ten minutes), and a plan with no price says "ask us". One-off
+services (a launch workshop) are `PRODUCTS` bought in payment mode.
+
+**Who has access** (`lib/billing/entitlement.ts`, one function, `hasAccess`): `active` or `trialing` yes;
+`past_due` for 7 days past the period end; everything else no; a manual (invoice) activation until its end date;
+and, whatever the stored status, no more than 3 days past a period end that was never renewed, so a missed webhook
+cannot leave a lapsed account open for ever. A plan that does not fit the organisation's kind grants nothing
+(`planFitsKind`). Owner pilots in the in-code register are free and never checked.
+
+**Where it lives.** Server-only Firestore collections written with the Admin SDK (default-deny rules, so no rules
+change): `organisations/{ownerUid}` (name, kind, `kindVerified`, subscription, purchases, roll-up key hash),
+`orgProgrammes/{CODE}` (live `content`, `draft`, `reviewState`, feature toggles, report key hash, the team's
+public key) and `billingEvents/{eventId}` (so a retried webhook changes nothing). Code: `lib/org/*` (model, store and
+its Firestore and in-memory versions, `service.ts` for every rule, `directory.ts`, `session.ts`, `owner.ts`,
+`client.ts`), `lib/billing/*` (catalogue, entitlement, `stripe.ts`, `service.ts`), routes under `app/api/org`,
+`app/api/billing`, `app/api/owner`, and pages `/pricing`, `/portal`, `/owner`, `/partners/terms`,
+`/partners/refunds`.
+
+**Rules that must stay true:**
+- **Every paid feature is checked on the server on every request**, never only by hiding a button. The directory
+  serves a database programme only while its organisation's plan is active, the owner has approved its words,
+  and each count or the workspace is switched on and in the plan. When a plan lapses the code simply stops being
+  found, the private report, workspace and roll-up addresses say "the plan has ended" (`PlanEndedNotice`), and
+  **nothing is deleted**. People who joined keep what is on their own devices and the helplines never depend on
+  a plan.
+- **Nothing an organisation writes reaches its people until the owner approves it** (`reviewProgramme`). This
+  is firm rule 2 in practice: a self-serve organisation could otherwise put a stranger's number in front of
+  someone looking for help. An edit is a draft; people keep seeing the last approved version. A retired helpline
+  number is refused in the content check (`lib/org/content.ts`, built so no source file carries it whole).
+- **The team workspace needs a plan that has it, a clinic or community kind, and the owner's confirmation of
+  the kind** (`kindVerified`), on top of everything else. Only the signed-in owner can give a programme its team
+  key (never the report link), and a key with a private part is refused. A workplace or a college can never have
+  one, on any plan. Do not weaken this to make a sale.
+- **Access is never granted from a redirect alone.** The return from Stripe asks Stripe about that exact
+  session (`confirm`), and webhooks (`handleEvent`) keep the record current. Events are applied once, an older
+  event never overwrites a newer one, a stale event about an old subscription cannot close a newer one, and a stale
+  card event cannot wipe a manual activation. A failure after a verified event answers 500 so Stripe retries.
+- **The paywall for server-rendered pages is a short signed cookie** (`rc_org`, 30 minutes, `lib/org/session.ts`)
+  opened by `POST /api/org/session` after the Firebase sign-in and the plan are checked, and re-checked against the
+  store on every page request (`currentMember`, `MembersGate`). Without `SESSION_SECRET` (32 or more characters) the
+  gated pages stay closed: it fails closed. Gated: the session outline, manager guide, campaign kit, orientation
+  pack and clinic handout, plus programme codes, the report, figures, challenge, CSV, roll-up and workspace. **Kept
+  free: the trust, FAQ, compliance, pilot, press and accessibility pages, the pricing page, the examples, the poster
+  maker without a code, and the two safety documents (disclosure protocol, help-a-friend).**
+- **No card detail ever touches our code**: Stripe's own Checkout and billing portal take it. We keep an
+  organisation's name, kind, plan and renewal date.
+- **No `stripe` package.** Installing packages is refused in this environment, so `lib/billing/stripe.ts` calls the
+  REST API with `fetch` (pinned `Stripe-Version`) and verifies webhooks itself (HMAC-SHA256 of `t.body`, constant
+  time, 5-minute tolerance). If a package install becomes possible, swapping is a contained change.
+- **Owner pages answer 404 to everyone else.** The owner is whoever's Firebase uid is in `OWNER_UIDS`; unset means
+  nobody. The owner switches a plan on by hand after an invoice, bank transfer or UPI payment (`activateManual`,
+  up to 400 days, ends by itself), confirms kinds, and approves or rejects words.
+- **The two legal pages are drafts** and say so on the page (`/partners/terms`, `/partners/refunds`): they leave the
+  operating entity's name, the limit of liability and the governing law to a lawyer, and propose refund periods the
+  owner has not yet confirmed. Do not present them as final.
+- **Revisit the commercial claims at the first real payment.** The press page and the FAQ say Recoverly has not
+  launched commercially and has no paying customers; that is true today and must be changed the day it stops being
+  true (never imply customers or revenue that do not exist).
+
+**Environment** (set by the owner in Vercel; never paste secrets in chat or commit them): `STRIPE_SECRET_KEY`,
+`STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_CLINIC`, `STRIPE_PRICE_WORKPLACE`, `STRIPE_PRICE_NETWORK`, optional
+`STRIPE_PRICE_WORKSHOP`, `SESSION_SECRET`, `OWNER_UIDS`, optional `SITE_URL` (for a preview), and later `CRON_SECRET` and
+`RESEND_API_KEY` for emailed reports.
+
+**Stripe in India, and "payments to a phone number".** As of this writing Stripe India accepts new business accounts
+by invitation only, an individual cannot open one, and payouts go only to an Indian bank account in INR that the
+account holder sets in Stripe's dashboard: **there is no payout to a phone number, and no code can choose one**. The
+owner asked for payments to go to a phone number; that number was deliberately **not** written into the repository, the
+site or Stripe calls. Because the founder is a child, a parent or guardian or a legal entity must hold the Stripe account
+(or Razorpay or Cashfree, which are open to Indian businesses) and receive the money in their bank account. Until
+an account exists, the practical route is manual activation: the organisation pays an invoice by bank transfer or UPI,
+and the owner switches its plan on in `/owner`.
 
 ## Summary links, the headcount, progress figures and the team workspace: the exceptions to firm rule 4
 
@@ -590,7 +680,9 @@ The app builds and renders without these, but auth and the AI coach are inert un
    20 or more, rounded to 5, no list), kept beside the headcount as `{CODE}:DRY`. **No employer, college, insurer, TPA or government body ever
    receives individual-level data, with or without consent**: consent given to your own employer,
    institution or insurer is not freely given, so the workspace cannot be switched on for a workplace or a
-   college (`workspaceAllowedFor`, pinned by tests) whatever the register says. Nothing else may make a
+   college (`workspaceAllowedFor`, pinned by tests) whatever the register says, and for an organisation
+   that signed up itself in the portal only after the owner has confirmed its kind (`kindVerified`),
+   because a kind typed into a form is not proof. Nothing else may make a
    person's data visible to anyone, and any change to these four needs the owner's decision and the
    privacy policy (`privacy.s12*` to `s15*`) changed first. See "Summary links, the headcount, progress
    figures and the team workspace" above.

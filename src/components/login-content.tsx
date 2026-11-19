@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MIN_NEW_PASSWORD_LENGTH, authErrorKey } from "@/lib/auth-errors";
 import { isFirebaseConfigured } from "@/lib/firebase";
+import { safeNextPath } from "@/lib/safe-next";
 import { cn } from "@/lib/utils";
 
 type Mode = "signIn" | "signUp" | "reset";
@@ -55,7 +56,8 @@ export function LoginContent() {
   // One place decides when to leave this page: as soon as there is a user,
   // whether they signed in a moment ago or were already signed in on arrival.
   useEffect(() => {
-    if (!authLoading && user) router.replace("/dashboard");
+    // An organisation page that sent them here may ask to be returned to (only its own pages can: `safeNextPath`).
+    if (!authLoading && user) router.replace(safeNextPath(new URLSearchParams(window.location.search).get("next")) ?? "/dashboard");
   }, [authLoading, router, user]);
 
   const switchMode = (next: Mode) => {

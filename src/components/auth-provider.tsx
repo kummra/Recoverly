@@ -125,6 +125,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOutUser: async () => {
         if (!auth) return;
         await signOut(auth);
+        // Close any organisation pages that were opened in this browser. Best effort: the cookie also ends by itself.
+        try {
+          await fetch("/api/org/session", { method: "DELETE" });
+        } catch {
+          /* offline or blocked: nothing to do */
+        }
       },
 
       getIdToken: async () => {

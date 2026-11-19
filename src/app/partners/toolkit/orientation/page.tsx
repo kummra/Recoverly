@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { MembersGate } from "@/components/members-gate";
 import { DocLink, DocList, DocSection, ToolkitDoc } from "@/components/toolkit-doc";
 import { HELPLINES } from "@/lib/safety";
 
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true }
 };
 
-export default function OrientationPage() {
+// Per request: whether the page opens depends on who is asking (`MembersGate`). Never prerendered.
+export const dynamic = "force-dynamic";
+
+function OrientationDoc() {
   return (
     <ToolkitDoc
       title="College orientation outline and peer-ambassador pack"
@@ -52,5 +56,14 @@ export default function OrientationPage() {
         </p>
       </DocSection>
     </ToolkitDoc>
+  );
+}
+
+/** Part of the toolkit for organisations with an active plan: anyone else sees the door (`components/members-gate.tsx`). */
+export default function OrientationPage() {
+  return (
+    <MembersGate path="/partners/toolkit/orientation" title="Orientation outline and peer-ambassador pack" summary="A short outline a college can use at orientation, and a one-page pack for student peer ambassadors.">
+      <OrientationDoc />
+    </MembersGate>
   );
 }

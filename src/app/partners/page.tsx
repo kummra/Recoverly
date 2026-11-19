@@ -76,7 +76,7 @@ const LINK =
 /**
  * For organisations. Written for the people who would sign a pilot, so it says
  * plainly what exists today and what would be built with them, and claims no
- * customers: the product is live and free, and has not launched commercially.
+ * customers: the product is live, free for individuals, with organisation plans that can be set up and paid for, and has not launched commercially.
  */
 export default function PartnersPage() {
   return (
@@ -94,7 +94,7 @@ export default function PartnersPage() {
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm leading-relaxed text-body">
           <p className="font-medium text-amber-800 dark:text-amber-300">Where we are</p>
           <p className="mt-1">
-            Recoverly is built and live on the web, free for everyone. We have not launched commercially. We are opening a small number of pilot
+            Recoverly is built and live on the web, free for every individual. Organisation plans can be set up and paid for online, but we have not launched commercially. We are opening a small number of pilot
             partnerships so the tools for organisations are shaped by the people who will use them.
           </p>
         </div>
@@ -122,25 +122,33 @@ export default function PartnersPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">What you can use today</h2>
+        <h2 className="text-xl font-semibold">What organisations get</h2>
         <p className="leading-relaxed text-body">
-          Some tools for organisations already work, with no contract needed. In the{" "}
-          <Link href="/partners/toolkit" className={LINK}>
-            organisation toolkit
-          </Link>{" "}
-          you can make posters and pocket cards with a QR code in nine languages, read a 45-minute session outline and a conversation guide for managers, and see how a{" "}
+          The tools for organisations work today. You can look at them for free: a sample{" "}
           <Link href="/join/SAMPLE" className={LINK}>
             programme code
-          </Link>{" "}
-          puts your name and support contacts on your people&rsquo;s dashboard. Your organisation cannot see who joins or what anyone logs. If you ask for it, you can also receive one anonymous number a month, from people who choose to be counted: see an{" "}
-          <Link href="/partners/report/example" className={LINK}>
-            example report
           </Link>
-          . A clinic or community service can also ask for a private{" "}
+          , an{" "}
+          <Link href="/partners/report/example" className={LINK}>
+            example monthly report
+          </Link>
+          , an example{" "}
           <Link href="/partners/workspace/example" className={LINK}>
             team workspace
           </Link>
-          , where people who choose to can share their own progress with you by name.
+          , and the safety documents for managers and friends. With a plan (see{" "}
+          <Link href="/pricing" className={LINK}>
+            plans and pricing
+          </Link>
+          , and set up in the{" "}
+          <Link href="/portal" className={LINK}>
+            organisation portal
+          </Link>
+          ) you get programme codes of your own that put your name and support contacts on your people&rsquo;s dashboard, posters and pocket cards with your code and a QR code in nine languages, the{" "}
+          <Link href="/partners/toolkit" className={LINK}>
+            toolkit
+          </Link>{" "}
+          documents (a 45-minute session outline, a manager conversation guide, a campaign kit), and, if you ask for it, one anonymous number a month from people who choose to be counted. A clinic or community service can also have a private team workspace, where people who choose to can share their own progress with you by name. Your organisation cannot see who joins or what anyone logs.
         </p>
       </section>
 
@@ -148,7 +156,7 @@ export default function PartnersPage() {
         <div className="space-y-1">
           <h2 className="text-xl font-semibold">What a pilot would explore</h2>
           <p className="text-sm text-muted-foreground">
-            This is what we would build and test together. These are not products you can buy today.
+            This is what we would build and test together. Some of it you can already set up yourself in the portal; the rest are not products you can buy today.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">

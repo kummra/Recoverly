@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { MembersGate } from "@/components/members-gate";
 import { DocLink, DocList, DocSection, ToolkitDoc } from "@/components/toolkit-doc";
 import { HELPLINES } from "@/lib/safety";
 
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true }
 };
 
-export default function ClinicHandoutPage() {
+// Per request: whether the page opens depends on who is asking (`MembersGate`). Never prerendered.
+export const dynamic = "force-dynamic";
+
+function ClinicHandoutDoc() {
   return (
     <ToolkitDoc
       title="Patient handout: using Recoverly between visits"
@@ -50,5 +54,14 @@ export default function ClinicHandoutPage() {
         </p>
       </DocSection>
     </ToolkitDoc>
+  );
+}
+
+/** Part of the toolkit for organisations with an active plan: anyone else sees the door (`components/members-gate.tsx`). */
+export default function ClinicHandoutPage() {
+  return (
+    <MembersGate path="/partners/toolkit/clinic-handout" title="Patient handout for clinics" summary="A one-page handout a clinic can give patients: how to use Recoverly, what the clinic can and cannot see, and who to call.">
+      <ClinicHandoutDoc />
+    </MembersGate>
   );
 }

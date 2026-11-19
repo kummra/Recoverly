@@ -53,7 +53,7 @@ export default function TrustPage() {
 
       <DocSection title="Where the data lives">
         <DocPara>
-          {"The app runs on Vercel and stores accounts and records with Google Firebase (Authentication and Firestore). Data is encrypted in transit and at rest by those providers. Browsers cannot read the server-only collections used for sharing and counting, and this was checked against the real security rules. We have not yet confirmed India-only data residency, so do not assume it."}
+          {"The app runs on Vercel and stores accounts and records with Google Firebase (Authentication and Firestore). Data is encrypted in transit and at rest by those providers. Browsers cannot read the server-only collections used for sharing and counting, and this was checked against the real security rules. An organisation that pays by card does so on Stripe's own payment page, so card details go to Stripe and never reach us; we keep only the organisation's name, its kind, its plan and the date it renews. We have not yet confirmed India-only data residency, so do not assume it."}
         </DocPara>
       </DocSection>
 

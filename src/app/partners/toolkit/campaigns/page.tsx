@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { MembersGate } from "@/components/members-gate";
 import { CopyButton } from "@/components/copy-button";
 import { DocLink, DocList, DocPara, DocSection, ToolkitDoc } from "@/components/toolkit-doc";
 import { HELPLINES } from "@/lib/safety";
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://recoverly.co.in/partners/toolkit/campaigns" },
   robots: { index: false, follow: true }
 };
+
+// Per request: whether the page opens depends on who is asking (`MembersGate`). Never prerendered.
+export const dynamic = "force-dynamic";
 
 const CALENDAR: Array<[string, string]> = [
   ["New academic year / freshers' week", "New freedom and peer pressure. Use the orientation outline and put posters in hostels."],
@@ -29,7 +33,7 @@ const MESSAGES: Array<[string, string]> = [
   ["For managers", `Worried about a colleague? You do not need to be an expert. Describe what you have seen, listen, and point to help. A short guide: https://recoverly.co.in/partners/toolkit/manager-guide`]
 ];
 
-export default function CampaignKitPage() {
+function CampaignKitDoc() {
   return (
     <ToolkitDoc
       title="Awareness campaign kit: when to speak and what to send"
@@ -71,5 +75,14 @@ export default function CampaignKitPage() {
         </p>
       </DocSection>
     </ToolkitDoc>
+  );
+}
+
+/** Part of the toolkit for organisations with an active plan: anyone else sees the door (`components/members-gate.tsx`). */
+export default function CampaignKitPage() {
+  return (
+    <MembersGate path="/partners/toolkit/campaigns" title="Awareness campaign kit" summary="A calendar of the moments when drinking risk rises, and ready-to-send messages for WhatsApp, noticeboards and email.">
+      <CampaignKitDoc />
+    </MembersGate>
   );
 }

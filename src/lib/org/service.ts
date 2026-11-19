@@ -14,8 +14,8 @@
  */
 import { randomBytes, randomInt } from "node:crypto";
 
-import { PLANS, type Plan, type PlanId, isOrgKind, isPlanId, planAllows, planFitsKind, plansForKind } from "@/lib/billing/catalogue";
-import { type AccessSummary, type Subscription, accessSummary, hasAccess } from "@/lib/billing/entitlement";
+import { PLANS, type PlanId, isOrgKind, isPlanId, planAllows, planFitsKind, plansForKind } from "@/lib/billing/catalogue";
+import { type Subscription, accessSummary, hasAccess } from "@/lib/billing/entitlement";
 import { checkProgrammeContent } from "@/lib/org/content";
 import { OrgError } from "@/lib/org/errors";
 import {
@@ -24,8 +24,12 @@ import {
   ORG_TERMS_VERSION,
   type OrgProgrammeRecord,
   type OrgRecord,
+  type OwnerOrgRow,
+  type PortalOrg,
+  type PortalOverview,
   type PortalProgramme,
-  type ProgrammeFeatures
+  type ProgrammeFeatures,
+  type ProgrammeSummary
 } from "@/lib/org/model";
 import type { OrgStore } from "@/lib/org/store";
 import { type ProgrammeContent, cleanText } from "@/lib/programme";
@@ -36,23 +40,7 @@ export { ORG_ERROR_STATUS, OrgError, type OrgErrorCode } from "@/lib/org/errors"
 
 export type SignedInUser = { uid: string; email: string | null; emailVerified: boolean };
 
-export type PortalOrg = Pick<OrgRecord, "name" | "kind" | "contactEmail" | "kindVerified" | "createdAt" | "termsVersion" | "purchases"> & { rollupOn: boolean };
-
-export type PlanOffer = Pick<Plan, "id" | "name" | "audience" | "programmes" | "features">;
-
-export type PortalOverview = {
-  org: PortalOrg;
-  access: AccessSummary;
-  programmes: PortalProgramme[];
-  /** How many programme codes the current plan covers, or `null` with no plan. */
-  programmeLimit: number | null;
-  plans: PlanOffer[];
-  /** Whether this organisation could use the team workspace at all (a clinic or community kind on a plan that has it). */
-  workspaceEligible: boolean;
-};
-
-export type ProgrammeSummary = { code: string; ownerUid: string; orgName: string; orgKind: OrgRecord["kind"]; kindVerified: boolean; draft: ProgrammeContent; live: ProgrammeContent | null; reviewState: OrgProgrammeRecord["reviewState"]; reviewNote?: string; updatedAt: number };
-export type OwnerOrgRow = { id: string; name: string; kind: OrgRecord["kind"]; kindVerified: boolean; contactEmail: string | null; createdAt: number; access: AccessSummary; subscription: Subscription | null; purchases: OrgRecord["purchases"] };
+export type { OwnerOrgRow, PlanOffer, PortalOrg, PortalOverview, ProgrammeSummary } from "@/lib/org/model";
 
 /** Letters and digits with nothing that looks like another (no I, O, 0 or 1): a code is read off a poster and typed. */
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

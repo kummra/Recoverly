@@ -102,5 +102,11 @@ export const LIMITS = {
   // when refreshed; per address and generous because a clinic's staff share a connection.
   workspaceSend: { limit: 30, windowMs: 60 * 60_000 },
   workspaceManage: { limit: 120, windowMs: 60 * 60_000 },
-  workspaceInbox: { limit: 120, windowMs: 60 * 60_000 }
+  workspaceInbox: { limit: 120, windowMs: 60 * 60_000 },
+  // The organisation portal and its billing. Signed in, so per person. The session call runs whenever a members' page
+  // opens in a browser without the cookie, so it is generous; starting a payment is rare.
+  orgManage: { limit: 300, windowMs: 60 * 60_000 },
+  orgSession: { limit: 120, windowMs: 60 * 60_000 },
+  billing: { limit: 30, windowMs: 60 * 60_000 },
+  ownerManage: { limit: 600, windowMs: 60 * 60_000 }
 } as const;

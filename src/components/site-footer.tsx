@@ -111,6 +111,12 @@ export function SiteFooter() {
           <Link href="/partners" className={LINK}>
             Overview and enquiry
           </Link>
+          <Link href="/pricing" className={LINK}>
+            Plans and pricing
+          </Link>
+          <Link href="/portal" className={LINK}>
+            Organisation portal
+          </Link>
           <Link href="/partners/toolkit" className={LINK}>
             Toolkit
           </Link>
@@ -158,6 +164,12 @@ export function SiteFooter() {
           </Link>
           <Link href="/partners/regional" className={LINK}>
             Regional partners
+          </Link>
+          <Link href="/partners/terms" className={LINK}>
+            Organisation terms
+          </Link>
+          <Link href="/partners/refunds" className={LINK}>
+            Cancellation and refunds
           </Link>
           <Link href="/trust" className={LINK}>
             Trust and security

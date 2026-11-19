@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { MembersGate } from "@/components/members-gate";
 import { DocLink, DocList, DocSection, ToolkitDoc } from "@/components/toolkit-doc";
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import { HELPLINES } from "@/lib/safety";
@@ -11,6 +12,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true }
 };
 
+// Per request: whether the page opens depends on who is asking (`MembersGate`). Never prerendered.
+export const dynamic = "force-dynamic";
+
 const t = createTranslator("en");
 
 /**
@@ -21,7 +25,7 @@ const t = createTranslator("en");
  * signs are a subset of the "Signs that are an emergency" list in the stopping-safely
  * guide (which both documents link to). Keep it that way.
  */
-export default function SessionOutlinePage() {
+function SessionOutlineDoc() {
   return (
     <ToolkitDoc
       title="Alcohol awareness and support: a 45-minute session outline"
@@ -121,5 +125,14 @@ export default function SessionOutlinePage() {
         />
       </DocSection>
     </ToolkitDoc>
+  );
+}
+
+/** Part of the toolkit for organisations with an active plan: anyone else sees the door (`components/members-gate.tsx`). */
+export default function SessionOutlinePage() {
+  return (
+    <MembersGate path="/partners/toolkit/session-outline" title="Session outline: alcohol awareness and support" summary="A 45-minute outline for running an alcohol awareness and support session at a workplace, college or clinic, to print or save as a PDF.">
+      <SessionOutlineDoc />
+    </MembersGate>
   );
 }

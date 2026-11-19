@@ -40,10 +40,12 @@ const PROMISES = [
 
 /**
  * The organisation toolkit: what a clinic, employer, college or NGO can use today
- * to put Recoverly in front of its people. Everything on it works now and none of it
- * needs a contract. It says plainly what an organisation does NOT get (any view of
- * its people), because that is both the promise to them and the reason they will
- * use it, and it claims no customers: the product has not launched commercially.
+ * to put Recoverly in front of its people. Everything on it works now. The hub, the
+ * poster maker and the safety documents are open to everyone; the session documents and
+ * programme codes are for organisations with a plan, and the page says so. It says plainly
+ * what an organisation does NOT get (any view of its people), because that is both the
+ * promise to them and the reason they will use it, and it claims no customers: the
+ * product has not launched commercially.
  */
 export default function ToolkitPage() {
   return (
@@ -58,7 +60,11 @@ export default function ToolkitPage() {
         <h1 className="text-3xl font-bold leading-tight">Organisation toolkit</h1>
         <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">
           Put Recoverly in front of the people you look after, with your name on it and your support contacts beside it, and run a session that leaves everyone knowing where to get
-          help. Everything here works today. Recoverly is built and live and has not launched commercially, so these are tools for pilots, offered as they are.
+          help. Everything here works today. The poster maker and the safety documents are open to everyone; programme codes, the session documents and the reports are for organisations with a plan (see{" "}
+          <Link href="/pricing" className={LINK}>
+            plans and pricing
+          </Link>
+          ). Recoverly is built and live and has not launched commercially, so these are tools offered as they are.
         </p>
       </header>
 
@@ -68,7 +74,11 @@ export default function ToolkitPage() {
           Your own programme code
         </h2>
         <p className="max-w-3xl leading-relaxed text-body">
-          A programme is a short code that we set up with you. A person types it in Settings, or scans a QR code that opens <span className="font-mono text-sm">recoverly.co.in/join/YOURCODE</span>
+          A programme is a short code. You make one in the{" "}
+          <Link href="/portal" className={LINK}>
+            organisation portal
+          </Link>{" "}
+          (it needs a plan), or, for a pilot, we set it up with you. A person types it in Settings, or scans a QR code that opens <span className="font-mono text-sm">recoverly.co.in/join/YOURCODE</span>
           , and your organisation&rsquo;s name, a welcome in your own words and up to four support contacts appear on their dashboard (an employee assistance line, a counsellor, a
           clinic, a page). It is available in nine languages, and you can choose the language a first-time visitor sees.
         </p>
@@ -87,11 +97,11 @@ export default function ToolkitPage() {
           </span>
         </div>
         <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          To get a code, write to{" "}
+          To make a code, set up your organisation in the portal and choose a plan. For a pilot, write to{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className={LINK}>
             {CONTACT_EMAIL}
           </a>{" "}
-          or use the <Link href="/partners#enquire" className={LINK}>enquiry form</Link>. Say if you want the monthly headcount: it is off unless you ask, and nothing is counted for a
+          or use the <Link href="/partners#enquire" className={LINK}>enquiry form</Link>. The monthly headcount is off unless you switch it on, and nothing is counted for a
           programme without it. See an{" "}
           <Link href="/partners/report/example" className={LINK}>
             example of the monthly report
