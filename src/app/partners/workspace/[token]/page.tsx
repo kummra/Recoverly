@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { PlanEndedNotice } from "@/components/plan-ended-notice";
 import { WorkspaceTeam } from "@/components/workspace-team";
-import { findWorkspaceByReportKey } from "@/lib/programme-register";
+import { directory } from "@/lib/org/server";
 import { LIMITS, rateLimit } from "@/lib/rate-limit";
 import { callerKey } from "@/lib/request-guards";
 
@@ -19,7 +20,7 @@ type Params = Promise<{ token: string }>;
 
 /**
  * An organisation's team workspace, at the same private address as its report
- * (`scripts/make-report-key.mjs`; the register holds only the key's hash). It exists only for a
+ * (`scripts/make-report-key.mjs`, or made in the organisation portal; only the key's hash is kept). It exists only for a
  * clinic or community service whose register entry switches the workspace on: a workplace or a
  * college never has one, and any other address is a plain 404. The address proves the team to the
  * server for listing what people sent; reading it needs the team's own private key, which is made
@@ -32,8 +33,12 @@ export default async function WorkspacePage({ params }: { params: Params }) {
   const caller = rateLimit(`workspace-page:${callerKey({ headers: await headers() })}`, LIMITS.reportView.limit, LIMITS.reportView.windowMs);
   if (!caller.allowed) notFound();
 
-  const team = findWorkspaceByReportKey(token);
-  if (!team) notFound();
+  const team = await directory.findWorkspaceByReportKey(token);
+  if (!team) {
+    const lapsed = await directory.findLapsedByKey(token);
+    if (lapsed) return <PlanEndedNotice name={lapsed.name} />;
+    notFound();
+  }
 
   return <WorkspaceTeam token={token} code={team.code} name={team.name} publicKey={team.publicKey} keyId={team.keyId} />;
 }

@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
+import { PlanEndedNotice } from "@/components/plan-ended-notice";
 import { ProgrammeReport } from "@/components/programme-report";
 import { adminDb } from "@/lib/firebase-admin";
+import { directory } from "@/lib/org/server";
 import { firestoreCountStore } from "@/lib/programme-count-firestore";
 import { rollUpRows } from "@/lib/programme-group";
-import { findGroupByKey } from "@/lib/programme-register";
 import { LIMITS, rateLimit } from "@/lib/rate-limit";
 import { callerKey } from "@/lib/request-guards";
 
@@ -24,8 +25,12 @@ export default async function GroupReportPage({ params }: { params: Params }) {
   const { token } = await params;
   const caller = rateLimit(`group:${callerKey({ headers: await headers() })}`, LIMITS.reportView.limit, LIMITS.reportView.windowMs);
   if (!caller.allowed) notFound();
-  const found = findGroupByKey(token);
-  if (!found) notFound();
+  const found = await directory.findGroupByKey(token);
+  if (!found) {
+    const lapsed = await directory.findLapsedByKey(token);
+    if (lapsed) return <PlanEndedNotice name={lapsed.name} />;
+    notFound();
+  }
 
   let rows = null;
   try {

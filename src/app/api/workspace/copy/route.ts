@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
-import { findWorkspaceTeam } from "@/lib/programme-register";
+import { directory } from "@/lib/org/server";
 import { normaliseCode } from "@/lib/programme";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { getUserIdFromRequest } from "@/lib/server-auth";
@@ -16,8 +16,8 @@ const MAX_BODY_BYTES = WORKSPACE_LIMITS.ciphertextMaxChars + 2_000;
 
 const unavailable = () => NextResponse.json({ error: "unavailable" }, { status: 503 });
 
-/** The fingerprint of the key a team has in the register now, or `null`. */
-const currentKeyId = (code: string): string | null => findWorkspaceTeam(code)?.keyId ?? null;
+/** The fingerprint of the key a team has on file now (in the register or the organisation database), or `null`. */
+const currentKeyId = async (code: string): Promise<string | null> => (await directory.findWorkspaceTeam(code))?.keyId ?? null;
 
 /**
  * A signed-in person's workspace copies: send or update one (PUT), see what they share (GET),
@@ -45,7 +45,7 @@ export async function PUT(request: NextRequest) {
     if (typeof body !== "object" || body === null || Array.isArray(body)) return NextResponse.json({ error: "invalid" }, { status: 400 });
     const fields = body as Record<string, unknown>;
 
-    const result = await putCopy(firestoreWorkspaceStore(adminDb), findWorkspaceTeam(fields.code), uid, fields, Date.now());
+    const result = await putCopy(firestoreWorkspaceStore(adminDb), await directory.findWorkspaceTeam(fields.code), uid, fields, Date.now());
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
     return NextResponse.json({ ok: true, ...result.value });
   } catch (error) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { findWorkspaceTeam } from "@/lib/programme-register";
+import { directory } from "@/lib/org/server";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { getUserIdFromRequest } from "@/lib/server-auth";
 
@@ -10,8 +10,9 @@ export const runtime = "nodejs";
  * Which key to scramble a summary for, when a person in a programme chooses to share it with
  * the programme's team: `GET /api/workspace?code=ACMELOGI26`, signed in.
  *
- * The answer is the team's PUBLIC key and its fingerprint, taken from the register where the
- * owner put them (`lib/programme-register.ts`), never from anything a caller can send. Public
+ * The answer is the team's PUBLIC key and its fingerprint, taken from where the owner or the
+ * signed-in organisation put them (`lib/programme-register.ts`, or the organisation's record behind
+ * `lib/org/directory.ts`), never from anything a caller can send. Public
  * keys are not secret; the sign-in is only so a script cannot hammer it. The sample programme
  * answers `{ practice: true }`, which the device uses to try the whole thing with a key it makes
  * itself. A programme with no workspace, or none yet, answers "not found", the same as a code
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     const limited = rateLimit(`workspace-manage:${uid}`, LIMITS.workspaceManage.limit, LIMITS.workspaceManage.windowMs);
     if (!limited.allowed) return tooManyRequests(limited.retryAfter);
 
-    const team = findWorkspaceTeam(request.nextUrl.searchParams.get("code"));
+    const team = await directory.findWorkspaceTeam(request.nextUrl.searchParams.get("code"));
     if (!team) return NextResponse.json({ error: "not-found" }, { status: 404 });
     if (team.practice || !team.publicKey || !team.keyId) return NextResponse.json({ practice: true });
     return NextResponse.json({ publicKey: team.publicKey, keyId: team.keyId });

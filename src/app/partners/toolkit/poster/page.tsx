@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { PosterSheet } from "@/components/poster-sheet";
 import { PrintButton } from "@/components/print-button";
-import { findProgramme } from "@/lib/programme-register";
+import { directory } from "@/lib/org/server";
 import { parsePosterSettings } from "@/lib/toolkit";
 
 // Built from the address, for the person who made it. Nothing for search engines.
@@ -17,13 +17,13 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 /**
  * The printable page behind the form on /partners/toolkit. Rebuilt from the
  * address alone, on the server, so it prints the same without a script and can
- * be bookmarked. A code that is not in the register is dropped here too (the
- * form checks first, but an address can be typed or edited): a QR code to a page
- * that says "we do not recognise that code" must never reach a wall.
+ * be bookmarked. A code that is not live (not in the register, or its organisation's plan has
+ * ended) is dropped here too (the form checks first, but an address can be typed or edited):
+ * a QR code to a page that says "we do not recognise that code" must never reach a wall.
  */
 export default async function PosterPage({ searchParams }: { searchParams: SearchParams }) {
   const requested = parsePosterSettings(await searchParams);
-  const programme = requested.code ? findProgramme(requested.code) : null;
+  const programme = requested.code ? await directory.findProgramme(requested.code) : null;
   const settings = { ...requested, code: programme ? programme.code : null };
   const rejected = requested.code !== null && programme === null;
 

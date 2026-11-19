@@ -32,9 +32,13 @@ vi.mock("@/lib/programme-count-firestore", () => ({
     readFigures: async () => env.figures
   })
 }));
-vi.mock("@/lib/programme-register", () => ({
-  findProgrammeByReportKey: (token: unknown) =>
-    token === KEY ? { code: "ACMELOGI26", name: "Acme Logistics" } : token === KEY_WITH_FIGURES ? { code: "FIGURESORG26", name: "Figures Foundation", figures: true } : null
+const LAPSED_KEY = "L".repeat(43);
+vi.mock("@/lib/org/server", () => ({
+  directory: {
+    findProgrammeByReportKey: async (token: unknown) =>
+      token === KEY ? { code: "ACMELOGI26", name: "Acme Logistics" } : token === KEY_WITH_FIGURES ? { code: "FIGURESORG26", name: "Figures Foundation", figures: true } : null,
+    findLapsedByKey: async (token: unknown) => (token === LAPSED_KEY ? { name: "Lapsed Ltd" } : null)
+  }
 }));
 
 import ProgrammeReportPage from "@/app/partners/report/[token]/page";
@@ -80,6 +84,13 @@ describe("an organisation's report page", () => {
     expect(out).toMatch(/You cannot see who joined/);
     expect(out).toMatch(/at least 20 people are counted/);
     expect(out).toMatch(/nearest 5/);
+  });
+
+  it("says the plan has ended, instead of a bare 404, at the real address of an organisation that has stopped paying", async () => {
+    const out = text(await page(LAPSED_KEY));
+    expect(out).toContain("Lapsed Ltd: the plan has ended");
+    expect(out).toMatch(/Nothing has been deleted/);
+    expect(out).not.toMatch(/monthly report/);
   });
 
   it("is a not-found page for any key it does not hold", async () => {

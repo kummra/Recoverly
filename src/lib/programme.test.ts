@@ -209,7 +209,7 @@ describe("the register", () => {
 
 /** The register must never be bundled for a browser: it holds every organisation's code. */
 describe("the register stays on the server", () => {
-  it("is imported only by server code: the route that answers one code at a time, and a server page", () => {
+  it("is imported only by the organisation directory and service, which are server code", () => {
     const importers: string[] = [];
     const walk = (dir: string) => {
       for (const entry of readdirSync(dir)) {
@@ -224,21 +224,9 @@ describe("the register stays on the server", () => {
       }
     };
     walk(join(process.cwd(), "src"));
-    // The lookup route, the monthly-tick route (which only counts a programme that offers it), the organisation's
-    // report page (which finds an organisation by its private key), the proxy that gives a wrong report key a real
-    // 404, the poster page (which drops a code that is not in the register), and the team-workspace routes and page
-    // (which need a team's public key and its private link, both held here).
-    expect(importers.sort()).toEqual([
-      "src/app/api/programme/count/route.ts",
-      "src/app/api/programme/route.ts",
-      "src/app/api/workspace/copy/route.ts",
-      "src/app/api/workspace/inbox/route.ts",
-      "src/app/api/workspace/route.ts",
-      "src/app/partners/group/[token]/page.tsx",
-      "src/app/partners/report/[token]/page.tsx",
-      "src/app/partners/toolkit/poster/page.tsx",
-      "src/app/partners/workspace/[token]/page.tsx",
-      "src/proxy.ts"
-    ]);
+    // Only the organisation directory (which answers every lookup, register first and then the paying
+    // organisations' database) and the organisation service (which makes report keys the same way the register
+    // does). Every route and page asks the directory, never the register itself.
+    expect(importers.sort()).toEqual(["src/lib/org/directory.ts", "src/lib/org/service.ts"]);
   });
 });

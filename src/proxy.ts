@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { findGroupByKey, findProgrammeByReportKey, findWorkspaceByReportKey } from "@/lib/programme-register";
+import { directory } from "@/lib/org/server";
 
 /**
  * Gives a wrong organisation-report address a real 404, and the same for a team-workspace address.
@@ -13,22 +13,25 @@ import { findGroupByKey, findProgrammeByReportKey, findWorkspaceByReportKey } fr
  * a real key (and the public example) goes straight through. The page still checks the key
  * itself, so nothing depends on this file for safety: it is only about the status code.
  *
- * Proxy runs on Node, which is why it can use the register's constant-time key comparison.
+ * A real address whose organisation's plan has ended also goes through, so its page can say so.
+ *
+ * Proxy runs on Node, which is why it can use the register's constant-time key comparison and the
+ * organisation database behind the directory.
  */
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const parts = request.nextUrl.pathname.split("/");
   const segment = parts[3] ?? "";
   if (segment === "example") return NextResponse.next();
-  // A team workspace needs more than a report key: the organisation must have one, and may.
-  const find = parts[2] === "workspace" ? findWorkspaceByReportKey : parts[2] === "group" ? findGroupByKey : findProgrammeByReportKey;
-
   let token = segment;
   try {
     token = decodeURIComponent(segment);
   } catch {
     /* a malformed escape cannot be a key: leave it as it is and it will not match */
   }
-  if (find(token)) return NextResponse.next();
+  // A team workspace needs more than a report key: the organisation must have one, and may.
+  const found = parts[2] === "workspace" ? await directory.findWorkspaceByReportKey(token) : parts[2] === "group" ? await directory.findGroupByKey(token) : await directory.findProgrammeByReportKey(token);
+  if (found) return NextResponse.next();
+  if (await directory.findLapsedByKey(token)) return NextResponse.next();
 
   return NextResponse.rewrite(new URL("/report-key-not-found", request.url), { status: 404 });
 }

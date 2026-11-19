@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { directory } from "@/lib/org/server";
 import { normaliseCode } from "@/lib/programme";
-import { findProgramme } from "@/lib/programme-register";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { callerKey } from "@/lib/request-guards";
 
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   const code = normaliseCode(request.nextUrl.searchParams.get("code"));
   if (!code) return NextResponse.json({ error: "invalid" }, { status: 400 });
 
-  const programme = findProgramme(code);
+  const programme = await directory.findProgramme(code);
   if (!programme) return NextResponse.json({ error: "not-found" }, { status: 404 });
 
   return NextResponse.json({ programme });

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
+import { directory } from "@/lib/org/server";
 import { firestoreCountStore } from "@/lib/programme-count-firestore";
 import { recordTick } from "@/lib/programme-count-service";
-import { findProgramme } from "@/lib/programme-register";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { getUserIdFromRequest } from "@/lib/server-auth";
 
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
     const fields = typeof body === "object" && body !== null ? (body as { code?: unknown; figures?: unknown; challenge?: unknown }) : {};
 
-    const result = await recordTick(firestoreCountStore(adminDb), findProgramme(fields.code), new Date(), fields.figures, fields.challenge);
+    const result = await recordTick(firestoreCountStore(adminDb), await directory.findProgramme(fields.code), new Date(), fields.figures, fields.challenge);
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
     return NextResponse.json({ ok: true, month: result.month });
   } catch (error) {

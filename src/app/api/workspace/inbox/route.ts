@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { adminDb, isAdminConfigured } from "@/lib/firebase-admin";
-import { findWorkspaceByReportKey } from "@/lib/programme-register";
+import { directory } from "@/lib/org/server";
 import { LIMITS, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { callerKey } from "@/lib/request-guards";
 import { firestoreWorkspaceStore } from "@/lib/workspace-firestore";
@@ -20,7 +20,7 @@ const NO_STORE = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex" };
  * What comes back is useless to anyone but the team: every copy is scrambled for the team's
  * private key, which exists only in the team's browser. So even a report key that leaked can only
  * list scrambled copies; it cannot read them, and it cannot swap the team's key (that lives in the
- * register, not here). No account or address of any sender is in the answer: only opaque ids.
+ * register or the organisation's record, not here). No account or address of any sender is in the answer: only opaque ids.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     const header = request.headers.get("authorization") ?? "";
     const token = header.startsWith("Bearer ") ? header.slice("Bearer ".length).trim() : "";
-    const team = findWorkspaceByReportKey(token);
+    const team = await directory.findWorkspaceByReportKey(token);
     if (!team) return NextResponse.json({ error: "not-found" }, { status: 404, headers: NO_STORE });
 
     const result = await readInbox(firestoreWorkspaceStore(adminDb), team, Date.now());

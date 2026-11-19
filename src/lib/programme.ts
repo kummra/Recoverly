@@ -120,7 +120,7 @@ export function normaliseCode(input: unknown): string | null {
 }
 
 /** Collapse whitespace, drop control characters, cut to length. Empty when not text. */
-function cleanText(value: unknown, max: number): string {
+export function cleanText(value: unknown, max: number): string {
   if (typeof value !== "string") return "";
   // eslint-disable-next-line no-control-regex
   return value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
@@ -136,7 +136,7 @@ export function cleanContactPhone(value: unknown): string | null {
   return (text.startsWith("+") ? "+" : "") + digits;
 }
 
-function cleanEmail(value: unknown): string | null {
+export function cleanEmail(value: unknown): string | null {
   const text = cleanText(value, PROGRAMME_LIMITS.emailMax);
   return /^[^\s@<>"'`]+@[^\s@<>"'`]+\.[^\s@<>"'`]+$/.test(text) ? text : null;
 }
@@ -172,22 +172,20 @@ function cleanContact(input: unknown): ProgrammeContact | null {
   return contact.phone || contact.email || contact.url ? contact : null;
 }
 
+/** What an organisation writes for its people: everything about a programme except its code, its kind and which anonymous counts it offers. */
+export type ProgrammeContent = Pick<Programme, "name" | "welcome" | "contacts" | "locale" | "plans" | "questions">;
+
 /**
- * Rebuild a programme from anything: a network response or whatever is in
- * localStorage, which a person (or a bug) may have edited. Only known fields
- * survive, text is cleaned and links are limited to what a phone or browser can
- * safely open, so a stored value can never become a script. `null` when it is
- * not a usable programme.
+ * Rebuild an organisation's own words (name, welcome, contacts, plans, questions) from anything, keeping only
+ * known fields, cleaning text and limiting links to what a phone or browser can safely open. `null` when there
+ * is no usable name or English welcome.
  */
-export function sanitiseProgramme(input: unknown): Programme | null {
+export function sanitiseProgrammeContent(input: unknown): ProgrammeContent | null {
   if (typeof input !== "object" || input === null) return null;
   const raw = input as Record<string, unknown>;
 
-  const code = normaliseCode(raw.code);
   const name = cleanText(raw.name, PROGRAMME_LIMITS.nameMax);
-  if (!code || !name) return null;
-  const kind = (PROGRAMME_KINDS as readonly unknown[]).includes(raw.kind) ? (raw.kind as ProgrammeKind) : null;
-  if (!kind) return null;
+  if (!name) return null;
 
   const welcomeIn = typeof raw.welcome === "object" && raw.welcome !== null ? (raw.welcome as Record<string, unknown>) : {};
   const welcome: Partial<Record<Locale, string>> = {};
@@ -202,19 +200,41 @@ export function sanitiseProgramme(input: unknown): Programme | null {
     .filter((c): c is ProgrammeContact => c !== null)
     .slice(0, PROGRAMME_LIMITS.contactsMax);
 
-  const programme: Programme = { code, name, kind, welcome: welcome as Programme["welcome"], contacts };
-  if (isLocale(raw.locale)) programme.locale = raw.locale;
-  if (raw.headcount === true) programme.headcount = true;
-  if (raw.figures === true && programme.headcount) programme.figures = true;
-  if (raw.challenge === true && programme.headcount) programme.challenge = true;
-  if (raw.workspace === true) programme.workspace = true;
+  const content: ProgrammeContent = { name, welcome: welcome as Programme["welcome"], contacts };
+  if (isLocale(raw.locale)) content.locale = raw.locale;
   const plans = (Array.isArray(raw.plans) ? raw.plans : [])
     .map(cleanPlan)
     .filter((p): p is ProgrammePlan => p !== null)
     .slice(0, PROGRAMME_LIMITS.plansMax);
-  if (plans.length) programme.plans = plans;
+  if (plans.length) content.plans = plans;
   const questions = (Array.isArray(raw.questions) ? raw.questions : []).map((q) => cleanText(q, PROGRAMME_LIMITS.questionMax)).filter(Boolean).slice(0, PROGRAMME_LIMITS.questionsMax);
-  if (questions.length) programme.questions = questions;
+  if (questions.length) content.questions = questions;
+  return content;
+}
+
+/**
+ * Rebuild a programme from anything: a network response or whatever is in
+ * localStorage, which a person (or a bug) may have edited. Only known fields
+ * survive, text is cleaned and links are limited to what a phone or browser can
+ * safely open, so a stored value can never become a script. `null` when it is
+ * not a usable programme.
+ */
+export function sanitiseProgramme(input: unknown): Programme | null {
+  if (typeof input !== "object" || input === null) return null;
+  const raw = input as Record<string, unknown>;
+
+  const code = normaliseCode(raw.code);
+  if (!code) return null;
+  const kind = (PROGRAMME_KINDS as readonly unknown[]).includes(raw.kind) ? (raw.kind as ProgrammeKind) : null;
+  if (!kind) return null;
+  const content = sanitiseProgrammeContent(raw);
+  if (!content) return null;
+
+  const programme: Programme = { code, kind, ...content };
+  if (raw.headcount === true) programme.headcount = true;
+  if (raw.figures === true && programme.headcount) programme.figures = true;
+  if (raw.challenge === true && programme.headcount) programme.challenge = true;
+  if (raw.workspace === true) programme.workspace = true;
   return programme;
 }
 

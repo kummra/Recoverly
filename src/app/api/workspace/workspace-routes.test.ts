@@ -69,6 +69,12 @@ vi.mock("@/lib/programme-register", async (importOriginal) => {
   };
 });
 
+// The routes look programmes up through the directory; with no database behind it, it answers from the (mocked) register alone.
+vi.mock("@/lib/org/server", async () => {
+  const { createDirectory } = await import("@/lib/org/directory");
+  return { directory: createDirectory({ store: null }) };
+});
+
 import { DELETE, GET as listCopies, PUT } from "@/app/api/workspace/copy/route";
 import { GET as inbox } from "@/app/api/workspace/inbox/route";
 import { GET as keyLookup } from "@/app/api/workspace/route";

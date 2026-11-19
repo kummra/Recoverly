@@ -36,6 +36,12 @@ vi.mock("@/lib/programme-count-firestore", () => ({
     }
   })
 }));
+// The routes look programmes up through the directory; with no database behind it, it answers from the (mocked) register alone.
+vi.mock("@/lib/org/server", async () => {
+  const { createDirectory } = await import("@/lib/org/directory");
+  return { directory: createDirectory({ store: null }) };
+});
+
 vi.mock("@/lib/programme-register", () => ({
   findProgramme: (code: unknown) => (typeof code === "string" ? (env.programmes.get(code.toUpperCase()) as Programme | undefined) ?? null : null)
 }));

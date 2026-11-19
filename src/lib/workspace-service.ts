@@ -118,14 +118,12 @@ export type OwnCopy = {
  * What this person is sharing now, newest first. `currentKeyId(code)` is the fingerprint of that
  * team's key in the register. Anything past its time is removed on the way.
  */
-export async function listOwnCopies(store: WorkspaceStore, uid: string, now: number, currentKeyId: (code: string) => string | null): Promise<ServiceResult<OwnCopy[]>> {
+export async function listOwnCopies(store: WorkspaceStore, uid: string, now: number, currentKeyId: (code: string) => string | null | Promise<string | null>): Promise<ServiceResult<OwnCopy[]>> {
   const all = await store.listByOwner(uid);
   for (const copy of all) if (copy.expiresAt <= now) await store.delete(copy.id).catch(() => undefined);
   const live = all.filter((copy) => copy.expiresAt > now).sort((a, b) => b.updatedAt - a.updatedAt);
-  return {
-    ok: true,
-    value: live.map(({ code, createdAt, updatedAt, expiresAt, keyId }) => ({ code, createdAt, updatedAt, expiresAt, current: currentKeyId(code) === keyId }))
-  };
+  const value = await Promise.all(live.map(async ({ code, createdAt, updatedAt, expiresAt, keyId }) => ({ code, createdAt, updatedAt, expiresAt, current: (await currentKeyId(code)) === keyId })));
+  return { ok: true, value };
 }
 
 /** The person stops sharing with one team: the copy is deleted. Not finding one is fine; it is already stopped. */
