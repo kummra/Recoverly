@@ -3,7 +3,12 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 import { createTranslator } from "@/lib/i18n/dictionaries";
 import { en } from "@/lib/i18n/en";
 import type { Locale } from "@/lib/i18n/types";
+import { RECOGNITION_SENTENCE } from "@/lib/recognition";
 import { BASE_URL, absoluteUrl } from "@/lib/seo/alternates";
+import { HOME_FEATURES } from "@/lib/seo/home-content";
+
+/** The nine languages the app and its guides are published in. */
+const LANGUAGES = ["en", "hi", "mr", "pa", "ta", "te", "kn", "ml", "gu"];
 
 /**
  * JSON-LD for search engines.
@@ -41,11 +46,30 @@ export function AppStructuredData() {
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Recoverly",
+          // "Recoverly" alone is shared with unrelated products, so say which one this is.
+          alternateName: "Recoverly alcohol recovery app",
           url: BASE_URL,
           // What a search result can show beside the name: the same mark as the
           // favicon, at the size crawlers ask for.
           logo: `${BASE_URL}/icon-512.png`,
-          email: CONTACT_EMAIL
+          email: CONTACT_EMAIL,
+          description:
+            "A free, private app for people in India who want to cut down or quit alcohol, with tools for the clinics, employers, colleges and NGOs that support them.",
+          areaServed: { "@type": "Country", name: "India" },
+          knowsLanguage: LANGUAGES,
+          // The same sentence the fact sheet (/press) prints, so markup and page agree.
+          award: RECOGNITION_SENTENCE
+        }}
+      />
+      <Ld
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Recoverly",
+          alternateName: ["Recoverly alcohol recovery app", "recoverly.co.in"],
+          url: BASE_URL,
+          inLanguage: "en",
+          publisher: { "@type": "Organization", name: "Recoverly", url: BASE_URL }
         }}
       />
       <Ld
@@ -58,7 +82,10 @@ export function AppStructuredData() {
           applicationCategory: "HealthApplication",
           operatingSystem: "Any (web browser)",
           description: en["home.heroBody"],
-          inLanguage: ["en", "hi", "mr", "pa", "ta", "te", "kn", "ml", "gu"],
+          // The same list the home page prints under "What you can do".
+          featureList: [...HOME_FEATURES],
+          countriesSupported: "IN",
+          inLanguage: LANGUAGES,
           isAccessibleForFree: true,
           offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
           audience: {

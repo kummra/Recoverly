@@ -22,6 +22,9 @@ const PARTNERS_UPDATED = "2026-11-12";
 const TOOLKIT_UPDATED = "2026-11-12";
 /** Plans and pricing, the organisation terms and the refund terms were added. */
 const BILLING_UPDATED = "2026-11-19";
+/** The home page gained plain text about what Recoverly is, the fact sheet gained
+ *  its recognition line, and the English support page a title that names the helpline. */
+const SEO_UPDATED = "2026-11-22";
 
 type Route = {
   path: string;
@@ -34,7 +37,7 @@ type Route = {
  *  they are published in. */
 const TRANSLATED: Route[] = [
   { path: "guide", priority: 0.8, changeFrequency: "monthly", lastModified: SIGN_IN_UPDATED },
-  { path: "support", priority: 0.8, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
+  { path: "support", priority: 0.8, changeFrequency: "monthly", lastModified: SEO_UPDATED },
   { path: "faq", priority: 0.7, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
   { path: "privacy", priority: 0.3, changeFrequency: "yearly", lastModified: PRIVACY_UPDATED },
   { path: "terms", priority: 0.3, changeFrequency: "yearly", lastModified: CONTENT_UPDATED },
@@ -57,12 +60,13 @@ const TRANSLATED: Route[] = [
 
 /** English-only routes: the app shell and the sign-in screen. */
 const ENGLISH_ONLY: Route[] = [
-  { path: "", priority: 1, changeFrequency: "monthly", lastModified: CONTENT_UPDATED },
+  { path: "", priority: 1, changeFrequency: "monthly", lastModified: SEO_UPDATED },
   { path: "partners", priority: 0.6, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
   { path: "partners/toolkit", priority: 0.5, changeFrequency: "monthly", lastModified: TOOLKIT_UPDATED },
-  { path: "login", priority: 0.5, changeFrequency: "yearly", lastModified: SIGN_IN_UPDATED },
+  // The sign-in page is deliberately not listed: it is a form with nothing to
+  // search for, and listing it only asks Google to spend visits on it.
   { path: "trust", priority: 0.5, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
-  { path: "press", priority: 0.3, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
+  { path: "press", priority: 0.4, changeFrequency: "monthly", lastModified: SEO_UPDATED },
   { path: "accessibility", priority: 0.3, changeFrequency: "yearly", lastModified: PARTNERS_UPDATED },
   { path: "partners/faq", priority: 0.4, changeFrequency: "monthly", lastModified: PARTNERS_UPDATED },
   { path: "pricing", priority: 0.5, changeFrequency: "monthly", lastModified: BILLING_UPDATED },

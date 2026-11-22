@@ -48,25 +48,32 @@ const fontVars = [
 export const metadata: Metadata = {
   metadataBase: new URL("https://recoverly.co.in"),
   alternates: { canonical: "/" },
+  // The brand name alone is shared with unrelated products (a shop-cart app, a
+  // pain tracker), so the title says what this one is. Brand last, as the
+  // template does on every other page. Kept under about 60 characters so a
+  // search result does not cut it off.
   title: {
-    default: "Recoverly — Anti-Alcohol Recovery",
+    default: "Recoverly: free, private app to cut down or quit alcohol",
     template: "%s · Recoverly"
   },
   description:
-    "A compassionate, data-backed companion to help you reduce or quit alcohol — with private tracking, gentle insights, an AI support coach, and real crisis helplines.",
+    "Free, private app to cut down or quit alcohol. Track drinks, ride out cravings, take the WHO AUDIT self-check, read sourced guides. 9 Indian languages.",
   keywords: [
-    "alcohol recovery",
-    "quit drinking",
+    "alcohol recovery app",
+    "quit drinking app",
     "reduce alcohol",
     "sobriety tracker",
+    "alcohol helpline India",
+    "AUDIT self-check",
+    "Tele-MANAS",
     "de-addiction support",
     "Recoverly"
   ],
   applicationName: "Recoverly",
   openGraph: {
-    title: "Recoverly — Anti-Alcohol Recovery",
+    title: "Recoverly: free, private app to cut down or quit alcohol",
     description:
-      "Private alcohol-recovery tracking, gentle insights, and a non-judgmental AI support coach. You don't have to do this alone.",
+      "Track your drinking privately, get through cravings, read sourced guides and find helplines. In English, Hindi, Marathi, Punjabi, Tamil, Telugu, Kannada, Malayalam and Gujarati.",
     url: "https://recoverly.co.in",
     siteName: "Recoverly",
     locale: "en_IN",
@@ -74,9 +81,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Recoverly — Anti-Alcohol Recovery",
+    title: "Recoverly: free, private app to cut down or quit alcohol",
     description:
-      "Private alcohol-recovery tracking, gentle insights, and a non-judgmental AI support coach."
+      "Track your drinking privately, get through cravings, read sourced guides and find helplines. Free, in nine Indian languages."
   },
   robots: {
     index: true,

@@ -176,6 +176,11 @@ entity must be the account holder, and the contracting party in the organisation
 Indian businesses if Stripe is not available: the code keeps the provider behind `lib/billing/`, so adding one means a
 second adapter, not a rewrite. Until an account exists, use the manual route below.
 
+**Status on 22 November 2026 (production):** `SESSION_SECRET` and `CRON_SECRET` are set (generated, never shown). Still not set:
+`OWNER_UIDS` (needs the owner's sign-in id: sign in, open `/owner`, copy the id it shows), every `STRIPE_*` variable, `RESEND_API_KEY` and
+`REPORTS_FROM_EMAIL`. Until `OWNER_UIDS` is set, `/owner` answers 404 and nobody can switch a plan on; the safety documents and everything
+for individuals are unaffected. Variables take effect on the next deploy.
+
 **The manual (invoice, bank transfer or UPI) route works today, with no Stripe account:**
 1. Set `SESSION_SECRET` and `OWNER_UIDS` in Vercel and redeploy. (Sign in, open `/owner`: it shows your id if you are not yet on
    the list.)

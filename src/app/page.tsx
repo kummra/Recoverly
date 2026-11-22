@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { HeartHandshake, Sparkles, ArrowRight, BookOpen, Building2, TrendingDown, Calendar, Quote } from "lucide-react";
 
+import { HomeAbout } from "@/components/home-about";
 import { useI18n } from "@/components/i18n-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { getDrinkRecords } from "@/lib/firestore";
@@ -244,6 +245,9 @@ export default function HomePage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Plain text about what this is, for first-time visitors and for search engines. */}
+      <HomeAbout />
     </div>
   );
 }

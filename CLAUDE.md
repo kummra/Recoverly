@@ -740,3 +740,16 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Search visibility (SEO)
+
+Read `docs/seo.md`. In short: the site was almost invisible to search engines (nothing indexed in Bing on 22 Nov 2026), and
+the code-side fixes are in. Keep these true:
+
+- `recoverly-app.vercel.app` redirects to `recoverly.co.in` (`next.config.mjs`); `/api` is deliberately excluded.
+- The Google verification file and the IndexNow key file live in `public/`, not in `src/app` (a file in `src/app` is never served).
+- The home page's plain text and the structured data's `featureList` come from `lib/seo/home-content.ts`; the competition result
+  comes from `lib/recognition.ts` and appears on `/press` and in the Organization markup. Change them there, not in two places.
+- No ratings, reviews or `reviewedBy` in markup: the guides have had no clinical review. `lib/seo/seo.test.ts` enforces this.
+- A page listed in the sitemap must not be blocked in `robots.ts`; `noindex` organisation pages stay out of the sitemap.
+- The owner's off-site steps (Search Console, Bing Webmaster Tools, links to the real address) are in `docs/seo.md`.

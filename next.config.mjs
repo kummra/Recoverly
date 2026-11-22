@@ -19,6 +19,23 @@ const nextConfig = {
   turbopack: {
     root: __dirname
   },
+  async redirects() {
+    return [
+      {
+        // The site was first deployed at recoverly-app.vercel.app, and that
+        // address still answers with the whole site. Press releases, and any
+        // search engine that found it first, still point there. A permanent
+        // redirect moves those links, and the ranking they carry, onto the real
+        // domain instead of splitting them between two copies of every page.
+        // `/api` is left alone so a cron job or a webhook that was set up
+        // against the old address keeps working.
+        source: "/:path((?!api/).*)",
+        has: [{ type: "host", value: "recoverly-app.vercel.app" }],
+        destination: "https://recoverly.co.in/:path",
+        permanent: true
+      }
+    ];
+  },
   async headers() {
     return [
       {

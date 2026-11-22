@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { DocList, DocPara, DocSection, ToolkitDoc } from "@/components/toolkit-doc";
 import { CONTACT_EMAIL } from "@/lib/contact";
+import { RECOGNITION, RECOGNITION_SENTENCE } from "@/lib/recognition";
 
 export const metadata: Metadata = {
   title: "Recoverly fact sheet",
@@ -28,6 +29,15 @@ export default function PressPage() {
             "For organisations: programme codes, a toolkit (posters with QR codes, a session outline, a manager guide), an anonymous monthly report, and a private team workspace for clinics and community services.",
           ]}
         />
+      </DocSection>
+      <DocSection title="Recognition">
+        <DocPara>
+          {RECOGNITION_SENTENCE} The competition&rsquo;s own page for the project is{" "}
+          <a className="underline" href={RECOGNITION.url}>
+            {RECOGNITION.url}
+          </a>
+          . The result was announced in a press release that news websites carried, including ANI, Business Standard and The Tribune.
+        </DocPara>
       </DocSection>
       <DocSection title="What makes it different">
         <DocList
