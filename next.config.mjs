@@ -33,6 +33,18 @@ const nextConfig = {
         has: [{ type: "host", value: "recoverly-app.vercel.app" }],
         destination: "https://recoverly.co.in/:path",
         permanent: true
+      },
+      {
+        // Each language's pages live under its own prefix (/hi/learn, /hi/support
+        // and so on) but nothing answers at the bare prefix, so /hi, /ml and the
+        // rest were 404s, and Google found /ml and listed it as an error. The home
+        // page is one page for every language, so that is where a person who
+        // types one of these addresses should land. Temporary on purpose: a
+        // permanent redirect is cached by browsers for good, and a translated
+        // home page at /hi is a thing we may build later.
+        source: "/:locale(hi|mr|pa|ta|te|kn|ml|gu)",
+        destination: "/",
+        permanent: false
       }
     ];
   },

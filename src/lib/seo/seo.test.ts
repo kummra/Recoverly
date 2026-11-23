@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -12,7 +13,7 @@ import { AppStructuredData } from "@/components/structured-data";
 import { LEARN_SLUGS, getLearnArticle } from "@/content/learn";
 import { RECOGNITION, RECOGNITION_SENTENCE } from "@/lib/recognition";
 import { HELPLINES } from "@/lib/safety";
-import { BASE_URL } from "@/lib/seo/alternates";
+import { BASE_URL, PREFIXED_LOCALES } from "@/lib/seo/alternates";
 import { HOME_FAQ, HOME_FEATURES, HOME_GUIDES } from "@/lib/seo/home-content";
 
 const root = process.cwd();
@@ -28,6 +29,25 @@ describe("the address search engines should use", () => {
     expect(rule.destination).toBe("https://recoverly.co.in/:path");
     // A cron job or webhook set up against the old address must not be redirected.
     expect(rule.source).toContain("(?!api/)");
+  });
+
+  it("sends a bare language address (/hi, /ml ...) to the home page, and nothing else", async () => {
+    const config = (await import(/* @vite-ignore */ pathToFileURL(path.join(root, "next.config.mjs")).href)).default;
+    const rules: { source: string; destination: string; permanent: boolean }[] = await config.redirects();
+    const rule = rules.find((r) => r.destination === "/");
+    expect(rule, "no redirect to the home page").toBeDefined();
+    // Temporary: a translated home page at /hi may be built later, and a permanent redirect is cached for good.
+    expect(rule?.permanent).toBe(false);
+    // Use the router's own matcher, so this checks what Next will really do with the pattern.
+    const { match } = createRequire(import.meta.url)("next/dist/compiled/path-to-regexp") as {
+      match: (pattern: string) => (pathname: string) => unknown;
+    };
+    const matches = match(rule?.source ?? "");
+    for (const locale of PREFIXED_LOCALES) expect(matches(`/${locale}`), `/${locale} should redirect`).toBeTruthy();
+    // Pages that really exist, a look-alike, English (which has no prefix) and the home page itself must be left alone.
+    for (const other of ["/", "/en", "/hindi", "/hi/learn", "/hi/support", "/learn", "/support"]) {
+      expect(matches(other), `${other} must not redirect`).toBeFalsy();
+    }
   });
 });
 
