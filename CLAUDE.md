@@ -33,6 +33,12 @@ Live deployment: https://recoverly.co.in
   "The AI coach: limits and failures" below before touching it.
 - **Validation:** shared between Zod (`src/lib/schemas.ts`) and `firestore.rules`.
 - **Deploy:** Vercel (primary); Docker + k8s manifests exist for Oracle Cloud.
+- **Oracle copy of app data: off since 2026-11-26.** Oracle terminated the production database (notice
+  dated 2026-10-26) and the `ORACLE_*` settings were removed from Vercel, so every mirror call in
+  `lib/oracle-storage.ts` does nothing and `/api/oci-sync` answers `skipped`. The code is kept. While it
+  was on, the coach reply waited for the mirror (`await` in `api/ai/route.ts`), so a dead database could
+  delay a reply by the 3-second timeout. Before turning a copy back on, the privacy policy must say it
+  exists (it does not mention Oracle), and the coach should write the copy after replying, not before.
 
 ### Key files
 - `src/components/auth-provider.tsx` — Firebase auth context.
